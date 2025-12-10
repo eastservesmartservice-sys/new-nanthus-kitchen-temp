@@ -7,6 +7,7 @@ const Header: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +15,19 @@ const Header: React.FC = () => {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
+      }
+
+      // Determine active section
+      const sections = navItems.map(item => item.sectionId);
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 100 && rect.bottom >= 100) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
       }
     };
 
@@ -58,9 +72,14 @@ const Header: React.FC = () => {
   };
 
   const drawer = (
-    <Box sx={{ textAlign: 'center' }}>
+    <Box sx={{ textAlign: 'center', bgcolor: 'background.default', height: '100%' }}>
       <Box sx={{ my: 2 }}>
-        <Box component="img" src="/new_nanthus_kitchen_logo.png" alt="New Nanthu's Kitchen" sx={{ height: 50 }} />
+        <Box 
+          component="img" 
+          src="/new_nanthus_kitchen_logo.png" 
+          alt="New Nanthu's Kitchen" 
+          sx={{ height: 50, filter: 'brightness(0) invert(1)' }} 
+        />
       </Box>
       <List>
         {navItems.map((item) => (
@@ -72,7 +91,7 @@ const Header: React.FC = () => {
               <ListItemText 
                 primary={item.label} 
                 sx={{ 
-                  color: 'primary.main', 
+                  color: activeSection === item.sectionId ? 'primary.main' : 'white', 
                   '& .MuiTypography-root': { fontWeight: 'bold' }
                 }} 
               />
@@ -86,16 +105,17 @@ const Header: React.FC = () => {
   return (
     <AppBar 
       position="fixed" 
-      elevation={isScrolled ? 4 : 0}
+      elevation={isScrolled ? 0 : 0}
       sx={{ 
         top: 0,
         left: 0,
         right: 0,
         transition: 'all 0.3s ease-in-out',
-        backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+        backgroundColor: isScrolled ? 'rgba(5, 5, 5, 0.9)' : 'transparent',
         backdropFilter: isScrolled ? 'blur(10px)' : 'none',
+        borderBottom: isScrolled ? '1px solid rgba(255, 255, 255, 0.05)' : 'none',
         zIndex: 1100,
-        py: isScrolled ? 0 : 1
+        py: isScrolled ? 1 : 2
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, sm: 4, lg: 6 } }}>
@@ -106,8 +126,9 @@ const Header: React.FC = () => {
             src="/new_nanthus_kitchen_logo.png" 
             alt="New Nanthu's Kitchen" 
             sx={{ 
-              height: { xs: 40, md: isScrolled ? 50 : 60 },
-              transition: 'height 0.3s ease'
+              height: { xs: 40, md: isScrolled ? 45 : 55 },
+              transition: 'height 0.3s ease',
+              filter: 'brightness(0) invert(1)'
             }} 
           />
         </Box>
@@ -118,26 +139,44 @@ const Header: React.FC = () => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ color: isScrolled ? 'primary.main' : 'white' }}
+            sx={{ color: 'white' }}
           >
             <MenuIcon />
           </IconButton>
         ) : (
-          <Box sx={{ display: 'flex', gap: { md: 1, lg: 2 }, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: { md: 2, lg: 4 }, alignItems: 'center' }}>
             {navItems.map((item) => (
               <Button
                 key={item.label}
                 onClick={() => scrollToSection(item.sectionId)}
                 sx={{
-                  color: isScrolled ? 'primary.main' : 'white',
-                  fontWeight: 700,
+                  color: activeSection === item.sectionId ? 'primary.main' : 'white',
+                  fontWeight: 500,
                   fontSize: { md: '0.75rem', lg: '0.85rem' },
-                  px: { md: 1, lg: 1.5 },
+                  letterSpacing: '0.1em',
+                  px: 0,
                   minWidth: 'auto',
-                  textShadow: isScrolled ? 'none' : '0px 2px 4px rgba(0,0,0,0.5)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '2px',
+                    backgroundColor: 'primary.main',
+                    transform: activeSection === item.sectionId ? 'scaleX(1)' : 'scaleX(0)',
+                    transformOrigin: activeSection === item.sectionId ? 'left' : 'right',
+                    transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
+                  },
                   '&:hover': {
-                    color: 'secondary.main',
+                    color: 'primary.main',
                     backgroundColor: 'transparent',
+                    '&::after': {
+                      transform: 'scaleX(1)',
+                      transformOrigin: 'left',
+                    }
                   },
                 }}
               >
@@ -156,7 +195,7 @@ const Header: React.FC = () => {
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 280 },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 280, bgcolor: 'background.default' },
         }}
       >
         {drawer}

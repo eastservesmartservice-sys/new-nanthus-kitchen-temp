@@ -1,362 +1,240 @@
 import React, { useRef } from "react";
-import { Box, Typography, Button, Container, Chip } from "@mui/material";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { Box, Typography, Button, Container } from "@mui/material";
+import { motion, useScroll, useTransform, useMotionValue } from "framer-motion";
+import type { Variants } from "framer-motion";
+import ThreeBackground from "./ThreeBackground";
 
-// Floating food images for 3D effect
-const floatingItems = [
-  {
-    src: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=200",
-    alt: "Biryani",
-    delay: 0,
-    x: "10%",
-    y: "20%",
-    size: 120,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200",
-    alt: "Samosa",
-    delay: 0.2,
-    x: "85%",
-    y: "15%",
-    size: 100,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200",
-    alt: "Curry",
-    delay: 0.4,
-    x: "5%",
-    y: "70%",
-    size: 90,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=200",
-    alt: "Naan",
-    delay: 0.6,
-    x: "90%",
-    y: "65%",
-    size: 110,
-  },
-];
+
 
 const Hero: React.FC = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Mouse parallax effect
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.2]);
+  const { scrollY } = useScroll();
+  const textScale = useTransform(scrollY, [0, 300], [1, 1.1]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    mouseX.set(clientX / innerWidth - 0.5);
+    mouseY.set(clientY / innerHeight - 0.5);
+  };
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1], // Custom easing
+      },
+    },
+  };
 
   return (
     <Box
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
       id="hero"
-      ref={ref}
       sx={{
-        width: "100%",
         height: "100vh",
-        position: "relative",
-        overflow: "hidden",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "#fff",
+        position: "relative",
+        overflow: "hidden",
+        bgcolor: "#050505",
+        color: "white",
       }}
     >
-      {/* Parallax Background with zoom effect */}
-      <motion.div
-        style={{
-          y,
-          scale,
-          position: "absolute",
-          top: "-10%",
-          left: "-10%",
-          right: "-10%",
-          bottom: "-10%",
-          backgroundImage: `linear-gradient(135deg, rgba(21, 101, 192, 0.7), rgba(255, 143, 0, 0.5)), url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          zIndex: -2,
-        }}
-      />
+      {/* 3D Background */}
+      <ThreeBackground />
+      
+      {/* Dark Overlay for readability */}
+       <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', bgcolor: 'rgba(0,0,0,0.4)', zIndex: 1 }} />
 
-      {/* Animated floating food items for 3D depth - hidden on mobile for cleaner UI */}
-      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-        {floatingItems.map((item, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, scale: 0, rotate: -20 }}
-            animate={{
-              opacity: 0.9,
-              scale: 1,
-              rotate: 0,
-              y: [0, -20, 0],
-            }}
-            transition={{
-              delay: item.delay + 0.5,
-              duration: 0.8,
-              y: {
-                duration: 3 + index * 0.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-            }}
-            style={{
-              position: "absolute",
-              left: item.x,
-              top: item.y,
-              zIndex: 0,
-              filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.4))",
-            }}
-          >
-            <Box
-              component="img"
-              src={item.src}
-              alt={item.alt}
-              sx={{
-                width: item.size,
-                height: item.size,
-                objectFit: "cover",
-                borderRadius: "50%",
-                border: "4px solid rgba(255,255,255,0.3)",
-              }}
-            />
-          </motion.div>
-        ))}
+      {/* Data Grid Overlay */}
+      <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 2 }}>
+         {/* Vertical Lines */}
+         <Box sx={{ position: 'absolute', left: '10%', height: '100%', width: '1px', bgcolor: 'rgba(255,255,255,0.03)' }} />
+         <Box sx={{ position: 'absolute', right: '10%', height: '100%', width: '1px', bgcolor: 'rgba(255,255,255,0.03)' }} />
+         {/* Corner Data */}
+         <Box sx={{ position: 'absolute', top: '15%', left: '10%', pl: 2, borderLeft: '2px solid #FFCF40' }}>
+            <Typography variant="caption" sx={{ fontFamily: '"Manrope", monospace', color: 'primary.main', display: 'block' }}>LAT 6.9271° N</Typography>
+            <Typography variant="caption" sx={{ fontFamily: '"Manrope", monospace', color: 'rgba(255,255,255,0.5)' }}>LON 79.8612° E</Typography>
+         </Box>
       </Box>
 
-      {/* Animated particles/sparkles - reduced on mobile */}
-      {[...Array(12)].map((_, i) => (
+      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 10 }}>
         <motion.div
-          key={`particle-${i}`}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: [0, 1, 0],
-            y: [0, -100],
-            x: Math.random() * 20 - 10,
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center",
+            textAlign: "center" 
           }}
-          transition={{
-            duration: 3 + Math.random() * 2,
-            repeat: Infinity,
-            delay: Math.random() * 3,
-          }}
-          style={{
-            position: "absolute",
-            left: `${Math.random() * 100}%`,
-            bottom: "10%",
-            width: 4 + Math.random() * 4,
-            height: 4 + Math.random() * 4,
-            backgroundColor: "rgba(255, 200, 100, 0.8)",
-            borderRadius: "50%",
-            zIndex: 1,
-          }}
-        />
-      ))}
-
-      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
-        <motion.div
-          style={{ opacity }}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 3,
-              alignItems: "center",
-              textAlign: "center",
-            }}
-          >
-            {/* Tagline chip */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+          {/* Top Tagline */}
+          <motion.div variants={itemVariants}>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2, 
+                mb: 4,
+                opacity: 0.9
+              }}
             >
-              <Chip
-                label="AUTHENTIC SRI LANKAN CUISINE"
+              <Typography
                 sx={{
-                  bgcolor: "rgba(255,255,255,0.2)",
-                  color: "white",
-                  fontWeight: "bold",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255,255,255,0.3)",
-                  fontSize: "1rem",
-                  py: 2.5,
-                  px: 1,
+                  color: "primary.main",
+                  fontFamily: '"Manrope", sans-serif',
+                  letterSpacing: "0.2em",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
                 }}
-              />
-            </motion.div>
+              >
+                New Nanthu's Kitchen
+              </Typography>
+            </Box>
+          </motion.div>
 
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.8 }}
+          {/* Large Hero Text with Masking Effect */}
+          <Box sx={{ position: 'relative', mb: 2 }}>
+            <motion.div 
+              variants={itemVariants}
+              style={{ scale: textScale }}
             >
               <Typography
                 variant="h1"
-                component="h1"
                 sx={{
-                  fontSize: { xs: "2.5rem", sm: "4rem", md: "6rem" },
-                  lineHeight: 1.1,
-                  fontWeight: 800,
-                  letterSpacing: "-0.02em",
-                  textShadow: "0 4px 30px rgba(0,0,0,0.5)",
+                  color: "white",
+                  fontSize: { xs: "3rem", md: "8rem", lg: "11rem" },
+                  fontWeight: 400,
+                  letterSpacing: "-0.04em",
+                  lineHeight: 0.85,
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  fontFamily: '"Tenor Sans", sans-serif',
                 }}
               >
-                TASTE THE
-                <br />
-                <Box
-                  component="span"
-                  sx={{
-                    color: "secondary.main",
-                    textShadow: "0 0 40px rgba(255, 143, 0, 0.5)",
-                  }}
-                >
-                  TRADITION
-                </Box>
+                AUTHENTIC
+              </Typography>
+              <Typography
+                variant="h1"
+                component="span"
+                sx={{
+                  fontSize: { xs: "3rem", md: "8rem", lg: "11rem" },
+                  fontWeight: 400,
+                  letterSpacing: "-0.04em",
+                  lineHeight: 0.85,
+                  textTransform: "uppercase",
+                  color: "transparent",
+                  WebkitTextStroke: "1px rgba(255,255,255,0.8)",
+                  position: "relative",
+                  display: "block",
+                  fontFamily: '"Tenor Sans", sans-serif',
+                }}
+              >
+                CEYLON
               </Typography>
             </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              style={{
-                fontSize: "1.2rem",
-                maxWidth: 600,
-                margin: "0 auto",
-                textShadow: "0 2px 10px rgba(0,0,0,0.5)",
-              }}
-            >
-              Experience the rich flavors of authentic Sri Lankan cuisine, crafted
-              with passion and tradition at New Nanthu's Kitchen.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              style={{
-                display: "flex",
-                gap: 16,
-                flexWrap: "wrap",
-                justifyContent: "center",
-                width: "100%",
-                padding: "0 16px",
-              }}
-            >
-              <motion.div
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 10px 40px rgba(21, 101, 192, 0.4)",
-                }}
-                whileTap={{ scale: 0.95 }}
-                style={{ flex: '1', maxWidth: 200, minWidth: 150 }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  fullWidth
-                  sx={{
-                    fontSize: { xs: '0.9rem', sm: '1.1rem' },
-                    px: { xs: 3, sm: 5 },
-                    py: 1.5,
-                    borderRadius: "50px",
-                    boxShadow: "0 4px 20px rgba(21, 101, 192, 0.4)",
-                  }}
-                >
-                  ORDER NOW
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                style={{ flex: '1', maxWidth: 200, minWidth: 150 }}
-              >
-                <Button
-                  variant="outlined"
-                  size="large"
-                  fullWidth
-                  sx={{
-                    fontSize: { xs: '0.9rem', sm: '1.1rem' },
-                    px: { xs: 3, sm: 5 },
-                    py: 1.5,
-                    borderRadius: "50px",
-                    borderColor: "white",
-                    color: "white",
-                    borderWidth: 2,
-                    "&:hover": {
-                      borderColor: "secondary.main",
-                      backgroundColor: "rgba(255,255,255,0.1)",
-                    },
-                  }}
-                >
-                  VIEW MENU
-                </Button>
-              </motion.div>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              style={{ marginTop: 40 }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: { xs: 2, sm: 3, md: 6 },
-                  justifyContent: "center",
-                  flexWrap: "wrap",
-                  px: { xs: 2, sm: 0 },
-                }}
-              >
-                {[
-                  { value: "25+", label: "Years of Excellence" },
-                  { value: "100+", label: "Signature Dishes" },
-                  { value: "50K+", label: "Happy Customers" },
-                ].map((stat, index) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 1.2 + index * 0.1 }}
-                  >
-                    <Box sx={{ textAlign: "center", minWidth: { xs: 80, sm: 100 } }}>
-                      <Typography
-                        variant="h3"
-                        sx={{ 
-                          fontWeight: 800, 
-                          color: "secondary.main",
-                          fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' }
-                        }}
-                      >
-                        {stat.value}
-                      </Typography>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          opacity: 0.8,
-                          fontSize: { xs: '0.7rem', sm: '0.875rem' }
-                        }}
-                      >
-                        {stat.label}
-                      </Typography>
-                    </Box>
-                  </motion.div>
-                ))}
-              </Box>
-            </motion.div>
           </Box>
+
+          <motion.div variants={itemVariants}>
+            <Typography
+              variant="body1"
+              sx={{
+                maxWidth: 600,
+                mx: "auto",
+                color: "rgba(255,255,255,0.8)",
+                fontSize: { xs: "1rem", md: "1.1rem" },
+                lineHeight: 1.6,
+                mb: 6,
+                letterSpacing: "0.05em",
+                fontFamily: '"Manrope", sans-serif',
+              }}
+            >
+              Experience the true taste of Jaffna. From our signature Mutton Rolls to the rich aroma of Chicken 65, 
+              we bring the heart of Sri Lankan cuisine to your table.
+            </Typography>
+          </motion.div>
+
+          {/* Minimalist Action Buttons */}
+          <motion.div 
+            variants={itemVariants} 
+            style={{ display: "flex", gap: 40, justifyContent: "center" }}
+          >
+            <Button
+              variant="text"
+              href="#dine-in"
+              sx={{
+                color: "white",
+                fontSize: "1rem",
+                letterSpacing: "0.15em",
+                borderBottom: "1px solid transparent",
+                borderRadius: 0,
+                px: 0,
+                pb: 1,
+                fontFamily: '"Manrope", sans-serif',
+                "&:hover": {
+                  bgcolor: "transparent",
+                  borderBottom: "1px solid #FFCF40",
+                  color: "primary.main",
+                },
+              }}
+            >
+              RESERVE TABLE
+            </Button>
+            <Button
+              variant="text"
+              href="#menu"
+              sx={{
+                color: "white",
+                fontSize: "1rem",
+                letterSpacing: "0.15em",
+                borderBottom: "1px solid transparent",
+                borderRadius: 0,
+                px: 0,
+                pb: 1,
+                fontFamily: '"Manrope", sans-serif',
+                "&:hover": {
+                  bgcolor: "transparent",
+                  borderBottom: "1px solid #4FC3F7",
+                  color: "secondary.main",
+                },
+              }}
+            >
+              VIEW MENU
+            </Button>
+          </motion.div>
         </motion.div>
       </Container>
-
+      
+      {/* Scroll Indicator - Minimal Line */}
+      <motion.div
+        style={{ opacity: useTransform(scrollY, [0, 100], [1, 0]) }}
+      >
+      </motion.div>
     </Box>
   );
 };

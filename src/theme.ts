@@ -2,106 +2,85 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
-    mode: "light",
+    mode: "dark",
     primary: {
-      main: "#1565C0", // Brand Blue
-      contrastText: "#FFFFFF",
+      main: "#FFCF40", // Premium Gold
+      contrastText: "#000000",
     },
     secondary: {
-      main: "#FF8F00", // Brand Orange
-      contrastText: "#FFFFFF",
+      main: "#4FC3F7", // keeping the blue/cyan requested
+      contrastText: "#000000",
     },
     background: {
-      default: "#FFFFFF", // White BG
-      paper: "#F5F5F5",
+      default: "#050505", // Deepest Black
+      paper: "#121212", // Surface Black
     },
     text: {
-      primary: "#333333",
-      secondary: "#666666",
-    },
-    success: {
-      main: "#388E3C",
-    },
-    warning: {
-      main: "#F9A825",
-    },
-    info: {
-      main: "#0D47A1", // Dark Blue for footer/accents
+      primary: "#FFFFFF",
+      secondary: "rgba(255, 255, 255, 0.7)",
     },
   },
   typography: {
-    fontFamily: '"Poppins", "sans-serif"',
+    fontFamily: '"Manrope", "Roboto", "sans-serif"',
     h1: {
-      fontWeight: 800,
+      fontFamily: '"Tenor Sans", "sans-serif"',
+      fontWeight: 400,
       textTransform: "uppercase",
-      "@media (max-width:600px)": {
-        fontSize: "2rem",
-      },
     },
     h2: {
-      fontWeight: 800,
+      fontFamily: '"Tenor Sans", "sans-serif"',
+      fontWeight: 400,
       textTransform: "uppercase",
-      fontSize: "2.5rem",
-      "@media (max-width:600px)": {
-        fontSize: "1.75rem",
-      },
     },
     h3: {
-      fontWeight: 800,
+      fontFamily: '"Tenor Sans", "sans-serif"',
+      fontWeight: 400,
       textTransform: "uppercase",
-      fontSize: "1.5rem",
-      "@media (max-width:600px)": {
-        fontSize: "1.25rem",
-      },
     },
     h4: {
-      fontWeight: 800,
+      fontFamily: '"Tenor Sans", "sans-serif"',
+      fontWeight: 400,
       textTransform: "uppercase",
-      "@media (max-width:600px)": {
-        fontSize: "1.1rem",
-      },
+    },
+    h5: {
+      fontFamily: '"Tenor Sans", "sans-serif"',
+      fontWeight: 400,
+      textTransform: "uppercase",
     },
     h6: {
-      fontWeight: 700,
+      fontFamily: '"Manrope", "sans-serif"',
+      fontWeight: 600,
       textTransform: "uppercase",
-      "@media (max-width:600px)": {
-        fontSize: "0.95rem",
-      },
+      letterSpacing: '0.05em'
     },
     body1: {
-      "@media (max-width:600px)": {
-        fontSize: "0.9rem",
-      },
+      fontFamily: '"Manrope", "sans-serif"',
+      fontSize: "1rem",
     },
     body2: {
-      "@media (max-width:600px)": {
-        fontSize: "0.8rem",
-      },
+      fontFamily: '"Manrope", "sans-serif"',
+      fontSize: "0.875rem",
     },
     button: {
-      fontWeight: 800,
-      textTransform: "uppercase",
-    },
-    subtitle1: {
+      fontFamily: '"Manrope", "sans-serif"',
       fontWeight: 700,
       textTransform: "uppercase",
-      letterSpacing: "1px",
+      letterSpacing: "0.1em",
+    },
+    overline: {
+      fontFamily: '"Manrope", "sans-serif"',
+      letterSpacing: "0.2em",
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: "20px",
-          padding: "8px 24px",
+          borderRadius: 0, // Sharper corners for tech feel
+          padding: "10px 30px",
           boxShadow: "none",
           "&:hover": {
             boxShadow: "none",
-          },
-        },
-        containedPrimary: {
-          "&:hover": {
-            backgroundColor: "#0D47A1", // Darker Blue
           },
         },
       },
@@ -109,18 +88,9 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: "#FFFFFF",
-          color: "#1565C0",
-          boxShadow: "0px 2px 4px -1px rgba(0,0,0,0.1)",
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: "0",
-          boxShadow: "none",
           backgroundColor: "transparent",
+          backgroundImage: "none",
+          boxShadow: "none",
         },
       },
     },

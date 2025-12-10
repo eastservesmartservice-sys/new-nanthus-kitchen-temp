@@ -1,479 +1,240 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Container, Grid, Card, CardMedia, CardContent, Chip, Tab, Tabs, Rating } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
-import StarIcon from '@mui/icons-material/Star';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Box, Typography, Container } from '@mui/material';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 
-const menuCategories = {
-  'All': [
-    {
-      title: 'CHICKEN BIRYANI',
-      description: 'Aromatic basmati rice layered with tender chicken, exotic spices, and saffron. Served with raita.',
-      price: '$16.99',
-      image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600',
-      badge: 'BEST SELLER',
-      badgeColor: 'secondary' as const,
-      rating: 4.9,
-      reviews: 324,
-      spiceLevel: 2,
-    },
-    {
-      title: 'BUTTER CHICKEN',
-      description: 'Succulent chicken in a creamy tomato-based sauce with butter and aromatic spices.',
-      price: '$14.99',
-      image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=600',
-      badge: 'CHEF SPECIAL',
-      badgeColor: 'primary' as const,
-      rating: 4.8,
-      reviews: 256,
-      spiceLevel: 1,
-    },
-    {
-      title: 'MASALA DOSA',
-      description: 'Crispy rice crepe filled with spiced potato masala. Served with sambar and chutneys.',
-      price: '$12.99',
-      image: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600',
-      badge: 'VEGETARIAN',
-      badgeColor: 'success' as const,
-      rating: 4.7,
-      reviews: 189,
-      spiceLevel: 1,
-    },
-    {
-      title: 'LAMB ROGAN JOSH',
-      description: 'Tender lamb slow-cooked in Kashmiri spices with a rich, aromatic gravy.',
-      price: '$19.99',
-      image: 'https://images.unsplash.com/photo-1545247181-516773cae754?w=600',
-      badge: 'PREMIUM',
-      badgeColor: 'warning' as const,
-      rating: 4.9,
-      reviews: 145,
-      spiceLevel: 3,
-    },
-    {
-      title: 'PANEER TIKKA',
-      description: 'Marinated cottage cheese cubes grilled to perfection with bell peppers and onions.',
-      price: '$13.99',
-      image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600',
-      badge: 'POPULAR',
-      badgeColor: 'info' as const,
-      rating: 4.6,
-      reviews: 198,
-      spiceLevel: 2,
-    },
-    {
-      title: 'FISH CURRY',
-      description: 'Fresh fish cooked in a tangy coconut-based curry with curry leaves and mustard.',
-      price: '$17.99',
-      image: 'https://images.unsplash.com/photo-1626777553635-be342a766ed0?w=600',
-      badge: 'SEAFOOD',
-      badgeColor: 'primary' as const,
-      rating: 4.7,
-      reviews: 167,
-      spiceLevel: 2,
-    },
-  ],
-};
+const menuItems = [
+  { category: 'Starters', title: 'Chicken 65', price: '$12.99', description: 'Spicy, deep-fried chicken bites', image: 'https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=800' },
+  { category: 'Starters', title: 'Mutton Rolls', price: '$8.99', description: 'Crispy rolls stuffed with spiced mutton', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800' },
+  { category: 'Mains', title: 'Chicken Biryani', price: '$16.99', description: 'Basmati rice, saffron, exotic spices', image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800' },
+  { category: 'Mains', title: 'Butter Chicken', price: '$14.99', description: 'Creamy tomato sauce, aromatic spices', image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=800' },
+  { category: 'Mains', title: 'Lamb Rogan Josh', price: '$19.99', description: 'Slow-cooked lamb, Kashmiri spices', image: 'https://images.unsplash.com/photo-1545247181-516773cae754?w=800' },
+  { category: 'Mains', title: 'Fish Curry', price: '$17.99', description: 'Coconut curry, mustard, curry leaves', image: 'https://images.unsplash.com/photo-1626777553635-be342a766ed0?w=800' },
+  { category: 'Vegetarian', title: 'Masala Dosa', price: '$12.99', description: 'Rice crepe, potato masala, sambar', image: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=800' },
+  { category: 'Vegetarian', title: 'Paneer Tikka', price: '$13.99', description: 'Grilled cheese cubes, bell peppers', image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800' },
+  { category: 'Desserts', title: 'Gulab Jamun', price: '$6.99', description: 'Sweet milk solids in rose syrup', image: 'https://images.unsplash.com/photo-1589119908995-c6837fa14848?w=800' },
+];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15
-    }
-  }
-};
+const categories = ['All', ...new Set(menuItems.map(item => item.category))];
 
-const itemVariants = {
-  hidden: { y: 60, opacity: 0, rotateX: -15 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    rotateX: 0,
-    transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 12
-    }
-  }
-};
-
-// 3D Card tilt effect component
-const Card3D: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    setRotateY((x - centerX) / 10);
-    setRotateX(-(y - centerY) / 10);
-  };
-
-  const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
-  };
-
+const MenuItem: React.FC<{ item: any; index: number; onHover: (img: string | null) => void }> = ({ item, index, onHover }) => {
   return (
     <motion.div
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        transformStyle: 'preserve-3d',
-        perspective: 1000,
-      }}
-      animate={{
-        rotateX,
-        rotateY,
-      }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ delay: index * 0.05 }}
+      onMouseEnter={() => onHover(item.image)}
+      onMouseLeave={() => onHover(null)}
+      style={{ position: 'relative', cursor: 'none' }} // Hide default cursor for immersion
     >
-      {children}
+      <Box 
+        sx={{ 
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr auto', md: '2fr 3fr 1fr' },
+          gap: 2,
+          alignItems: 'center',
+          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          py: 4,
+          px: 2,
+          transition: 'all 0.4s ease',
+          '&:hover': {
+            bgcolor: 'rgba(255,255,255,0.02)',
+            pl: 4, // Slide effect
+            borderBottomColor: 'rgba(255,207,64, 0.3)'
+          }
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontFamily: '"Tenor Sans", sans-serif',
+            fontWeight: 400, 
+            color: 'white',
+            letterSpacing: '0.02em',
+            fontSize: { xs: '1.2rem', md: '1.8rem' },
+          }}
+        >
+          {item.title}
+        </Typography>
+        
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: 'rgba(255,255,255,0.5)', 
+            fontFamily: '"Manrope", sans-serif',
+            display: { xs: 'none', md: 'block' } 
+          }}
+        >
+          {item.description}
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            color: 'primary.main', 
+            fontWeight: 400,
+            fontFamily: '"Manrope", sans-serif',
+            textAlign: 'right'
+          }}
+        >
+          {item.price}
+        </Typography>
+      </Box>
     </motion.div>
   );
 };
 
-const SpiceLevel: React.FC<{ level: number }> = ({ level }) => (
-  <Box sx={{ display: 'flex', gap: 0.5 }}>
-    {[1, 2, 3].map((i) => (
-      <LocalFireDepartmentIcon 
-        key={i} 
-        sx={{ 
-          fontSize: 16, 
-          color: i <= level ? '#ff5722' : '#e0e0e0',
-          filter: i <= level ? 'drop-shadow(0 0 3px #ff5722)' : 'none'
-        }} 
-      />
-    ))}
-  </Box>
-);
-
 const Menu: React.FC = () => {
-  const [activeTab] = useState('All');
-  const menuItems = menuCategories[activeTab as keyof typeof menuCategories];
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+  
+  // Cursor follower logic
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { damping: 20, stiffness: 150, mass: 0.5 };
+  const springX = useSpring(mouseX, springConfig);
+  const springY = useSpring(mouseY, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    // Offset by a bit so it doesn't block text
+    mouseX.set(e.clientX + 20); 
+    mouseY.set(e.clientY - 100);
+  };
+
+  const filteredItems = activeCategory === 'All' 
+    ? menuItems 
+    : menuItems.filter(item => item.category === activeCategory);
 
   return (
     <Box 
       id="menu"
+      onMouseMove={handleMouseMove}
       sx={{ 
-        py: { xs: 10, lg: 16 }, 
-        bgcolor: 'background.default', 
-        textAlign: 'center',
+        py: { xs: 15, lg: 25 }, 
+        bgcolor: '#050505', 
         position: 'relative',
-        overflow: 'hidden'
+        minHeight: '100vh',
+        cursor: hoveredImage ? 'none' : 'default' // Custom cursor feel
       }}
     >
-      {/* Decorative background elements */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '10%',
-          left: '-5%',
-          width: 300,
-          height: 300,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(21, 101, 192, 0.1) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+      {/* Floating Image Follower */}
+      <motion.div
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          x: springX,
+          y: springY,
+          pointerEvents: 'none',
+          zIndex: 99,
+          opacity: hoveredImage ? 1 : 0,
+          scale: hoveredImage ? 1 : 0.8,
         }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '20%',
-          right: '-5%',
-          width: 400,
-          height: 400,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255, 143, 0, 0.1) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-        }}
-      />
+      >
+         <Box
+           sx={{
+             width: 300,
+             height: 400,
+             overflow: 'hidden',
+             borderRadius: '4px', // Slight radius for elegance
+             border: '1px solid rgba(255,207,64,0.3)',
+             boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+           }}
+         >
+           <AnimatePresence mode="wait">
+             {hoveredImage && (
+               <motion.img
+                 key={hoveredImage}
+                 src={hoveredImage}
+                 initial={{ opacity: 0, scale: 1.2 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 exit={{ opacity: 0 }}
+                 transition={{ duration: 0.4 }}
+                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+               />
+             )}
+           </AnimatePresence>
+         </Box>
+      </motion.div>
 
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <Chip 
-            icon={<FavoriteIcon />}
-            label="CUSTOMER FAVORITES" 
-            color="secondary" 
-            sx={{ mb: 2, fontWeight: 'bold' }}
-          />
+        <Box sx={{ mb: 12, textAlign: 'center' }}>
+          <Typography 
+            variant="overline" 
+            sx={{ 
+              color: 'primary.main', 
+              fontFamily: '"Manrope", sans-serif',
+              mb: 2, 
+              display: 'block',
+              letterSpacing: '0.3em'
+            }}
+          >
+            OUR SELECTION
+          </Typography>
           <Typography 
             variant="h2" 
-            gutterBottom 
             sx={{ 
-              fontWeight: 800, 
-              color: 'primary.main',
-              fontSize: { xs: '2rem', md: '3rem' }
+              color: 'white', 
+              fontWeight: 400, 
+              textTransform: 'uppercase', 
+              fontSize: { xs: '3rem', md: '6rem' },
+              fontFamily: '"Tenor Sans", sans-serif'
             }}
           >
-            OUR SIGNATURE DISHES
+            The Menu
           </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              mb: 6, 
-              color: 'text.secondary', 
-              maxWidth: 600, 
-              mx: 'auto',
-              fontWeight: 400
-            }}
-          >
-            Discover the authentic flavors of Sri Lanka with our carefully crafted dishes, 
-            made with the finest ingredients and traditional recipes.
-          </Typography>
-        </motion.div>
 
-        {/* Category Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <Tabs 
-            value={0} 
-            centered 
-            variant="scrollable"
-            scrollButtons="auto"
-            allowScrollButtonsMobile
-            sx={{ 
-              mb: 6,
-              '& .MuiTab-root': {
-                fontWeight: 'bold',
-                fontSize: { xs: '0.8rem', sm: '1rem' },
-                mx: { xs: 0.5, sm: 1, md: 2 },
-                minWidth: { xs: 80, sm: 100 },
-                px: { xs: 1, sm: 2 },
-              },
-              '& .MuiTabs-flexContainer': {
-                justifyContent: { xs: 'flex-start', md: 'center' },
-              }
-            }}
-          >
-            <Tab label="All Dishes" />
-            <Tab label="Vegetarian" />
-            <Tab label="Non-Veg" />
-            <Tab label="Seafood" />
-          </Tabs>
-        </motion.div>
-
-        <AnimatePresence mode="wait">
-          <Grid 
-            container 
-            spacing={4} 
-            justifyContent="center"
-            component={motion.div}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            key={activeTab}
-          >
-            {menuItems.map((item, index) => (
-              <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={item.title}>
-                <motion.div 
-                  variants={itemVariants}
-                  custom={index}
-                >
-                  <Card3D>
-                    <Card 
-                      sx={{ 
-                        height: '100%', 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        bgcolor: 'white',
-                        borderRadius: 4,
-                        overflow: 'hidden',
-                        boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          boxShadow: '0 20px 60px rgba(21, 101, 192, 0.2)',
-                        }
-                      }}
-                    >
-                      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-                        <motion.div 
-                          whileHover={{ scale: 1.1 }} 
-                          transition={{ duration: 0.6, ease: 'easeOut' }}
-                        >
-                          <CardMedia
-                            component="div"
-                            sx={{ 
-                              pt: '75%', 
-                              backgroundSize: 'cover', 
-                              backgroundPosition: 'center',
-                            }}
-                            image={item.image}
-                            title={item.title}
-                          />
-                        </motion.div>
-                        
-                        {/* Gradient overlay */}
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: '50%',
-                            background: 'linear-gradient(transparent, rgba(0,0,0,0.5))',
-                          }}
-                        />
-                        
-                        {item.badge && (
-                          <motion.div
-                            initial={{ x: 50, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 + index * 0.1 }}
-                          >
-                            <Chip
-                              label={item.badge}
-                              color={item.badgeColor}
-                              size="small"
-                              sx={{
-                                position: 'absolute',
-                                top: 12,
-                                right: 12,
-                                fontWeight: 'bold',
-                                fontSize: '0.7rem',
-                              }}
-                            />
-                          </motion.div>
-                        )}
-                        
-                        {/* Price tag */}
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            bottom: 12,
-                            left: 12,
-                            bgcolor: 'secondary.main',
-                            color: 'white',
-                            px: 2,
-                            py: 0.5,
-                            borderRadius: 2,
-                            fontWeight: 'bold',
-                            fontSize: '1.1rem',
-                          }}
-                        >
-                          {item.price}
-                        </Box>
-                      </Box>
-                      
-                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                          <Typography 
-                            variant="h6" 
-                            sx={{ 
-                              fontWeight: 800, 
-                              textTransform: 'uppercase',
-                              fontSize: '1rem'
-                            }}
-                          >
-                            {item.title}
-                          </Typography>
-                          <SpiceLevel level={item.spiceLevel} />
-                        </Box>
-                        
-                        <Typography 
-                          variant="body2" 
-                          color="text.secondary" 
-                          sx={{ mb: 2, minHeight: 40 }}
-                        >
-                          {item.description}
-                        </Typography>
-                        
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Rating 
-                            value={item.rating} 
-                            precision={0.1} 
-                            readOnly 
-                            size="small"
-                            emptyIcon={<StarIcon style={{ opacity: 0.3 }} fontSize="inherit" />}
-                          />
-                          <Typography variant="body2" color="text.secondary">
-                            ({item.reviews})
-                          </Typography>
-                        </Box>
-                        
-                        <motion.div
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Button 
-                            fullWidth 
-                            variant="outlined" 
-                            color="primary"
-                            sx={{ 
-                              mt: 2, 
-                              borderRadius: 2,
-                              fontWeight: 'bold',
-                              '&:hover': {
-                                bgcolor: 'primary.main',
-                                color: 'white',
-                              }
-                            }}
-                          >
-                            ADD TO ORDER
-                          </Button>
-                        </motion.div>
-                      </CardContent>
-                    </Card>
-                  </Card3D>
-                </motion.div>
-              </Grid>
+          {/* Elegant Tabs */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 6, flexWrap: 'wrap' }}>
+            {categories.map((category) => (
+              <Typography 
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                variant="body1"
+                sx={{ 
+                  cursor: 'pointer',
+                  color: activeCategory === category ? 'primary.main' : 'rgba(255,255,255,0.5)', 
+                  fontWeight: 600, 
+                  textTransform: 'uppercase',
+                  fontFamily: '"Manrope", sans-serif',
+                  letterSpacing: '0.1em',
+                  position: 'relative',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: -5,
+                    left: 0,
+                    width: activeCategory === category ? '100%' : '0%',
+                    height: '1px',
+                    bgcolor: 'primary.main',
+                    transition: 'width 0.3s ease'
+                  },
+                  '&:hover': {
+                    color: 'white'
+                  }
+                }}
+              >
+                {category}
+              </Typography>
             ))}
-          </Grid>
-        </AnimatePresence>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8, gap: 2, flexWrap: 'wrap' }}>
-            <motion.div 
-              whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(21, 101, 192, 0.3)' }} 
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button 
-                variant="contained" 
-                color="primary" 
-                size="large" 
-                sx={{ px: 6, py: 1.5, borderRadius: '50px', fontWeight: 'bold' }}
-              >
-                VIEW FULL MENU
-              </Button>
-            </motion.div>
-            <motion.div 
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button 
-                variant="outlined" 
-                color="secondary" 
-                size="large" 
-                sx={{ px: 6, py: 1.5, borderRadius: '50px', fontWeight: 'bold' }}
-              >
-                DOWNLOAD PDF
-              </Button>
-            </motion.div>
           </Box>
-        </motion.div>
+        </Box>
+
+        <Box sx={{ minHeight: 600 }}>
+          <AnimatePresence mode="wait">
+             <motion.div
+               key={activeCategory}
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -20 }}
+               transition={{ duration: 0.5 }}
+             >
+                {filteredItems.map((item, index) => (
+                  <MenuItem key={item.title} item={item} index={index} onHover={setHoveredImage} />
+                ))}
+             </motion.div>
+          </AnimatePresence>
+        </Box>
       </Container>
     </Box>
   );
