@@ -1,113 +1,232 @@
 import React, { useRef } from 'react';
-import { Box, Typography, Container, Button } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import {
+  Box,
+  Typography,
+  Container,
+  Button,
+  Chip,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { tokens } from "../theme";
 
-const todaySpecials = [
+interface SpecialItemType {
+  title: string;
+  description: string;
+  price: string;
+  image: string;
+  tag: string;
+  availability?: string;
+}
+
+const todaySpecials: SpecialItemType[] = [
   {
-    title: 'Thali Special',
-    description: 'A complete culinary journey on a single platter. Rice, sambar, rasam, 2 vegetable curries, and sweet.',
-    price: '$18.99',
-    originalPrice: '$24.99',
-    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=1200',
-    tag: 'Limited Time'
+    title: "Everyday Lunch Boxes",
+    description:
+      "Enjoy a complete meal with your choice of rice, curry, and accompaniments. Perfect for a quick and satisfying lunch that brings the authentic taste of Jaffna cuisine to your day.",
+    price: "$10",
+    image:
+      "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=1200",
+    tag: "Daily Special",
+    availability: "Available Every Day",
   },
   {
-    title: 'Biryani Feast',
-    description: 'Royal Hyderabadi flavors. Served with raita, mirchi ka salan, and boiled egg.',
-    price: '$17.99',
-    originalPrice: '$22.99',
-    image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=1200',
-    tag: 'Weekend Exclusive'
-  }
+    title: "Sri Lankan Chicken Soup",
+    description:
+      "Warm, comforting, and bursting with authentic Sri Lankan spices. Our traditional chicken soup is slowly simmered to perfection with aromatic herbs and tender chicken pieces.",
+    price: "Market Price",
+    image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=1200",
+    tag: "Weekend Special",
+    availability: "Saturday & Sunday Only",
+  },
 ];
 
-const SpecialItem: React.FC<{ item: any; index: number }> = ({ item, index }) => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [100, -100]); // Parallax text
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.1, 1]);
+interface SpecialItemProps {
+  item: SpecialItemType;
+  index: number;
+}
 
+const SpecialItem: React.FC<SpecialItemProps> = ({ item, index }) => {
+  const ref = useRef(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1.05, 1]);
   const isEven = index % 2 === 0;
 
+  const scrollToOrder = () => {
+    const element = document.getElementById("take-away");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <Box 
-      ref={ref} 
-      sx={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        position: 'relative',
-        py: 10
+    <Box
+      ref={ref}
+      component="article"
+      sx={{
+        minHeight: { xs: "auto", md: "100vh" },
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        py: { xs: 8, md: 12 },
       }}
     >
-      <Container maxWidth="xl">
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: isEven ? 'row' : 'row-reverse' }, alignItems: 'center', gap: { xs: 8, md: 15 } }}>
-          
+      <Container maxWidth="lg">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: isEven ? "row" : "row-reverse" },
+            alignItems: "center",
+            gap: { xs: 5, md: 10 },
+          }}
+        >
           {/* Image Side */}
-          <Box sx={{ flex: 1, position: 'relative', height: { xs: '50vh', md: '80vh' }, width: '100%', overflow: 'hidden' }}>
-             <motion.div style={{ scale: imgScale, width: '100%', height: '100%' }}>
-                <Box 
-                  component="img" 
-                  src={item.image} 
-                  sx={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'cover',
-                    filter: 'grayscale(20%) brightness(0.9)',
-                    borderRadius: '4px'
-                  }} 
-                />
-             </motion.div>
-             {/* Tech Overlay lines */}
-             <Box sx={{ position: 'absolute', top: 20, left: 20, right: 20, bottom: 20, border: '1px solid rgba(255,255,255,0.1)', pointerEvents: 'none' }} />
+          <Box
+            sx={{
+              flex: 1,
+              position: "relative",
+              height: { xs: 350, md: 500 },
+              width: "100%",
+              overflow: "hidden",
+              borderRadius: 2,
+            }}
+          >
+            <motion.div
+              style={{
+                scale: isMobile ? 1 : imgScale,
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <Box
+                component="img"
+                src={item.image}
+                alt={item.title}
+                loading="lazy"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  filter: "brightness(0.95)",
+                }}
+              />
+            </motion.div>
+            {/* Tag Badge */}
+            <Chip
+              label={item.tag}
+              sx={{
+                position: "absolute",
+                top: 20,
+                left: 20,
+                bgcolor: tokens.colors.primary.main,
+                color: tokens.colors.neutral.black,
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                letterSpacing: "0.05em",
+              }}
+            />
           </Box>
 
           {/* Text Side */}
-          <Box sx={{ flex: 1, position: 'relative' }}>
-             <motion.div style={{ y }}>
-                <Typography variant="overline" sx={{ color: 'primary.main', fontFamily: '"Manrope", sans-serif', letterSpacing: '0.3em', mb: 2, display: 'block' }}>
-                  — {item.tag}
-                </Typography>
-                <Typography variant="h1" sx={{ color: 'white', fontFamily: '"Tenor Sans", sans-serif', fontSize: { xs: '4rem', md: '7rem' }, lineHeight: 0.9, mb: 4 }}>
-                  {item.title}
-                </Typography>
-                <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.7)', fontFamily: '"Manrope", sans-serif', fontSize: '1.2rem', maxWidth: 500, mb: 6, lineHeight: 1.8 }}>
-                  {item.description}
-                </Typography>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 6 }}>
-                  <Typography variant="h3" sx={{ color: 'white', fontFamily: '"Tenor Sans", sans-serif' }}>
-                    {item.price}
-                  </Typography>
-                  <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through', fontFamily: '"Manrope", sans-serif' }}>
-                    {item.originalPrice}
-                  </Typography>
+          <Box sx={{ flex: 1, position: "relative" }}>
+            <motion.div style={{ y: isMobile ? 0 : y }}>
+              <Typography
+                component="span"
+                sx={{
+                  color: tokens.colors.primary.main,
+                  letterSpacing: "0.2em",
+                  mb: 2,
+                  display: "block",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                }}
+              >
+                Today's Special
+              </Typography>
+              <Typography
+                component="h3"
+                sx={{
+                  color: "white",
+                  fontFamily: tokens.fonts.display,
+                  fontSize: { xs: "2.5rem", md: "4rem" },
+                  lineHeight: 1,
+                  mb: 3,
+                }}
+              >
+                {item.title}
+              </Typography>
+              <Typography
+                sx={{
+                  color: tokens.colors.text.secondary,
+                  fontSize: { xs: "1rem", md: "1.1rem" },
+                  maxWidth: 450,
+                  mb: 4,
+                  lineHeight: 1.7,
+                }}
+              >
+                {item.description}
+              </Typography>
+
+              {/* Availability */}
+              {item.availability && (
+                <Box sx={{ mb: 3 }}>
+                  <Chip
+                    label={item.availability}
+                    sx={{
+                      bgcolor: "rgba(255,207,64,0.15)",
+                      color: tokens.colors.primary.main,
+                      fontWeight: 600,
+                      fontSize: "0.8rem",
+                      px: 1,
+                    }}
+                  />
                 </Box>
+              )}
 
-                <Button
-                   variant="contained" 
-                   color="primary"
-                   size="large"
-                   sx={{ 
-                     borderRadius: 0, 
-                     px: 6,
-                     py: 2,
-                     color: 'black',
-                     fontFamily: '"Manrope", sans-serif',
-                     fontWeight: 700,
-                     letterSpacing: '0.1em',
-                     bgcolor: 'primary.main',
-                     '&:hover': { 
-                        bgcolor: 'white'
-                     }
-                   }}
+              {/* Price Display */}
+              <Box
+                sx={{ display: "flex", alignItems: "baseline", gap: 2, mb: 5 }}
+              >
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontFamily: tokens.fonts.display,
+                    fontSize: { xs: "2rem", md: "2.5rem" },
+                    fontWeight: 500,
+                  }}
                 >
-                  ORDER NOW
-                </Button>
-             </motion.div>
-          </Box>
+                  {item.price}
+                </Typography>
+              </Box>
 
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={scrollToOrder}
+                sx={{
+                  px: 5,
+                  py: 1.5,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  color: tokens.colors.neutral.black,
+                }}
+              >
+                Order Now
+              </Button>
+            </motion.div>
+          </Box>
         </Box>
       </Container>
     </Box>
@@ -116,24 +235,67 @@ const SpecialItem: React.FC<{ item: any; index: number }> = ({ item, index }) =>
 
 const Special: React.FC = () => {
   return (
-    <Box id="special" sx={{ bgcolor: '#050505', position: 'relative' }}>
-      {/* Sticky Background Title */}
-      <Box sx={{ position: 'sticky', top: 50, left: 0, width: '100%', textAlign: 'center', opacity: 0.05, pointerEvents: 'none', zIndex: 0 }}>
-        <Typography 
-          variant="h1" 
-          sx={{ 
-            fontSize: '20vw', 
-            fontFamily: '"Tenor Sans", sans-serif', 
-            fontWeight: 900, 
-            color: 'white',
-            lineHeight: 1
+    <Box
+      component="section"
+      id="special"
+      aria-label="Today's Specials"
+      sx={{
+        bgcolor: tokens.colors.neutral.black,
+        position: "relative",
+        py: { xs: 8, md: 0 },
+      }}
+    >
+      {/* Background Title - Desktop Only */}
+      <Box
+        aria-hidden="true"
+        sx={{
+          display: { xs: "none", md: "block" },
+          position: "sticky",
+          top: 100,
+          left: 0,
+          width: "100%",
+          textAlign: "center",
+          opacity: 0.03,
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "15vw",
+            fontFamily: tokens.fonts.display,
+            fontWeight: 400,
+            color: "white",
+            lineHeight: 1,
+            letterSpacing: "-0.02em",
           }}
         >
           SPECIAL
         </Typography>
       </Box>
 
-      <Box sx={{ position: 'relative', zIndex: 1, mt: -20 }}>
+      {/* Section Header - Mobile */}
+      <Box
+        sx={{
+          display: { xs: "block", md: "none" },
+          textAlign: "center",
+          mb: 4,
+        }}
+      >
+        <Typography
+          component="h2"
+          sx={{
+            color: "white",
+            fontFamily: tokens.fonts.display,
+            fontSize: "2.5rem",
+            textTransform: "uppercase",
+          }}
+        >
+          Specials
+        </Typography>
+      </Box>
+
+      <Box sx={{ position: "relative", zIndex: 1 }}>
         {todaySpecials.map((item, index) => (
           <SpecialItem key={item.title} item={item} index={index} />
         ))}

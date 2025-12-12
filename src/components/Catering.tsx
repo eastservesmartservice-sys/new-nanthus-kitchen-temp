@@ -1,138 +1,224 @@
-import React from 'react';
-import { Box, Typography, Container, Grid, Button } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React from "react";
+import { Box, Typography, Container, Grid, Button } from "@mui/material";
+import { motion } from "framer-motion";
+import { tokens } from "../theme";
+import GroupsIcon from "@mui/icons-material/Groups";
+import CelebrationIcon from "@mui/icons-material/Celebration";
 
 const Catering: React.FC = () => {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const scrollToContact = () => {
+    const element = document.getElementById("contact");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const services = [
+    {
+      icon: <GroupsIcon />,
+      title: "Corporate Events",
+      desc: "Business lunches & meetings",
+    },
+    {
+      icon: <CelebrationIcon />,
+      title: "Private Parties",
+      desc: "Weddings & celebrations",
+    },
+  ];
 
   return (
-    <Box 
+    <Box
+      component="section"
       id="catering"
-      sx={{ 
-        py: { xs: 10, lg: 25 }, 
-        bgcolor: '#050505',
-        position: 'relative',
-        overflow: 'hidden',
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center'
+      aria-label="Catering Services"
+      sx={{
+        py: { xs: 10, md: 15 },
+        bgcolor: tokens.colors.neutral.black,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={8} alignItems="center" direction="row-reverse">
-          <Grid size={{ xs: 12, md: 5 }}>
+        <Grid
+          container
+          spacing={{ xs: 6, md: 10 }}
+          alignItems="center"
+          direction="row-reverse"
+        >
+          <Grid size={{ xs: 12, md: 6 }}>
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
             >
-                <Typography 
-                variant="overline" 
-                sx={{ 
-                  color: 'primary.main', 
-                  letterSpacing: '0.2em', 
-                  mb: 4, 
-                  display: 'block',
-                  fontFamily: '"Manrope", sans-serif'
+              <Typography
+                component="span"
+                sx={{
+                  color: tokens.colors.primary.main,
+                  letterSpacing: "0.2em",
+                  mb: 2,
+                  display: "block",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
                 }}
               >
-                // Catering
+                Catering Services
               </Typography>
-              <Typography 
-                variant="h2" 
-                sx={{ 
-                  color: 'white', 
-                  fontWeight: 400, 
-                  textTransform: 'uppercase', 
-                  lineHeight: 0.9,
-                  mb: 6,
-                  fontSize: { xs: '3rem', md: '5rem' },
-                  fontFamily: '"Tenor Sans", sans-serif'
+              <Typography
+                component="h2"
+                sx={{
+                  color: "white",
+                  fontWeight: 400,
+                  textTransform: "uppercase",
+                  lineHeight: 1,
+                  mb: 4,
+                  fontSize: { xs: "2.5rem", md: "4rem" },
+                  fontFamily: tokens.fonts.display,
                 }}
               >
                 Curated <br />
-                <Box component="span" sx={{ color: 'transparent', WebkitTextStroke: '1px #fff' }}>Events</Box>
+                <Box
+                  component="span"
+                  sx={{ color: tokens.colors.primary.main }}
+                >
+                  Events
+                </Box>
               </Typography>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  color: 'rgba(255,255,255,0.6)', 
-                  mb: 6, 
-                  fontWeight: 300, 
-                  lineHeight: 1.8,
-                  borderColor: 'rgba(255,255,255,0.1)',
-                  borderLeft: '1px solid',
-                  pl: 4,
-                  fontFamily: '"Manrope", sans-serif'
+              <Typography
+                sx={{
+                  color: tokens.colors.text.secondary,
+                  mb: 5,
+                  lineHeight: 1.7,
+                  fontSize: { xs: "1rem", md: "1.1rem" },
+                  maxWidth: 450,
                 }}
               >
-                Elevate your next gathering with the distinct flavors of Nanthus. 
-                From corporate luncheons to grand weddings, we bring a touch of 
-                culinary excellence to every occasion.
+                Elevate your next gathering with the distinct flavors of
+                Nanthus. From corporate luncheons to grand weddings, we bring a
+                touch of culinary excellence to every occasion.
               </Typography>
-              
-              <Button 
-                variant="outlined" 
-                color="secondary" 
+
+              {/* Services */}
+              <Box sx={{ display: "flex", gap: 4, mb: 5, flexWrap: "wrap" }}>
+                {services.map((service, index) => (
+                  <Box key={index}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        mb: 0.5,
+                      }}
+                    >
+                      <Box sx={{ color: tokens.colors.primary.main }}>
+                        {service.icon}
+                      </Box>
+                      <Typography
+                        sx={{
+                          color: "white",
+                          fontWeight: 600,
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        {service.title}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      sx={{
+                        color: tokens.colors.text.tertiary,
+                        fontSize: "0.85rem",
+                        pl: 4.5,
+                      }}
+                    >
+                      {service.desc}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+
+              <Button
+                variant="contained"
+                color="primary"
                 size="large"
-                sx={{ 
-                  borderRadius: 0, 
-                  borderWidth: 1, 
-                  px: 5, 
-                  py: 2,
-                  color: 'white',
-                  borderColor: 'rgba(255,255,255,0.3)',
-                  fontFamily: '"Manrope", sans-serif',
-                  letterSpacing: '0.1em',
-                  '&:hover': {
-                    borderColor: 'white',
-                    borderWidth: 1,
-                    bgcolor: 'transparent'
-                  }
+                onClick={scrollToContact}
+                sx={{
+                  px: 5,
+                  py: 1.5,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  color: tokens.colors.neutral.black,
                 }}
               >
                 Inquire Now
               </Button>
             </motion.div>
           </Grid>
-          
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Box sx={{ position: 'relative' }}>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Box sx={{ position: "relative" }}>
               <motion.div
-                 initial={{ opacity: 0, scale: 0.9 }}
-                 whileInView={{ opacity: 1, scale: 1 }}
-                 transition={{ duration: 1.2, delay: 0.2 }}
-                 style={{ y }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                viewport={{ once: true }}
               >
-                <Box 
-                  component="img" 
+                <Box
+                  component="img"
                   src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200"
-                  sx={{ width: '100%', height: 600, objectFit: 'cover', filter: 'brightness(0.6) contrast(1.2)' }}
+                  alt="Elegant catering setup for events"
+                  loading="lazy"
+                  sx={{
+                    width: "100%",
+                    height: { xs: 350, md: 500 },
+                    objectFit: "cover",
+                    borderRadius: 2,
+                  }}
                 />
               </motion.div>
 
-              {/* Stats/Float Element */}
+              {/* Stats Badge */}
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: -30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.6 }}
-                style={{
-                  position: 'absolute',
-                  top: -40,
-                  right: -40,
-                  background: '#1a1a1a',
-                  padding: '40px',
-                  maxWidth: '300px',
-                  border: '1px solid rgba(255,255,255,0.1)'
-                }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
               >
-                <Typography variant="h3" sx={{ color: 'primary.main', mb: 0, fontWeight: 400, fontFamily: '"Tenor Sans", sans-serif' }}>
-                  500+
-                </Typography>
-                <Typography variant="overline" sx={{ color: 'rgba(255,255,255,0.6)', letterSpacing: '0.2em', fontFamily: '"Manrope", sans-serif' }}>
-                  Events Catered
-                </Typography>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: { xs: 20, md: -20 },
+                    right: { xs: 20, md: -20 },
+                    bgcolor: tokens.colors.neutral.black,
+                    border: `1px solid ${tokens.colors.border.medium}`,
+                    borderRadius: 2,
+                    p: { xs: 3, md: 4 },
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      color: tokens.colors.primary.main,
+                      fontFamily: tokens.fonts.display,
+                      fontSize: { xs: "2rem", md: "2.5rem" },
+                      fontWeight: 500,
+                      lineHeight: 1,
+                    }}
+                  >
+                    500+
+                  </Typography>
+                  <Typography
+                    sx={{
+                      color: tokens.colors.text.secondary,
+                      fontSize: "0.85rem",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      mt: 0.5,
+                    }}
+                  >
+                    Events Catered
+                  </Typography>
+                </Box>
               </motion.div>
             </Box>
           </Grid>
