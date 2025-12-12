@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Typography, Container, Grid, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { tokens } from "../theme";
@@ -10,6 +10,36 @@ const TakeAway: React.FC = () => {
     { icon: <StorefrontIcon />, text: "Pickup Only - Two Locations" },
     { icon: <AccessTimeIcon />, text: "Ready in 20-30 mins" },
   ];
+
+  const images = useMemo(
+    () => [
+      {
+        src: "https://images.pexels.com/photos/34070063/pexels-photo-34070063.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        alt: "Sri Lankan colorful rice and curry feast",
+      },
+      {
+        src: "https://images.pexels.com/photos/5176006/pexels-photo-5176006.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        alt: "Sri Lankan noodles and curry",
+      },
+      {
+        src: "https://images.pexels.com/photos/32360929/pexels-photo-32360929.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        alt: "Sri Lankan street food vendor preparing dishes",
+      },
+      {
+        src: "https://images.pexels.com/photos/319942/pexels-photo-319942.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        alt: "Sri Lankan fish and meat dish",
+      },
+    ],
+    []
+  );
+
+  const [selectedImage, setSelectedImage] = useState(images[0]);
+
+  useEffect(() => {
+    const idx = Math.floor(Math.random() * images.length);
+    setSelectedImage(images[idx]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box
@@ -173,8 +203,8 @@ const TakeAway: React.FC = () => {
               >
                 <Box
                   component="img"
-                  src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=1200"
-                  alt="Delicious food ready for pickup"
+                  src={selectedImage.src}
+                  alt={selectedImage.alt}
                   loading="lazy"
                   sx={{
                     width: "100%",
@@ -212,7 +242,7 @@ const TakeAway: React.FC = () => {
                       lineHeight: 1,
                     }}
                   >
-                    20% Off
+                    10% Off
                   </Typography>
                   <Typography
                     sx={{

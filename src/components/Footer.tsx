@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
                 src="/new_nanthus_kitchen_logo.png"
                 alt="New Nanthus Kitchen Logo"
                 sx={{
-                  height: 50,
+                  height: 80,
                   width: "auto",
                   mb: 4,
                   objectFit: "contain",

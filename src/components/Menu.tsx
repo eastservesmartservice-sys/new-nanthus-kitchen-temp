@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -13,6 +13,8 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { motion } from "framer-motion";
@@ -228,15 +230,21 @@ const categories = ["All", ...menuData.map((cat) => cat.category)];
 interface MenuCategoryAccordionProps {
   category: MenuCategory;
   defaultExpanded?: boolean;
+  expanded?: boolean;
+  onChange?: (event: React.SyntheticEvent, expanded: boolean) => void;
 }
 
 const MenuCategoryAccordion: React.FC<MenuCategoryAccordionProps> = ({
   category,
   defaultExpanded = false,
+  expanded,
+  onChange,
 }) => {
   return (
     <Accordion
-      defaultExpanded={defaultExpanded}
+      {...(typeof expanded !== "undefined"
+        ? { expanded, onChange }
+        : { defaultExpanded })}
       sx={{
         bgcolor: "transparent",
         backgroundImage: "none",
@@ -373,12 +381,32 @@ const MenuCategoryAccordion: React.FC<MenuCategoryAccordionProps> = ({
 };
 
 const Menu: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredCategories =
     activeCategory === "All"
       ? menuData
       : menuData.filter((cat) => cat.category === activeCategory);
+  const [expandedCategory, setExpandedCategory] = useState<string | false>(() =>
+    isMobile ? filteredCategories[0]?.category ?? false : false
+  );
+  const [expandedSet, setExpandedSet] = useState<Set<string>>(
+    () => new Set(isMobile ? [] : [filteredCategories[0]?.category ?? ""])
+  );
+
+  useEffect(() => {
+    // When the visible categories or viewport change, adjust the default expanded panel
+    const first = filteredCategories[0]?.category;
+    if (isMobile) {
+      setExpandedCategory(first ?? false);
+      setExpandedSet(new Set());
+    } else {
+      setExpandedCategory(false);
+      setExpandedSet(new Set([first ?? ""]));
+    }
+  }, [filteredCategories, isMobile]);
 
   const scrollToOrder = () => {
     const element = document.getElementById("take-away");
@@ -608,11 +636,38 @@ const Menu: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          {filteredCategories.map((category, index) => (
+          {filteredCategories.map((category) => (
             <MenuCategoryAccordion
               key={category.category}
               category={category}
-              defaultExpanded={index === 0}
+              {...(isMobile
+                ? {
+                    expanded: expandedCategory === category.category,
+                    onChange: (
+                      e: React.SyntheticEvent,
+                      isExpanded: boolean
+                    ) => {
+                      void e;
+                      setExpandedCategory(
+                        isExpanded ? category.category : false
+                      );
+                    },
+                  }
+                : {
+                    expanded: expandedSet.has(category.category),
+                    onChange: (
+                      e: React.SyntheticEvent,
+                      isExpanded: boolean
+                    ) => {
+                      void e;
+                      setExpandedSet((prev) => {
+                        const next = new Set(prev);
+                        if (isExpanded) next.add(category.category);
+                        else next.delete(category.category);
+                        return next;
+                      });
+                    },
+                  })}
             />
           ))}
         </motion.div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -94,7 +94,7 @@ const Header: React.FC = () => {
           component="img"
           src="/new_nanthus_kitchen_logo.png"
           alt="New Nanthus Kitchen - Home"
-          sx={{ height: 48 }}
+          sx={{ height: 80 }}
         />
         <IconButton
           onClick={handleDrawerToggle}
@@ -210,7 +210,7 @@ const Header: React.FC = () => {
               src="/new_nanthus_kitchen_logo.png"
               alt="New Nanthus Kitchen"
               sx={{
-                height: { xs: 44, sm: 48, md: isScrolled ? 44 : 52 },
+                height: { xs: 52, sm: 56, md: isScrolled ? 52 : 64 },
                 transition: "height 0.3s ease",
                 display: "block",
               }}
@@ -270,18 +270,21 @@ const Header: React.FC = () => {
                       height: "2px",
                       backgroundColor: "primary.main",
                       transform: "translateX(-50%)",
-                      transition: "all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                      transition:
+                        "all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
                       borderRadius: "2px",
-                      boxShadow: activeSection === item.sectionId 
-                        ? "0 0 8px rgba(255, 207, 64, 0.6), 0 0 16px rgba(255, 207, 64, 0.3)"
-                        : "none",
+                      boxShadow:
+                        activeSection === item.sectionId
+                          ? "0 0 8px rgba(255, 207, 64, 0.6), 0 0 16px rgba(255, 207, 64, 0.3)"
+                          : "none",
                     },
                     "&:hover": {
                       color: "primary.main",
                       backgroundColor: "transparent",
-                      "&::after": { 
+                      "&::after": {
                         width: "30px",
-                        boxShadow: "0 0 8px rgba(255, 207, 64, 0.6), 0 0 16px rgba(255, 207, 64, 0.3)",
+                        boxShadow:
+                          "0 0 8px rgba(255, 207, 64, 0.6), 0 0 16px rgba(255, 207, 64, 0.3)",
                       },
                     },
                     "&:focus-visible": {

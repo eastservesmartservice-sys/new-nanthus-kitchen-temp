@@ -205,7 +205,7 @@ const Catering: React.FC = () => {
                       lineHeight: 1,
                     }}
                   >
-                    500+
+                    25+
                   </Typography>
                   <Typography
                     sx={{
