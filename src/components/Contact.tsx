@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import { tokens } from "../theme";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 
 interface FormData {
   name: string;
@@ -94,11 +94,13 @@ const Contact: React.FC = () => {
       name: "Markham",
       address: "72-30 Karachi Dr",
       city: "Markham ON L3S 0B6",
+      phones: ["289-554-5999"],
     },
     {
       name: "Scarborough",
       address: "80 Nashdene Rd",
       city: "Scarborough ON M1V 5E4",
+      phones: ["416-299-1999", "416-388-4791"],
     },
   ];
 
@@ -202,7 +204,7 @@ const Contact: React.FC = () => {
                 </Box>
               </Typography>
 
-              {/* Locations */}
+              {/* Locations with phones */}
               {locations.map((location, index) => (
                 <Box key={index} sx={{ mb: 4, display: "flex", gap: 2 }}>
                   <LocationOnIcon
@@ -216,6 +218,9 @@ const Contact: React.FC = () => {
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
                         mb: 0.5,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
                       }}
                     >
                       {location.name}
@@ -227,10 +232,41 @@ const Contact: React.FC = () => {
                       sx={{
                         color: tokens.colors.text.secondary,
                         fontSize: "1rem",
+                        mb: 1,
                       }}
                     >
                       {location.city}
                     </Typography>
+
+                    {/* Phones for this location */}
+                    {location.phones?.map((phone, pIdx) => (
+                      <Box
+                        key={pIdx}
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          alignItems: "center",
+                          mb: 0.5,
+                        }}
+                      >
+                        <PhoneAndroidIcon
+                          sx={{ color: tokens.colors.primary.main }}
+                          fontSize="small"
+                        />
+                        <Typography
+                          component="a"
+                          href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
+                          sx={{
+                            color: "white",
+                            textDecoration: "none",
+                            fontSize: "1rem",
+                            "&:hover": { color: tokens.colors.primary.main },
+                          }}
+                        >
+                          {phone}
+                        </Typography>
+                      </Box>
+                    ))}
                   </Box>
                 </Box>
               ))}
@@ -256,55 +292,7 @@ const Contact: React.FC = () => {
                 </Box>
               </Box>
 
-              {/* Phone Numbers */}
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <PhoneIcon
-                  sx={{ color: tokens.colors.primary.main, mt: 0.5 }}
-                />
-                <Box>
-                  <Typography
-                    component="a"
-                    href="tel:416-299-1999"
-                    sx={{
-                      color: "white",
-                      fontSize: "1.1rem",
-                      textDecoration: "none",
-                      display: "block",
-                      mb: 0.5,
-                      "&:hover": { color: tokens.colors.primary.main },
-                    }}
-                  >
-                    416-299-1999
-                  </Typography>
-                  <Typography
-                    component="a"
-                    href="tel:416-388-4791"
-                    sx={{
-                      color: "white",
-                      fontSize: "1.1rem",
-                      textDecoration: "none",
-                      display: "block",
-                      mb: 0.5,
-                      "&:hover": { color: tokens.colors.primary.main },
-                    }}
-                  >
-                    416-388-4791
-                  </Typography>
-                  <Typography
-                    component="a"
-                    href="tel:289-554-5999"
-                    sx={{
-                      color: "white",
-                      fontSize: "1.1rem",
-                      textDecoration: "none",
-                      display: "block",
-                      "&:hover": { color: tokens.colors.primary.main },
-                    }}
-                  >
-                    289-554-5999
-                  </Typography>
-                </Box>
-              </Box>
+              {/* removed global phone block - phones are shown per location above */}
             </motion.div>
           </Grid>
 
