@@ -161,7 +161,7 @@ const TakeAway: React.FC = () => {
                   variant="outlined"
                   size="large"
                   component="a"
-                  href="#contact"
+                  href="https://www.eastserve.ca/ordering/restaurant/menu?company_uid=b26cb912-8916-4de5-ae9e-bdcab2c08fa8&restaurant_uid=d171d5c5-0412-4013-b588-c52b5513f592&facebook=true"
                   sx={{
                     px: 4,
                     py: 1.5,
@@ -178,18 +178,6 @@ const TakeAway: React.FC = () => {
                   Order - Markham
                 </Button>
               </Box>
-
-              {/* Note */}
-              <Typography
-                sx={{
-                  color: tokens.colors.text.tertiary,
-                  fontSize: "0.85rem",
-                  mt: 3,
-                  fontStyle: "italic",
-                }}
-              >
-                * Markham online ordering coming soon. Call to place orders.
-              </Typography>
             </motion.div>
           </Grid>
 
