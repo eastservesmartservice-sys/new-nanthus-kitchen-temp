@@ -155,7 +155,7 @@ const TakeAway: React.FC = () => {
                     color: tokens.colors.neutral.black,
                   }}
                 >
-                  Order - Scarborough
+                  Scarborough
                 </Button>
                 <Button
                   variant="outlined"
@@ -175,7 +175,7 @@ const TakeAway: React.FC = () => {
                     },
                   }}
                 >
-                  Order - Markham
+                  Markham
                 </Button>
               </Box>
             </motion.div>
