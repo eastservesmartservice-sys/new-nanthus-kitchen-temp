@@ -1,17 +1,15 @@
 {
-  "version": 2,
   "redirects": [
     {
-      "source": "/:path(.*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
           "value": "www.newnanthuskitchen.com"
         }
       ],
-      "destination": "https://newnanthuskitchen.com/:path",
-      "permanent": true,
-      "statusCode": 301
+      "destination": "https://newnanthuskitchen.com/:path*",
+      "permanent": true
     },
     {
       "source": "/wp-content/themes/maxron-tech/assets/img/web-logo.png",
@@ -31,13 +29,13 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/assets/:path*",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
@@ -45,12 +43,17 @@
         },
         {
           "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
+          "value": "GET, OPTIONS"
         },
         {
-          "key": "Access-Control-Allow-Headers",
-          "value": "X-Requested-With, Content-Type, Accept"
-        },
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*",
+      "headers": [
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
@@ -66,23 +69,10 @@
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
         },
         {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, OPTIONS"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
         }
       ]
     },
@@ -113,7 +103,7 @@
       ]
     },
     {
-      "source": "/(.*?)\\.(jpg|jpeg|png|gif|ico|svg|webp)",
+      "source": "/:path*.jpg",
       "headers": [
         {
           "key": "Cache-Control",
@@ -122,7 +112,70 @@
       ]
     },
     {
-      "source": "/(.*?)\\.(js|css)",
+      "source": "/:path*.jpeg",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*.png",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*.gif",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*.ico",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*.svg",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*.webp",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/:path*.css",
       "headers": [
         {
           "key": "Cache-Control",

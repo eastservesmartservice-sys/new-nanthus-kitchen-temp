@@ -1,7 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" style="scroll-behavior: smooth">
   <head>
+    <!-- Force www to non-www redirect (safety fallback) -->
+    <script>
+      if (window.location.hostname === "www.newnanthuskitchen.com") {
+        window.location.replace(
+          "https://newnanthuskitchen.com" +
+            window.location.pathname +
+            window.location.search +
+            window.location.hash
+        );
+      }
+    </script>
+
     <meta charset="UTF-8" />
+    <base href="https://newnanthuskitchen.com/" />
     <link rel="icon" type="image/png" href="/new_nanthus_kitchen_logo.png" />
     <meta
       name="viewport"
