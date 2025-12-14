@@ -2,12 +2,7 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.newnanthuskitchen.com"
-        }
-      ],
+      "has": [{ "type": "host", "value": "www.newnanthuskitchen.com" }],
       "destination": "https://newnanthuskitchen.com/:path*",
       "permanent": true
     },
@@ -27,27 +22,20 @@
       "permanent": true
     }
   ],
-  "routes": [
+
+  "rewrites": [
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/:path*",
+      "destination": "/index.html"
     }
   ],
+
   "headers": [
     {
-      "source": "/assets/(.*).css",
+      "source": "/assets/:path*.css",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/css; charset=utf-8"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
+        { "key": "Content-Type", "value": "text/css; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -55,16 +43,13 @@
       ]
     },
     {
-      "source": "/assets/(.*).js",
+      "source": "/assets/:path*.js",
       "headers": [
         {
           "key": "Content-Type",
           "value": "application/javascript; charset=utf-8"
         },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -72,12 +57,9 @@
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/:path*",
       "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -85,12 +67,9 @@
       ]
     },
     {
-      "source": "/(.*).png",
+      "source": "/:path*.png",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/png"
-        },
+        { "key": "Content-Type", "value": "image/png" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -98,12 +77,9 @@
       ]
     },
     {
-      "source": "/(.*).jpg",
+      "source": "/:path*.jpg",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/jpeg"
-        },
+        { "key": "Content-Type", "value": "image/jpeg" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -111,12 +87,9 @@
       ]
     },
     {
-      "source": "/(.*).svg",
+      "source": "/:path*.svg",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/svg+xml"
-        },
+        { "key": "Content-Type", "value": "image/svg+xml" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -124,12 +97,9 @@
       ]
     },
     {
-      "source": "/(.*).woff2",
+      "source": "/:path*.woff2",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "font/woff2"
-        },
+        { "key": "Content-Type", "value": "font/woff2" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -137,12 +107,9 @@
       ]
     },
     {
-      "source": "/(.*).woff",
+      "source": "/:path*.woff",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "font/woff"
-        },
+        { "key": "Content-Type", "value": "font/woff" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
@@ -152,10 +119,7 @@
     {
       "source": "/sitemap.xml",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/xml; charset=utf-8"
-        },
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400, s-maxage=86400"
@@ -165,10 +129,7 @@
     {
       "source": "/robots.txt",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain; charset=utf-8"
-        },
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400, s-maxage=86400"
@@ -176,28 +137,13 @@
       ]
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]
