@@ -2,12 +2,12 @@
   "redirects": [
     {
       "source": "/contact-us/",
-      "destination": "/contact",
+      "destination": "/#contact",
       "statusCode": 301
     },
     {
       "source": "/our-menu/",
-      "destination": "/menu",
+      "destination": "/#menu",
       "statusCode": 301
     },
     {
