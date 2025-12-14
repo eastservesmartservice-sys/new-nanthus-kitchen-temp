@@ -10,13 +10,9 @@ import TakeAway from "./components/TakeAway";
 import Catering from "./components/Catering";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import { initializeLegacyUrlHandlers } from './utils/legacyUrlHandler';
 
 function App() {
   useEffect(() => {
-    // Handle legacy WordPress URLs for SEO
-    initializeLegacyUrlHandlers();
-
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
