@@ -1,6 +1,17 @@
 {
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.newnanthuskitchen.com"
+        }
+      ],
+      "destination": "https://newnanthuskitchen.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/wp-content/themes/maxron-tech/assets/img/web-logo.png",
       "destination": "/new_nanthus_kitchen_logo.png",
       "permanent": true
@@ -23,6 +34,23 @@
     }
   ],
   "headers": [
+    {
+      "source": "/assets/:path*",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
     {
       "source": "/:path*",
       "headers": [
