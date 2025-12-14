@@ -3,21 +3,11 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-
-  // IMPORTANT: root-based assets for Vercel
   base: "/",
-
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
   },
-
   optimizeDeps: {
     include: ["three", "@react-three/fiber", "@react-three/drei"],
   },
