@@ -1,4 +1,21 @@
 {
+  "redirects": [
+    {
+      "source": "/contact-us/",
+      "destination": "/contact",
+      "statusCode": 301
+    },
+    {
+      "source": "/our-menu/",
+      "destination": "/menu",
+      "statusCode": 301
+    },
+    {
+      "source": "/wp-content/themes/maxron-tech/assets/img/web-logo.png",
+      "destination": "/new_nanthus_kitchen_logo.png",
+      "statusCode": 301
+    }
+  ],
   "rewrites": [
     {
       "source": "/:path*",
