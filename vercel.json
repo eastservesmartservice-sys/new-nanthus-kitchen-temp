@@ -1,4 +1,8 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/((?!assets|.*\\.(css|js|png|jpg|jpeg|svg|gif|ico|woff|woff2|ttf|eot|json|xml|txt)).*)",
