@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -19,16 +20,17 @@ import CloseIcon from "@mui/icons-material/Close";
 import { tokens } from "../theme";
 
 const navItems = [
-  { label: "HOME", sectionId: "hero" },
-  { label: "MENU", sectionId: "menu" },
-  { label: "SPECIALS", sectionId: "special" },
-  { label: "ORDER", sectionId: "take-away" },
-  { label: "CATERING", sectionId: "catering" },
-  { label: "CONTACT", sectionId: "contact" },
+  { label: "HOME", sectionId: "hero", path: "/" },
+  { label: "MENU", sectionId: "menu", path: "/our-menu" },
+  { label: "SPECIALS", sectionId: "special", path: "/specials" },
+  { label: "ORDER", sectionId: "take-away", path: "/order" },
+  { label: "CATERING", sectionId: "catering", path: "/catering" },
+  { label: "CONTACT", sectionId: "contact", path: "/contact-us" },
 ];
 
 const Header: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -56,19 +58,26 @@ const Header: React.FC = () => {
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-  const scrollToSection = (sectionId: string) => {
-    if (sectionId === "hero") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        const headerOffset = 80;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition =
-          elementPosition + window.pageYOffset - headerOffset;
-        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+  const scrollToSection = (sectionId: string, path: string) => {
+    // Update URL
+    navigate(path);
+    
+    // Scroll to section
+    setTimeout(() => {
+      if (sectionId === "hero") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const headerOffset = 80;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition =
+            elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
       }
-    }
+    }, 100);
+    
     if (mobileOpen) setMobileOpen(false);
   };
 
@@ -109,7 +118,7 @@ const Header: React.FC = () => {
         {navItems.map((item) => (
           <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
             <ListItemButton
-              onClick={() => scrollToSection(item.sectionId)}
+              onClick={() => scrollToSection(item.sectionId, item.path)}
               sx={{
                 py: 2,
                 borderRadius: 1,
@@ -193,10 +202,10 @@ const Header: React.FC = () => {
         >
           <Box
             component="a"
-            href="#hero"
+            href="/"
             onClick={(e: React.MouseEvent) => {
               e.preventDefault();
-              scrollToSection("hero");
+              scrollToSection("hero", "/");
             }}
             sx={{
               display: "flex",
@@ -245,7 +254,7 @@ const Header: React.FC = () => {
               {navItems.map((item) => (
                 <Button
                   key={item.label}
-                  onClick={() => scrollToSection(item.sectionId)}
+                  onClick={() => scrollToSection(item.sectionId, item.path)}
                   aria-current={
                     activeSection === item.sectionId ? "page" : undefined
                   }
