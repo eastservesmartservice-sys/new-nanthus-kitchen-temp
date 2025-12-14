@@ -1,17 +1,15 @@
 {
-  "version": 2,
   "redirects": [
     {
-      "source": "/:path(.*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
           "value": "www.newnanthuskitchen.com"
         }
       ],
-      "destination": "https://newnanthuskitchen.com/:path",
-      "permanent": true,
-      "statusCode": 301
+      "destination": "https://newnanthuskitchen.com/:path*",
+      "permanent": true
     },
     {
       "source": "/wp-content/themes/maxron-tech/assets/img/web-logo.png",
@@ -31,13 +29,13 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
@@ -70,7 +68,7 @@
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/:path*",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
@@ -113,7 +111,7 @@
       ]
     },
     {
-      "source": "/(.*?)\\.(jpg|jpeg|png|gif|ico|svg|webp)",
+      "source": "/:path*.(jpg|jpeg|png|gif|ico|svg|webp)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -122,7 +120,7 @@
       ]
     },
     {
-      "source": "/(.*?)\\.(js|css)",
+      "source": "/:path*.(js|css)",
       "headers": [
         {
           "key": "Cache-Control",
