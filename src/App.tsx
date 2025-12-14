@@ -1,20 +1,22 @@
-import { useEffect, useRef } from "react";
-import { ThemeProvider, CssBaseline, Box } from "@mui/material";
-import Lenis from "lenis";
-import theme from "./theme";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import Menu from "./components/Menu";
+import { useEffect } from 'react';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
+import Lenis from 'lenis';
+import theme from './theme';
+import Header from './components/Header';
+import Hero from './components/Hero';
+import Menu from './components/Menu';
 import Special from "./components/Special";
 import TakeAway from "./components/TakeAway";
 import Catering from "./components/Catering";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import { initializeLegacyUrlHandlers } from './utils/legacyUrlHandler';
 
 function App() {
-  const lenisRef = useRef<Lenis | null>(null);
-
   useEffect(() => {
+    // Handle legacy WordPress URLs for SEO
+    initializeLegacyUrlHandlers();
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -23,8 +25,6 @@ function App() {
       smoothWheel: true,
     });
 
-    lenisRef.current = lenis;
-
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -32,19 +32,7 @@ function App() {
 
     requestAnimationFrame(raf);
 
-    const handleHashChange = () => {
-      const hash = window.location.hash.substring(1);
-      if (hash) {
-        lenis.scrollTo(`#${hash}`);
-      }
-    };
-
-    window.addEventListener("hashchange", handleHashChange);
-    // On initial load, delay to ensure DOM is ready
-    setTimeout(handleHashChange, 100);
-
     return () => {
-      window.removeEventListener("hashchange", handleHashChange);
       lenis.destroy();
     };
   }, []);
@@ -63,24 +51,12 @@ function App() {
       >
         <Header />
         <Box component="main" id="main-content">
-          <Box id="hero">
-            <Hero />
-          </Box>
-          <Box id="menu">
-            <Menu />
-          </Box>
-          <Box id="special">
-            <Special />
-          </Box>
-          <Box id="takeaway">
-            <TakeAway />
-          </Box>
-          <Box id="catering">
-            <Catering />
-          </Box>
-          <Box id="contact">
-            <Contact />
-          </Box>
+          <Hero />
+          <Menu />
+          <Special />
+          <TakeAway />
+          <Catering />
+          <Contact />
         </Box>
         <Footer />
       </Box>

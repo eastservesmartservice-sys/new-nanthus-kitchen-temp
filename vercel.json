@@ -1,19 +1,19 @@
 {
   "redirects": [
     {
-      "source": "/contact-us/",
+      "source": "/contact-us/:path*",
       "destination": "/#contact",
-      "statusCode": 301
+      "permanent": true
     },
     {
-      "source": "/our-menu/",
+      "source": "/our-menu/:path*",
       "destination": "/#menu",
-      "statusCode": 301
+      "permanent": true
     },
     {
       "source": "/wp-content/themes/maxron-tech/assets/img/web-logo.png",
       "destination": "/new_nanthus_kitchen_logo.png",
-      "statusCode": 301
+      "permanent": true
     }
   ],
   "rewrites": [
