@@ -61,7 +61,7 @@ const Header: React.FC = () => {
   const scrollToSection = (sectionId: string, path: string) => {
     // Update URL
     navigate(path);
-    
+
     // Scroll to section
     setTimeout(() => {
       if (sectionId === "hero") {
@@ -77,7 +77,7 @@ const Header: React.FC = () => {
         }
       }
     }, 100);
-    
+
     if (mobileOpen) setMobileOpen(false);
   };
 
