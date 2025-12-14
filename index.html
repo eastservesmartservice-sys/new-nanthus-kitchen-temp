@@ -1,51 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" style="scroll-behavior: smooth">
   <head>
-    <!-- Force www to non-www redirect (safety fallback) -->
-    <script>
-      if (window.location.hostname === "www.newnanthuskitchen.com") {
-        window.location.replace(
-          "https://newnanthuskitchen.com" +
-            window.location.pathname +
-            window.location.search +
-            window.location.hash
-        );
-      }
-    </script>
-
     <meta charset="UTF-8" />
-    <base href="https://newnanthuskitchen.com/" />
+
+    <!-- IMPORTANT: DO NOT USE <base> in Vite production -->
     <link rel="icon" type="image/png" href="/new_nanthus_kitchen_logo.png" />
+
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
 
-    <!-- Primary Meta Tags -->
     <title>New Nanthu's Kitchen | Authentic Sri Lankan Cuisine in Canada</title>
     <meta
-      name="title"
-      content="New Nanthu's Kitchen | Authentic Sri Lankan Cuisine in Canada"
-    />
-    <meta
       name="description"
-      content="Experience authentic Sri Lankan cuisine in Canada at New Nanthu's Kitchen. Enjoy traditional Kothu, grilled dishes, seafood, catering services, and takeaway. Order now!"
+      content="Experience authentic Sri Lankan cuisine in Canada. Traditional Kothu, grilled dishes, seafood, catering & takeaway."
     />
-    <meta
-      name="keywords"
-      content="Sri Lankan restaurant, authentic Sri Lankan food, Kothu, Sri Lankan cuisine Canada, grilled dishes, seafood, catering, takeaway, New Nanthu's Kitchen, South Asian food"
-    />
-    <meta name="author" content="New Nanthu's Kitchen" />
-    <meta
-      name="robots"
-      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-    />
-    <meta name="theme-color" content="#000000" />
 
-    <!-- Canonical URL -->
+    <!-- Canonical -->
     <link rel="canonical" href="https://newnanthuskitchen.com/" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://newnanthuskitchen.com/" />
     <meta
@@ -54,124 +29,44 @@
     />
     <meta
       property="og:description"
-      content="Experience authentic Sri Lankan cuisine in Canada. Traditional Kothu, grilled dishes, seafood, catering & takeaway services available."
+      content="Authentic Sri Lankan food in Canada"
     />
     <meta
       property="og:image"
       content="https://newnanthuskitchen.com/new_nanthus_kitchen_logo.png"
     />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="New Nanthu's Kitchen" />
-    <meta property="og:locale" content="en_CA" />
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://newnanthuskitchen.com/" />
-    <meta
-      name="twitter:title"
-      content="New Nanthu's Kitchen | Authentic Sri Lankan Cuisine in Canada"
-    />
-    <meta
-      name="twitter:description"
-      content="Experience authentic Sri Lankan cuisine in Canada. Traditional Kothu, grilled dishes, seafood, catering & takeaway services available."
-    />
-    <meta
-      name="twitter:image"
-      content="https://newnanthuskitchen.com/new_nanthus_kitchen_logo.png"
-    />
-
-    <!-- Additional SEO -->
-    <meta name="geo.region" content="CA" />
-    <meta name="geo.placename" content="Canada" />
-    <meta name="format-detection" content="telephone=yes" />
-    <link
-      rel="alternate"
-      hreflang="en-ca"
-      href="https://newnanthuskitchen.com/"
-    />
-    <link rel="alternate" hreflang="en" href="https://newnanthuskitchen.com/" />
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href="https://newnanthuskitchen.com/"
-    />
-
-    <!-- Preconnect for Performance -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Tenor+Sans&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Structured Data (JSON-LD) -->
+    <!-- JSON-LD -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Restaurant",
         "name": "New Nanthu's Kitchen",
-        "image": "https://newnanthuskitchen.com/new_nanthus_kitchen_logo.png",
         "url": "https://newnanthuskitchen.com",
-        "description": "Authentic Sri Lankan restaurant in Canada offering traditional Kothu, grilled dishes, seafood, catering, and takeaway services.",
-        "servesCuisine": ["Sri Lankan", "South Asian"],
-        "priceRange": "$$",
-        "acceptsReservations": "True",
-        "menu": "https://newnanthuskitchen.com/our-menu",
-        "hasMenu": {
-          "@type": "Menu",
-          "name": "Main Menu",
-          "description": "Authentic Sri Lankan dishes including Kothu, grilled items, and seafood",
-          "url": "https://newnanthuskitchen.com/our-menu"
-        },
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "CA"
-        },
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "contactType": "Customer Service",
-          "email": "newnanthuskitchen@gmail.com",
-          "url": "https://newnanthuskitchen.com/contact-us"
-        },
-        "potentialAction": {
-          "@type": "OrderAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://newnanthuskitchen.com/order",
-            "inLanguage": "en-CA",
-            "actionPlatform": [
-              "http://schema.org/DesktopWebPlatform",
-              "http://schema.org/MobileWebPlatform"
-            ]
-          },
-          "deliveryMethod": [
-            "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet"
-          ]
-        },
-        "sameAs": []
+        "logo": "https://newnanthuskitchen.com/new_nanthus_kitchen_logo.png"
       }
     </script>
+
     <style>
       body {
-        background-color: #000000;
-        cursor: default;
-      }
-      ::-webkit-scrollbar {
-        width: 8px;
-        background: #000;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(255, 207, 64, 0.3);
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 207, 64, 0.8);
+        background-color: #000;
+        margin: 0;
       }
     </style>
   </head>
+
   <body>
     <div id="root"></div>
+
+    <!-- IMPORTANT: This stays EXACTLY like this -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
