@@ -29,7 +29,7 @@
   ],
   "rewrites": [
     {
-      "source": "/:path*",
+      "source": "/((?!api|assets|.*\\.(css|js|jpg|jpeg|png|gif|ico|svg|webp|woff|woff2|ttf|eot|otf|xml|txt)).*)",
       "destination": "/index.html"
     }
   ],
@@ -68,15 +68,45 @@
       ]
     },
     {
-      "source": "/assets/:path*",
+      "source": "/assets/:path*.(js|css)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
         },
         {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, OPTIONS"
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/:path*.css",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/css; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/:path*.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         },
         {
           "key": "Cache-Control",
