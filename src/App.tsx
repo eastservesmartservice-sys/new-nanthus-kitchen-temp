@@ -32,27 +32,21 @@ function App() {
 
     requestAnimationFrame(raf);
 
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
-
-  useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1);
-      if (hash && lenisRef.current) {
-        const element = document.getElementById(hash);
-        if (element) {
-          lenisRef.current.scrollTo(element);
-        }
+      if (hash) {
+        lenis.scrollTo(`#${hash}`);
       }
     };
 
     window.addEventListener("hashchange", handleHashChange);
-    // On initial load
-    handleHashChange();
+    // On initial load, delay to ensure DOM is ready
+    setTimeout(handleHashChange, 100);
 
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+      lenis.destroy();
+    };
   }, []);
 
   return (
