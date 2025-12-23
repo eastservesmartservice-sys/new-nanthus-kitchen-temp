@@ -6,8 +6,6 @@ import {
   Box,
   Typography,
   Button,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -24,13 +22,15 @@ const locations = [
     name: "Scarborough",
     address: "80 Nashdene Rd, Scarborough, ON",
     phone: "(416) 299 1999",
-    orderLink: "https://www.ubereats.com/ca/store/new-nanthus-kitchen-scarborough/your-scarborough-link",
+    orderLink:
+      "https://www.eastserve.ca/ordering/restaurant/menu?company_uid=b26cb912-8916-4de5-ae9e-bdcab2c08fa8&restaurant_uid=548c1a41-011d-488a-8876-d7815c9181d7&facebook=true",
   },
   {
     name: "Markham",
     address: "72-30 Karachi Dr, Markham, ON",
     phone: "(289) 554 5999",
-    orderLink: "https://www.ubereats.com/ca/store/new-nanthus-kitchen-markham/your-markham-link",
+    orderLink:
+      "https://www.eastserve.ca/ordering/restaurant/menu?company_uid=b26cb912-8916-4de5-ae9e-bdcab2c08fa8&restaurant_uid=d171d5c5-0412-4013-b588-c52b5513f592&facebook=true",
   },
 ];
 
@@ -38,9 +38,6 @@ const LocationSelectionModal = ({
   open,
   onClose,
 }: LocationSelectionModalProps) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const handleLocationSelect = (orderLink: string) => {
     window.open(orderLink, "_blank");
     onClose();
@@ -52,21 +49,22 @@ const LocationSelectionModal = ({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      fullScreen={isMobile}
+      fullScreen={false}
       PaperProps={{
         sx: {
-          borderRadius: isMobile ? 0 : 2,
+          borderRadius: 2,
           bgcolor: tokens.colors.neutral.black,
           color: "white",
           border: `1px solid ${tokens.colors.border.light}`,
+          m: 2,
         },
       }}
     >
       <DialogTitle
         sx={{
           borderBottom: `1px solid ${tokens.colors.border.light}`,
-          pb: 2,
-          pt: { xs: 2, md: 3 },
+          pb: 1.5,
+          pt: 2,
           px: { xs: 2, md: 3 },
         }}
       >
@@ -102,17 +100,17 @@ const LocationSelectionModal = ({
         </Box>
       </DialogTitle>
 
-      <DialogContent 
-        sx={{ 
-          p: { xs: 2, md: 3 }, 
-          mt: { xs: 1, md: 2 },
-          overflow: "auto",
+      <DialogContent
+        sx={{
+          p: { xs: 2, md: 3 },
+          pb: { xs: 2, md: 3 },
+          overflow: "visible",
         }}
       >
         <Typography
           sx={{
             color: tokens.colors.text.secondary,
-            mb: { xs: 2, md: 3 },
+            mb: 2,
             textAlign: "center",
             fontSize: { xs: "0.875rem", md: "1rem" },
           }}
@@ -120,14 +118,14 @@ const LocationSelectionModal = ({
           Choose your nearest location to place an order
         </Typography>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 1.5, md: 2 } }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           {locations.map((location, index) => (
             <Box
               key={index}
               sx={{
                 border: `2px solid ${tokens.colors.border.light}`,
                 borderRadius: 2,
-                p: { xs: 2, md: 3 },
+                p: 2,
                 transition: "all 0.3s ease",
                 cursor: "pointer",
                 "&:hover": {
@@ -145,8 +143,8 @@ const LocationSelectionModal = ({
                 sx={{
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: { xs: 1.5, md: 2 },
-                  mb: { xs: 1.5, md: 2 },
+                  gap: 1.5,
+                  mb: 1.5,
                 }}
               >
                 <LocationOnIcon
@@ -184,8 +182,8 @@ const LocationSelectionModal = ({
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
-                  mb: { xs: 1.5, md: 2 },
-                  pl: { xs: 4.5, md: 5 },
+                  mb: 1.5,
+                  pl: 4.5,
                 }}
               >
                 <PhoneIcon
@@ -209,7 +207,7 @@ const LocationSelectionModal = ({
                 color="primary"
                 fullWidth
                 sx={{
-                  py: { xs: 1.25, md: 1.5 },
+                  py: 1.25,
                   fontWeight: 600,
                   fontSize: { xs: "0.85rem", md: "1rem" },
                   color: tokens.colors.neutral.black,
