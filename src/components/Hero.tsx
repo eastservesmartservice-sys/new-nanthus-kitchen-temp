@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Box,
   Typography,
@@ -10,6 +10,7 @@ import {
 import { motion, useScroll, useTransform } from "framer-motion";
 import type { Variants } from "framer-motion";
 import ThreeBackground from "./ThreeBackground";
+import LocationSelectionModal from "./LocationSelectionModal";
 import { tokens } from "../theme";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -17,6 +18,7 @@ const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [locationModalOpen, setLocationModalOpen] = useState(false);
 
   const { scrollY } = useScroll();
   const textScale = useTransform(scrollY, [0, 300], [1, isMobile ? 1 : 1.05]);
@@ -217,7 +219,7 @@ const Hero: React.FC = () => {
                 variant="contained"
                 color="primary"
                 size="large"
-                onClick={() => scrollToSection("take-away")}
+                onClick={() => setLocationModalOpen(true)}
                 sx={{
                   px: { xs: 4, md: 5 },
                   py: 1.5,
@@ -316,6 +318,12 @@ const Hero: React.FC = () => {
         </motion.div>
       </Container>
 
+      {/* Location Selection Modal */}
+      <LocationSelectionModal
+        open={locationModalOpen}
+        onClose={() => setLocationModalOpen(false)}
+      />
+
       {/* Scroll Indicator */}
       <motion.div
         style={{
@@ -344,9 +352,6 @@ const Hero: React.FC = () => {
             "&:hover": { color: "white" },
           }}
         >
-          <Typography variant="caption" sx={{ letterSpacing: "0.2em" }}>
-            SCROLL
-          </Typography>
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}

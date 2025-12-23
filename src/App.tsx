@@ -11,7 +11,8 @@ import TakeAway from "./components/TakeAway";
 import Catering from "./components/Catering";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import { routeToSection } from './router';
+import ChristmasOffersModal from "./components/ChristmasOffersModal";
+import { routeToSection } from "./router";
 
 function App() {
   const location = useLocation();
@@ -40,19 +41,20 @@ function App() {
   // Handle route-based scrolling
   useEffect(() => {
     const sectionId = routeToSection[location.pathname];
-    
+
     if (sectionId) {
       // Small delay to ensure DOM is ready
       const timer = setTimeout(() => {
-        if (sectionId === 'hero') {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (sectionId === "hero") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
           const element = document.getElementById(sectionId);
           if (element) {
             const headerOffset = 80;
             const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            const offsetPosition =
+              elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: offsetPosition, behavior: "smooth" });
           }
         }
       }, 100);
@@ -64,20 +66,21 @@ function App() {
   // Update document title based on route
   useEffect(() => {
     const titles: Record<string, string> = {
-      '/': "New Nanthu's Kitchen | Authentic Sri Lankan Cuisine in Canada",
-      '/home': "New Nanthu's Kitchen | Authentic Sri Lankan Cuisine in Canada",
-      '/our-menu': "Our Menu | New Nanthu's Kitchen - Authentic Sri Lankan Food",
-      '/menu': "Our Menu | New Nanthu's Kitchen - Authentic Sri Lankan Food",
-      '/specials': "Special Dishes | New Nanthu's Kitchen",
-      '/order': "Order Takeaway | New Nanthu's Kitchen",
-      '/takeaway': "Order Takeaway | New Nanthu's Kitchen",
-      '/take-away': "Order Takeaway | New Nanthu's Kitchen",
-      '/catering': "Catering Services | New Nanthu's Kitchen",
-      '/contact': "Contact Us | New Nanthu's Kitchen",
-      '/contact-us': "Contact Us | New Nanthu's Kitchen",
+      "/": "New Nanthu's Kitchen | Authentic Sri Lankan Cuisine in Canada",
+      "/home": "New Nanthu's Kitchen | Authentic Sri Lankan Cuisine in Canada",
+      "/our-menu":
+        "Our Menu | New Nanthu's Kitchen - Authentic Sri Lankan Food",
+      "/menu": "Our Menu | New Nanthu's Kitchen - Authentic Sri Lankan Food",
+      "/specials": "Special Dishes | New Nanthu's Kitchen",
+      "/order": "Order Takeaway | New Nanthu's Kitchen",
+      "/takeaway": "Order Takeaway | New Nanthu's Kitchen",
+      "/take-away": "Order Takeaway | New Nanthu's Kitchen",
+      "/catering": "Catering Services | New Nanthu's Kitchen",
+      "/contact": "Contact Us | New Nanthu's Kitchen",
+      "/contact-us": "Contact Us | New Nanthu's Kitchen",
     };
 
-    document.title = titles[location.pathname] || titles['/'];
+    document.title = titles[location.pathname] || titles["/"];
   }, [location.pathname]);
 
   return (
@@ -88,6 +91,9 @@ function App() {
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
+
+      {/* Christmas Offers Modal */}
+      <ChristmasOffersModal />
 
       <Box
         sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
