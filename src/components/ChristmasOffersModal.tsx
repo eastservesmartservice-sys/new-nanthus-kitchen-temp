@@ -39,6 +39,23 @@ const ChristmasOffersModal = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Auto-advance to next slide every 3 seconds
+    if (!open) return;
+
+    const interval = setInterval(() => {
+      setActiveStep((prevActiveStep) => {
+        // Loop back to first slide after last slide
+        if (prevActiveStep === maxSteps - 1) {
+          return 0;
+        }
+        return prevActiveStep + 1;
+      });
+    },2000);
+
+    return () => clearInterval(interval);
+  }, [open, maxSteps]);
+
   const handleClose = () => {
     setOpen(false);
   };
