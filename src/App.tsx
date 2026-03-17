@@ -11,7 +11,7 @@ import TakeAway from "./components/TakeAway";
 import Catering from "./components/Catering";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import ChristmasOffersModal from "./components/ChristmasOffersModal";
+// import ChristmasOffersModal from "./components/ChristmasOffersModal";
 import { routeToSection } from "./router";
 
 function App() {
@@ -93,7 +93,7 @@ function App() {
       </a>
 
       {/* Christmas Offers Modal */}
-      <ChristmasOffersModal />
+      {/* <ChristmasOffersModal /> */}
 
       <Box
         sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
