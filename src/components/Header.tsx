@@ -1,180 +1,77 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  useMediaQuery,
-  useTheme,
-  Typography,
+  AppBar, Toolbar, Box, IconButton, Button, Typography, useMediaQuery, useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import { motion, AnimatePresence } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { tokens } from "../theme";
+import LocationSelectionModal from "./LocationSelectionModal";
 
 const navItems = [
-  { label: "HOME", sectionId: "hero", path: "/" },
-  { label: "MENU", sectionId: "menu", path: "/our-menu" },
-  { label: "SPECIALS", sectionId: "special", path: "/specials" },
-  { label: "ORDER", sectionId: "take-away", path: "/order" },
-  { label: "CATERING", sectionId: "catering", path: "/catering" },
-  { label: "CONTACT", sectionId: "contact", path: "/contact-us" },
+  { label: "Home",     path: "/" },
+  { label: "Menu",     path: "/menu" },
+  { label: "Specials", path: "/specials" },
+  { label: "Order",    path: "/order" },
+  { label: "Catering", path: "/catering" },
+  { label: "Contact",  path: "/contact" },
 ];
+
+const overlayVariants: Variants = {
+  hidden:  { opacity: 0, clipPath: "inset(0 0 100% 0)" },
+  visible: {
+    opacity: 1,
+    clipPath: "inset(0 0 0% 0)",
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: {
+    opacity: 0,
+    clipPath: "inset(0 0 100% 0)",
+    transition: { duration: 0.35, ease: [0.4, 0, 1, 1] },
+  },
+};
+
+const stagger: Variants = {
+  hidden:  {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.18 } },
+};
+
+const linkAnim: Variants = {
+  hidden:  { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+};
 
 const Header: React.FC = () => {
   const theme = useTheme();
+  const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("hero");
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [locationModalOpen, setLocationModalOpen] = useState(false);
+  const isDarkHero = location.pathname === '/' || location.pathname === '/catering';
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-
-      for (const { sectionId } of navItems) {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(sectionId);
-            break;
-          }
-        }
-      }
+    const onScroll = () => {
+      const isScrolled = window.scrollY > 40;
+      setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
     };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
-  const scrollToSection = (sectionId: string, path: string) => {
-    // Update URL
-    navigate(path);
+  // Close overlay on route change
+  useEffect(() => { setOpen(false); }, [location.pathname]);
 
-    // Scroll to section
-    setTimeout(() => {
-      if (sectionId === "hero") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const headerOffset = 80;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition =
-            elementPosition + window.pageYOffset - headerOffset;
-          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-        }
-      }
-    }, 100);
-
-    if (mobileOpen) setMobileOpen(false);
-  };
-
-  const drawer = (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: tokens.colors.neutral.black,
-        height: "100%",
-        p: 3,
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 4,
-        }}
-      >
-        <Box
-          component="img"
-          src="/new_nanthus_kitchen_logo.png"
-          alt="New Nanthus Kitchen - Home"
-          sx={{ height: 80 }}
-        />
-        <IconButton
-          onClick={handleDrawerToggle}
-          aria-label="Close navigation menu"
-          sx={{ color: "white", minWidth: 44, minHeight: 44 }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Box>
-
-      <List component="nav" aria-label="Main navigation">
-        {navItems.map((item) => (
-          <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
-            <ListItemButton
-              onClick={() => scrollToSection(item.sectionId, item.path)}
-              sx={{
-                py: 2,
-                borderRadius: 1,
-                minHeight: 48,
-                bgcolor:
-                  activeSection === item.sectionId
-                    ? "rgba(255,207,64,0.1)"
-                    : "transparent",
-                borderLeft:
-                  activeSection === item.sectionId
-                    ? `3px solid ${tokens.colors.primary.main}`
-                    : "3px solid transparent",
-                "&:hover": { bgcolor: "rgba(255,255,255,0.05)" },
-              }}
-            >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  sx: {
-                    color:
-                      activeSection === item.sectionId
-                        ? "primary.main"
-                        : "white",
-                    fontWeight: 600,
-                    letterSpacing: "0.1em",
-                    fontSize: "0.9rem",
-                  },
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-
-      <Box
-        sx={{
-          mt: "auto",
-          pt: 4,
-          borderTop: `1px solid ${tokens.colors.border.light}`,
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{ color: tokens.colors.text.tertiary, mb: 1 }}
-        >
-          newnanthuskitchen@gmail.com
-        </Typography>
-        <Typography
-          variant="caption"
-          sx={{ color: tokens.colors.text.disabled }}
-        >
-          © {new Date().getFullYear()} New Nanthus Kitchen
-        </Typography>
-      </Box>
-    </Box>
-  );
+  const isActive = (path: string) =>
+    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
   return (
     <>
@@ -183,151 +80,298 @@ const Header: React.FC = () => {
         position="fixed"
         elevation={0}
         sx={{
-          transition: tokens.transitions.normal,
-          backgroundColor: isScrolled ? "rgba(5, 5, 5, 0.95)" : "transparent",
-          backdropFilter: isScrolled ? "blur(12px)" : "none",
-          borderBottom: isScrolled
-            ? `1px solid ${tokens.colors.border.subtle}`
-            : "none",
           zIndex: 1100,
-          py: isScrolled ? 0.5 : 1.5,
+          transition: `background-color 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease`,
+          backgroundColor: scrolled
+            ? "rgba(253,250,244,0.95)"
+            : isDarkHero
+              ? "transparent"
+              : "rgba(253,250,244,0.82)",
+          backdropFilter:  scrolled ? "blur(20px) saturate(160%)" : isDarkHero ? "none" : "blur(20px) saturate(160%)",
+          borderBottom:    scrolled
+            ? `1px solid ${tokens.colors.border.subtle}`
+            : "1px solid transparent",
+          boxShadow:       scrolled ? tokens.shadows.sm : "none",
         }}
       >
         <Toolbar
           sx={{
             justifyContent: "space-between",
-            px: { xs: 2, sm: 3, lg: 6 },
-            minHeight: { xs: 64, md: 72 },
+            px: { xs: 2.5, sm: 4, lg: 8, xl: 10 },
+            minHeight: { xs: 68, md: 76, xl: 84 },
           }}
         >
+          {/* Logo */}
           <Box
-            component="a"
-            href="/"
-            onClick={(e: React.MouseEvent) => {
-              e.preventDefault();
-              scrollToSection("hero", "/");
-            }}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              textDecoration: "none",
-            }}
-            aria-label="New Nanthus Kitchen - Go to home"
+            component={Link}
+            to="/"
+            aria-label="New Nanthus Kitchen — Home"
+            sx={{ display: "flex", alignItems: "center", textDecoration: "none" }}
           >
             <Box
               component="img"
               src="/new_nanthus_kitchen_logo.png"
               alt="New Nanthus Kitchen"
               sx={{
-                height: { xs: 52, sm: 56, md: isScrolled ? 52 : 64 },
-                transition: "height 0.3s ease",
+                height: { xs: 50, md: scrolled ? 50 : 60, xl: scrolled ? 56 : 68 },
+                transition: "height 0.35s ease",
                 display: "block",
               }}
             />
           </Box>
 
-          {isMobile ? (
-            <IconButton
-              aria-label="Open navigation menu"
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-navigation"
-              onClick={handleDrawerToggle}
-              sx={{
-                color: "white",
-                minWidth: 44,
-                minHeight: 44,
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-          ) : (
+          {/* Desktop nav */}
+          {!isMobile && (
             <Box
               component="nav"
               aria-label="Main navigation"
-              sx={{
-                display: "flex",
-                gap: { md: 1, lg: 2 },
-                alignItems: "center",
-              }}
+              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
               {navItems.map((item) => (
                 <Button
-                  key={item.label}
-                  onClick={() => scrollToSection(item.sectionId, item.path)}
-                  aria-current={
-                    activeSection === item.sectionId ? "page" : undefined
-                  }
+                  key={item.path}
+                  component={Link}
+                  to={item.path}
+                  aria-current={isActive(item.path) ? "page" : undefined}
                   sx={{
-                    color:
-                      activeSection === item.sectionId
-                        ? "primary.main"
-                        : "white",
-                    fontWeight: 600,
-                    fontSize: { md: "0.7rem", lg: "0.8rem" },
-                    letterSpacing: "0.08em",
-                    px: { md: 1.5, lg: 2 },
-                    py: 1,
-                    minHeight: 44,
-                    position: "relative",
+                    position:      "relative",
+                    color:         isActive(item.path)
+                      ? tokens.colors.primary.main
+                      : (!scrolled && isDarkHero)
+                        ? tokens.colors.dark.textSecondary
+                        : tokens.colors.text.secondary,
+                    fontWeight:    isActive(item.path) ? 600 : 400,
+                    fontSize:      { md: "0.72rem", lg: "0.78rem", xl: "0.84rem" },
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    px:            { md: 1.5, lg: 2 },
+                    py:            1,
+                    minHeight:     44,
+                    borderRadius:  0,
                     "&::after": {
-                      content: '""',
-                      position: "absolute",
-                      bottom: 8,
-                      left: "50%",
-                      width: activeSection === item.sectionId ? "30px" : "0px",
-                      height: "2px",
-                      backgroundColor: "primary.main",
-                      transform: "translateX(-50%)",
-                      transition:
-                        "all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                      content:    '""',
+                      position:   "absolute",
+                      bottom:     6,
+                      left:       "50%",
+                      transform:  "translateX(-50%)",
+                      width:      isActive(item.path) ? "18px" : "0px",
+                      height:     "1.5px",
+                      background: tokens.colors.primary.main,
                       borderRadius: "2px",
-                      boxShadow:
-                        activeSection === item.sectionId
-                          ? "0 0 8px rgba(255, 207, 64, 0.6), 0 0 16px rgba(255, 207, 64, 0.3)"
-                          : "none",
+                      transition: "width 0.28s ease",
                     },
                     "&:hover": {
-                      color: "primary.main",
+                      color:           tokens.colors.primary.main,
                       backgroundColor: "transparent",
-                      "&::after": {
-                        width: "30px",
-                        boxShadow:
-                          "0 0 8px rgba(255, 207, 64, 0.6), 0 0 16px rgba(255, 207, 64, 0.3)",
-                      },
-                    },
-                    "&:focus-visible": {
-                      outline: `2px solid ${tokens.colors.primary.main}`,
-                      outlineOffset: 2,
+                      "&::after": { width: "18px" },
                     },
                   }}
                 >
                   {item.label}
                 </Button>
               ))}
+
+              {/* Order CTA */}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setLocationModalOpen(true)}
+                sx={{
+                  ml:            1.5,
+                  px:            { md: 2.5, lg: 3, xl: 3.5 },
+                  py:            0.9,
+                  fontSize:      { md: "0.72rem", xl: "0.8rem" },
+                  fontWeight:    700,
+                  color:         tokens.colors.bg.base,
+                  borderRadius:  tokens.radius.pill,
+                  minHeight:     36,
+                  letterSpacing: "0.1em",
+                  "&:hover": {
+                    boxShadow: tokens.shadows.gold,
+                    transform: "translateY(-1px)",
+                  },
+                }}
+              >
+                Order Now
+              </Button>
             </Box>
+          )}
+
+          {/* Mobile hamburger */}
+          {isMobile && (
+            <IconButton
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              onClick={() => setOpen(!open)}
+              sx={{
+              color:     (!scrolled && isDarkHero) ? tokens.colors.dark.textPrimary : tokens.colors.text.primary,
+                zIndex:    1201,
+                minWidth:  44,
+                minHeight: 44,
+                "&:hover": { bgcolor: tokens.colors.primary.glow },
+              }}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={open ? "close" : "open"}
+                  initial={{ opacity: 0, rotate: open ? -90 : 90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {open ? <CloseIcon /> : <MenuIcon />}
+                </motion.div>
+              </AnimatePresence>
+            </IconButton>
           )}
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        id="mobile-navigation"
-        variant="temporary"
-        anchor="right"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: { xs: "100%", sm: 320 },
-            bgcolor: tokens.colors.neutral.black,
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
+      {/* ── Full-screen mobile overlay ────────────────────────── */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="dialog"
+            aria-label="Navigation menu"
+            aria-modal="true"
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            style={{
+              position:        "fixed",
+              inset:           0,
+              zIndex:          1200,
+              backgroundColor: "rgba(253,250,244,0.97)",
+              backdropFilter:  "blur(24px)",
+              display:         "flex",
+              flexDirection:   "column",
+            }}
+          >
+            {/* Logo row */}
+            <Box
+              sx={{
+                px: { xs: 2.5, sm: 4 },
+                pt: 2,
+                minHeight: 76,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Box
+                component="img"
+                src="/new_nanthus_kitchen_logo.png"
+                alt="New Nanthus Kitchen"
+                sx={{ height: 54 }}
+              />
+            </Box>
+
+            {/* Nav links */}
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                px: { xs: 3, sm: 5 },
+              }}
+            >
+              <motion.nav
+                variants={stagger}
+                initial="hidden"
+                animate="visible"
+                aria-label="Mobile navigation"
+              >
+                {navItems.map((item) => (
+                  <motion.div key={item.path} variants={linkAnim}>
+                    <Box
+                      component={Link}
+                      to={item.path}
+                      onClick={() => { setOpen(false); navigate(item.path); }}
+                      sx={{
+                        display:        "block",
+                        textDecoration: "none",
+                        py:             { xs: 1.5, sm: 2 },
+                        borderBottom:   `1px solid ${tokens.colors.border.faint}`,
+                        "&:last-child": { borderBottom: "none" },
+                        "&:focus-visible": {
+                          outline:       `2px solid ${tokens.colors.primary.main}`,
+                          outlineOffset: 4,
+                        },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontFamily:    tokens.fonts.display,
+                          fontSize:      { xs: "2.8rem", sm: "3.5rem" },
+                          fontWeight:    400,
+                          textTransform: "uppercase",
+                          letterSpacing: "-0.01em",
+                          lineHeight:    1.1,
+                          color: isActive(item.path)
+                            ? tokens.colors.primary.main
+                            : tokens.colors.text.primary,
+                          transition: "color 0.2s ease",
+                          "&:hover": { color: tokens.colors.primary.main },
+                        }}
+                      >
+                        {item.label}
+                      </Typography>
+                    </Box>
+                  </motion.div>
+                ))}
+
+                {/* Order CTA */}
+                <motion.div variants={linkAnim}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    onClick={() => { setOpen(false); setLocationModalOpen(true); }}
+                    sx={{
+                      mt:            3,
+                      px:            5,
+                      py:            1.8,
+                      fontSize:      "0.82rem",
+                      fontWeight:    700,
+                      color:         tokens.colors.bg.base,
+                      borderRadius:  tokens.radius.pill,
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    Order Now
+                  </Button>
+                </motion.div>
+              </motion.nav>
+            </Box>
+
+            {/* Footer strip */}
+            <Box
+              sx={{
+                px:        { xs: 3, sm: 5 },
+                py:        3,
+                borderTop: `1px solid ${tokens.colors.border.faint}`,
+                display:   "flex",
+                justifyContent: "space-between",
+                flexWrap:  "wrap",
+                gap:       1,
+              }}
+            >
+              <Typography variant="caption" sx={{ color: tokens.colors.text.tertiary }}>
+                newnanthuskitchen@gmail.com
+              </Typography>
+              <Typography variant="caption" sx={{ color: tokens.colors.text.disabled }}>
+                Markham · Scarborough
+              </Typography>
+            </Box>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <LocationSelectionModal
+        open={locationModalOpen}
+        onClose={() => setLocationModalOpen(false)}
+      />
     </>
   );
 };
