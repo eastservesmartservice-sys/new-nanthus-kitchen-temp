@@ -5,6 +5,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { tokens } from "../theme";
+import PageBanner from "../components/PageBanner";
 
 interface MenuItem { name: string; price: string; popular?: boolean; }
 interface MenuCategory { category: string; subtitle?: string; items: MenuItem[]; }
@@ -155,10 +156,10 @@ const MenuPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState(menuData[0].category);
   const contentRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const tabsRef = useRef<HTMLDivElement>(null);
 
-  // Intersection observer to update active category on scroll
+  // Intersection observer — works on both mobile and desktop
   useEffect(() => {
-    if (isMobile) return;
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -168,92 +169,105 @@ const MenuPage: React.FC = () => {
           }
         }
       },
-      { rootMargin: "-20% 0px -70% 0px", threshold: 0 }
+      { rootMargin: isMobile ? "-15% 0px -75% 0px" : "-20% 0px -70% 0px", threshold: 0 }
     );
     Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
   }, [isMobile]);
 
+  // Scroll active tab into view on mobile
+  useEffect(() => {
+    if (!isMobile || !tabsRef.current) return;
+    const activeBtn = tabsRef.current.querySelector(`[data-cat="${activeCategory}"]`);
+    if (activeBtn) {
+      (activeBtn as HTMLElement).scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [activeCategory, isMobile]);
+
   const scrollToCategory = useCallback((category: string) => {
     setActiveCategory(category);
     const el = sectionRefs.current[category];
     if (el) {
-      const offset = el.getBoundingClientRect().top + window.pageYOffset - 100;
+      const navHeight = isMobile ? 64 + 52 : 96; // navbar + sticky tabs on mobile
+      const offset = el.getBoundingClientRect().top + window.pageYOffset - navHeight;
       window.scrollTo({ top: offset, behavior: "smooth" });
     }
-  }, []);
+  }, [isMobile]);
 
   return (
     <Box sx={{ bgcolor: tokens.colors.bg.base, minHeight: "100vh" }}>
-      {/* ── Page header ── */}
-      <Box
-        sx={{
-          pt:       { xs: 14, md: 18 },
-          pb:       { xs: 6, md: 8 },
-          bgcolor:  tokens.colors.dark.bg,
-          borderBottom:`1px solid ${tokens.colors.dark.borderSubtle}`,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
+      <PageBanner
+        eyebrow="Our Selection"
+        title="The"
+        highlight="Menu"
+        subtitle="Authentic Jaffna flavours — from kothu to biryani, banana leaf to shawarma."
+        watermark="Menu"
+      />
+
+      {/* ── Mobile sticky category tabs ── */}
+      {isMobile && (
         <Box
-          aria-hidden="true"
+          ref={tabsRef}
           sx={{
-            position:   "absolute",
-            top:        "50%",
-            right:      "-5%",
-            transform:  "translateY(-50%)",
-            fontFamily: tokens.fonts.display,
-            fontSize:   "18vw",
-            color:      tokens.colors.primary.main,
-            opacity:    0.03,
-            lineHeight: 1,
-            userSelect: "none",
-            pointerEvents:"none",
+            position:     "sticky",
+            top:          64,
+            zIndex:       50,
+            bgcolor:      tokens.colors.bg.base,
+            borderBottom: `1px solid ${tokens.colors.border.faint}`,
+            overflowX:    "auto",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": { display: "none" },
           }}
         >
-          MENU
-        </Box>
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-            <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-            <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>Our Selection</Typography>
+          <Box sx={{ display: "flex", gap: 1, px: 2.5, py: 1.5, minWidth: "max-content" }}>
+            {menuData.map((cat) => (
+              <Box
+                key={cat.category}
+                component="button"
+                data-cat={cat.category}
+                onClick={() => scrollToCategory(cat.category)}
+                sx={{
+                  background:   activeCategory === cat.category ? tokens.colors.primary.main : "transparent",
+                  border:       `1px solid ${activeCategory === cat.category ? tokens.colors.primary.main : tokens.colors.border.subtle}`,
+                  borderRadius: tokens.radius.pill,
+                  color:        activeCategory === cat.category ? tokens.colors.bg.base : tokens.colors.text.secondary,
+                  cursor:       "pointer",
+                  fontSize:     "0.7rem",
+                  fontWeight:   600,
+                  letterSpacing:"0.04em",
+                  px:           "14px",
+                  py:           "6px",
+                  whiteSpace:   "nowrap",
+                  transition:   `all ${tokens.transitions.fast}`,
+                  flexShrink:   0,
+                  "&:active":   { opacity: 0.8 },
+                }}
+              >
+                {cat.category}
+              </Box>
+            ))}
           </Box>
-          <Typography
-            component="h1"
-            sx={{
-              fontFamily: tokens.fonts.display, fontSize: { xs: "2.8rem", md: "4.5rem" },
-              fontWeight: 400, textTransform: "uppercase", color: tokens.colors.dark.textPrimary,
-              lineHeight: 0.92, letterSpacing: "-0.02em",
-            }}
-          >
-            The{" "}
-            <Box component="span" sx={{ color: tokens.colors.primary.main }}>Menu</Box>
-          </Typography>
-          <Typography sx={{ color: tokens.colors.dark.textTertiary, mt: 2, fontSize: "0.9rem", maxWidth: 480 }}>
-            Authentic Jaffna flavours — from kothu to biryani, banana leaf to shawarma.
-          </Typography>
-        </Container>
-      </Box>
+        </Box>
+      )}
 
-      {/* ── Main layout: sidebar + content ── */}
-      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
-        <Box sx={{ display: "flex", gap: { xs: 0, md: 8 }, alignItems: "flex-start" }}>
+      {/* ── Main layout ── */}
+      <Container maxWidth="xl" sx={{ py: { xs: 4, md: 10 }, px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
+        <Box sx={{ display: "flex", gap: { xs: 0, md: 6, lg: 8 }, alignItems: "flex-start" }}>
 
-          {/* Sticky sidebar — desktop only */}
+          {/* Desktop sticky sidebar */}
           {!isMobile && (
             <Box
               component="nav"
               aria-label="Menu categories"
               sx={{
-                width:    240,
-                flexShrink:0,
-                position: "sticky",
-                top:      96,
-                maxHeight:"calc(100vh - 120px)",
-                overflowY:"auto",
-                pr:       2,
-                scrollbarWidth:"none",
+                width:      { md: 220, lg: 260, xl: 280 },
+                flexShrink: 0,
+                position:   "sticky",
+                top:        96,
+                maxHeight:  "calc(100vh - 120px)",
+                overflowY:  "auto",
+                pr:         2,
+                scrollbarWidth: "none",
                 "&::-webkit-scrollbar": { display: "none" },
               }}
             >
@@ -263,52 +277,35 @@ const MenuPage: React.FC = () => {
                   component="button"
                   onClick={() => scrollToCategory(cat.category)}
                   sx={{
-                    display:       "flex",
-                    alignItems:    "center",
-                    justifyContent:"space-between",
-                    width:         "100%",
-                    background:    "none",
-                    border:        "none",
-                    cursor:        "pointer",
-                    textAlign:     "left",
-                    px:            2,
-                    py:            1.2,
-                    mb:            0.5,
-                    borderRadius:  tokens.radius.sm,
-                    borderLeft:    `2px solid ${activeCategory === cat.category ? tokens.colors.primary.main : "transparent"}`,
-                    bgcolor:       activeCategory === cat.category ? tokens.colors.primary.glow2 : "transparent",
-                    transition:    `all ${tokens.transitions.fast}`,
-                    "&:hover": {
-                      bgcolor:    tokens.colors.primary.glow2,
-                      borderLeftColor: tokens.colors.border.light,
-                    },
-                    "&:focus-visible": {
-                      outline:       `2px solid ${tokens.colors.primary.main}`,
-                      outlineOffset: 2,
-                    },
+                    display:        "flex",
+                    alignItems:     "center",
+                    justifyContent: "space-between",
+                    width:          "100%",
+                    background:     "none",
+                    border:         "none",
+                    cursor:         "pointer",
+                    textAlign:      "left",
+                    px:             2,
+                    py:             1.2,
+                    mb:             0.5,
+                    borderRadius:   tokens.radius.sm,
+                    borderLeft:     `2px solid ${activeCategory === cat.category ? tokens.colors.primary.main : "transparent"}`,
+                    bgcolor:        activeCategory === cat.category ? tokens.colors.primary.glow2 : "transparent",
+                    transition:     `all ${tokens.transitions.fast}`,
+                    "&:hover":      { bgcolor: tokens.colors.primary.glow2, borderLeftColor: tokens.colors.border.light },
+                    "&:focus-visible": { outline: `2px solid ${tokens.colors.primary.main}`, outlineOffset: 2 },
                   }}
                 >
-                  <Typography
-                    sx={{
-                      fontSize:  "0.82rem",
-                      fontWeight:activeCategory === cat.category ? 600 : 400,
-                      color:     activeCategory === cat.category
-                        ? tokens.colors.primary.main
-                        : tokens.colors.text.tertiary,
-                      transition:tokens.transitions.fast,
-                      lineHeight:1.3,
-                    }}
-                  >
+                  <Typography sx={{
+                    fontSize:   "0.82rem",
+                    fontWeight: activeCategory === cat.category ? 600 : 400,
+                    color:      activeCategory === cat.category ? tokens.colors.primary.main : tokens.colors.text.tertiary,
+                    transition: tokens.transitions.fast,
+                    lineHeight: 1.3,
+                  }}>
                     {cat.category}
                   </Typography>
-                  <Typography
-                    sx={{
-                      fontSize:  "0.65rem",
-                      color:     tokens.colors.text.disabled,
-                      flexShrink:0,
-                      ml:        1,
-                    }}
-                  >
+                  <Typography sx={{ fontSize: "0.65rem", color: tokens.colors.text.disabled, flexShrink: 0, ml: 1 }}>
                     {String(i + 1).padStart(2, "0")}
                   </Typography>
                 </Box>
@@ -329,40 +326,6 @@ const MenuPage: React.FC = () => {
             </Box>
           )}
 
-          {/* Mobile: horizontal scroll pill tabs */}
-          {isMobile && (
-            <Box
-              sx={{
-                mb:         3, mx: -2.5, px: 2.5,
-                overflowX:  "auto",
-                scrollbarWidth:"none",
-                "&::-webkit-scrollbar":{ display:"none" },
-              }}
-            >
-              <Box sx={{ display:"flex", gap:1, pb:1, minWidth:"max-content" }}>
-                {menuData.map((cat) => (
-                  <Button
-                    key={cat.category}
-                    onClick={() => scrollToCategory(cat.category)}
-                    variant={activeCategory === cat.category ? "contained" : "outlined"}
-                    sx={{
-                      color:       activeCategory === cat.category ? tokens.colors.bg.base : tokens.colors.text.secondary,
-                      bgcolor:     activeCategory === cat.category ? tokens.colors.primary.main : "transparent",
-                      borderColor: tokens.colors.border.subtle,
-                      fontSize:    "0.68rem", fontWeight:600,
-                      px:          2, py:0.7, minHeight:32,
-                      borderRadius:tokens.radius.pill,
-                      whiteSpace:  "nowrap",
-                      "&:hover":{ borderColor:tokens.colors.primary.main },
-                    }}
-                  >
-                    {cat.category}
-                  </Button>
-                ))}
-              </Box>
-            </Box>
-          )}
-
           {/* Menu content */}
           <Box ref={contentRef} sx={{ flex: 1, minWidth: 0 }}>
             {menuData.map((cat, catIdx) => (
@@ -372,7 +335,7 @@ const MenuPage: React.FC = () => {
                 data-category={cat.category}
                 component="section"
                 aria-labelledby={`cat-${cat.category}`}
-                sx={{ mb: { xs: 6, md: 10 } }}
+                sx={{ mb: { xs: 5, md: 10 } }}
               >
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
@@ -381,22 +344,20 @@ const MenuPage: React.FC = () => {
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
                   {/* Category heading */}
-                  <Box
-                    sx={{
-                      display:     "flex",
-                      alignItems:  "baseline",
-                      gap:         2,
-                      mb:          3,
-                      pb:          2,
-                      borderBottom:`1px solid ${tokens.colors.border.faint}`,
-                    }}
-                  >
+                  <Box sx={{
+                    display:      "flex",
+                    alignItems:   "baseline",
+                    gap:          2,
+                    mb:           { xs: 2, md: 3 },
+                    pb:           { xs: 1.5, md: 2 },
+                    borderBottom: `1px solid ${tokens.colors.border.faint}`,
+                  }}>
                     <Typography
                       id={`cat-${cat.category}`}
                       component="h2"
                       sx={{
                         fontFamily:    tokens.fonts.display,
-                        fontSize:      { xs: "1.6rem", md: "2rem" },
+                        fontSize:      { xs: "1.4rem", md: "2rem" },
                         fontWeight:    400,
                         textTransform: "uppercase",
                         color:         tokens.colors.text.primary,
@@ -405,27 +366,23 @@ const MenuPage: React.FC = () => {
                     >
                       {cat.category}
                     </Typography>
-                    <Typography
-                      sx={{
-                        color:      tokens.colors.primary.main,
-                        fontFamily: tokens.fonts.display,
-                        fontSize:   "0.8rem",
-                        opacity:    0.6,
-                      }}
-                    >
+                    <Typography sx={{
+                      color:      tokens.colors.primary.main,
+                      fontFamily: tokens.fonts.display,
+                      fontSize:   "0.75rem",
+                      opacity:    0.6,
+                    }}>
                       {String(catIdx + 1).padStart(2, "0")}
                     </Typography>
                   </Box>
 
                   {cat.subtitle && (
-                    <Typography
-                      sx={{
-                        color:     tokens.colors.primary.main,
-                        fontSize:  "0.82rem",
-                        fontStyle: "italic",
-                        mb:        2,
-                      }}
-                    >
+                    <Typography sx={{
+                      color:     tokens.colors.primary.main,
+                      fontSize:  "0.8rem",
+                      fontStyle: "italic",
+                      mb:        { xs: 1.5, md: 2 },
+                    }}>
                       {cat.subtitle}
                     </Typography>
                   )}
@@ -435,28 +392,29 @@ const MenuPage: React.FC = () => {
                     <Box
                       key={itemIdx}
                       sx={{
-                        display:     "flex",
-                        alignItems:  "center",
+                        display:       "flex",
+                        alignItems:    "center",
                         justifyContent:"space-between",
-                        gap:         2,
-                        py:          1.6,
-                        borderBottom:`1px solid ${tokens.colors.border.faint}`,
-                        transition:  `background-color ${tokens.transitions.fast}`,
-                        px:          1.5,
-                        mx:          -1.5,
-                        borderRadius:tokens.radius.xs,
-                        "&:hover":   { bgcolor: tokens.colors.primary.glow2 },
-                        "&:last-child": { borderBottom: "none" },
+                        gap:           1.5,
+                        py:            { xs: 1.4, md: 1.6 },
+                        borderBottom:  `1px solid ${tokens.colors.border.faint}`,
+                        px:            { xs: 1, md: 1.5 },
+                        mx:            { xs: -1, md: -1.5 },
+                        borderRadius:  tokens.radius.xs,
+                        transition:    `background-color ${tokens.transitions.fast}`,
+                        "&:hover":     { bgcolor: tokens.colors.primary.glow2 },
+                        "&:last-child":{ borderBottom: "none" },
                       }}
                     >
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flex: 1, minWidth: 0 }}>
-                        <Typography
-                          sx={{
-                            color:     tokens.colors.text.primary,
-                            fontSize:  { xs: "0.88rem", md: "0.95rem" },
-                            lineHeight:1.4,
-                          }}
-                        >
+                      {/* Name + badge */}
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1, minWidth: 0 }}>
+                        <Typography sx={{
+                          color:     tokens.colors.text.primary,
+                          fontSize:  { xs: "0.85rem", md: "0.95rem" },
+                          lineHeight: 1.4,
+                          flexShrink: 1,
+                          minWidth:   0,
+                        }}>
                           {item.name}
                         </Typography>
                         {item.popular && (
@@ -464,29 +422,29 @@ const MenuPage: React.FC = () => {
                             label="Popular"
                             size="small"
                             sx={{
-                              bgcolor:    tokens.colors.primary.glow,
-                              color:      tokens.colors.primary.main,
-                              fontWeight: 700,
-                              fontSize:   "0.55rem",
-                              height:     18,
-                              border:     `1px solid ${tokens.colors.border.subtle}`,
-                              borderRadius:tokens.radius.xs,
-                              "& .MuiChip-label": { px: 0.8 },
-                              flexShrink: 0,
+                              bgcolor:      tokens.colors.primary.glow,
+                              color:        tokens.colors.primary.main,
+                              fontWeight:   700,
+                              fontSize:     "0.5rem",
+                              height:       16,
+                              border:       `1px solid ${tokens.colors.border.subtle}`,
+                              borderRadius: tokens.radius.xs,
+                              flexShrink:   0,
+                              "& .MuiChip-label": { px: 0.7 },
                             }}
                           />
                         )}
                       </Box>
-                      <Typography
-                        sx={{
-                          color:      tokens.colors.primary.main,
-                          fontFamily: tokens.fonts.display,
-                          fontSize:   { xs: "0.88rem", md: "0.95rem" },
-                          fontWeight: 400,
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                        }}
-                      >
+
+                      {/* Price */}
+                      <Typography sx={{
+                        color:      tokens.colors.primary.main,
+                        fontFamily: tokens.fonts.display,
+                        fontSize:   { xs: "0.85rem", md: "0.95rem" },
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                        ml:         1,
+                      }}>
                         {item.price}
                       </Typography>
                     </Box>
@@ -495,14 +453,12 @@ const MenuPage: React.FC = () => {
               </Box>
             ))}
 
-            {/* Bottom order CTA */}
-            <Box
-              sx={{
-                textAlign: "center",
-                py:        { xs: 6, md: 8 },
-                borderTop: `1px solid ${tokens.colors.border.faint}`,
-              }}
-            >
+            {/* Bottom CTA */}
+            <Box sx={{
+              textAlign: "center",
+              py:        { xs: 6, md: 8 },
+              borderTop: `1px solid ${tokens.colors.border.faint}`,
+            }}>
               <Typography sx={{ color: tokens.colors.text.tertiary, mb: 2, fontSize: "0.88rem" }}>
                 Seen something you like?
               </Typography>
@@ -520,6 +476,7 @@ const MenuPage: React.FC = () => {
           </Box>
         </Box>
       </Container>
+
     </Box>
   );
 };

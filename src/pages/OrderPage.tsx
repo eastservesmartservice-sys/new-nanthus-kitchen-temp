@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
+import PageBanner from "../components/PageBanner";
 import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -37,71 +38,29 @@ const OrderPage: React.FC = () => {
 
   return (
     <Box sx={{ bgcolor: tokens.colors.bg.base }}>
-      {/* ── Page header ── */}
-      <Box
-        sx={{
-          pt:       { xs: 14, md: 18 },
-          pb:       { xs: 8, md: 12 },
-          position: "relative",
-          overflow: "hidden",
-          bgcolor:  tokens.colors.dark.bg,
-          borderBottom:`1px solid ${tokens.colors.dark.borderSubtle}`,
-        }}
+      <PageBanner
+        eyebrow="Pickup Only"
+        title="Order for"
+        highlight="Pickup"
+        subtitle="Authentic Jaffna cuisine, ready in 20–30 minutes. Pick up from either of our two GTA locations — no delivery, always fresh."
+        watermark="Order"
       >
-        <Box
-          aria-hidden="true"
-          sx={{
-            position:   "absolute",
-            top: "50%", right: "-3%",
-            transform:  "translateY(-50%)",
-            fontFamily: tokens.fonts.display,
-            fontSize:   "18vw", color: tokens.colors.primary.main,
-            opacity:    0.04, lineHeight: 1,
-            userSelect: "none", pointerEvents: "none",
-          }}
-        >
-          ORDER
+        <Box sx={{ display: "flex", gap: { xs: 2, md: 4 }, flexWrap: "wrap" }}>
+          {[
+            { icon: <AccessTimeIcon sx={{ fontSize: "1rem" }} />, text: "20–30 Min Ready" },
+            { icon: <LocalOfferIcon sx={{ fontSize: "1rem" }} />, text: "10% Off First Order" },
+          ].map((perk, i) => (
+            <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box sx={{ color: tokens.colors.primary.main }}>{perk.icon}</Box>
+              <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.85rem" }}>{perk.text}</Typography>
+            </Box>
+          ))}
         </Box>
-
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-            <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-            <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>Pickup Only</Typography>
-          </Box>
-          <Typography
-            component="h1"
-            sx={{
-              fontFamily: tokens.fonts.display, fontSize: { xs: "2.8rem", md: "5rem" },
-              fontWeight: 400, textTransform: "uppercase", color: tokens.colors.dark.textPrimary,
-              lineHeight: 0.9, letterSpacing: "-0.02em", mb: 2,
-            }}
-          >
-            Order for{" "}
-            <Box component="span" sx={{ color: tokens.colors.primary.main }}>Pickup</Box>
-          </Typography>
-          <Typography sx={{ color: tokens.colors.dark.textTertiary, fontSize: "0.95rem", maxWidth: 480, lineHeight: 1.7 }}>
-            Authentic Jaffna cuisine, ready in 20–30 minutes. Pick up from either
-            of our two GTA locations — no delivery, always fresh.
-          </Typography>
-
-          {/* Perks strip */}
-          <Box sx={{ display: "flex", gap: { xs: 2, md: 4 }, mt: 5, flexWrap: "wrap" }}>
-            {[
-              { icon: <AccessTimeIcon sx={{ fontSize: "1rem" }}/>, text: "20–30 Min Ready" },
-              { icon: <LocalOfferIcon sx={{ fontSize: "1rem" }}/>, text: "10% Off First Order" },
-            ].map((perk, i) => (
-              <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Box sx={{ color: tokens.colors.primary.main }}>{perk.icon}</Box>
-                <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.85rem" }}>{perk.text}</Typography>
-              </Box>
-            ))}
-          </Box>
-        </Container>
-      </Box>
+      </PageBanner>
 
       {/* ── How it works ── */}
       <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: tokens.colors.bg.base }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
           <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 5, textAlign: "center" }}>
             How It Works
           </Typography>
@@ -176,7 +135,7 @@ const OrderPage: React.FC = () => {
 
       {/* ── Location cards ── */}
       <Box sx={{ py: { xs: 8, md: 14 }, bgcolor: tokens.colors.bg.surface }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
           <Box sx={{ textAlign: "center", mb: { xs: 6, md: 10 } }}>
             <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 1.5 }}>
               Choose Your Location

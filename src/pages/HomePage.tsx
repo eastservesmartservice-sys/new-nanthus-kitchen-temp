@@ -104,10 +104,9 @@ const HomePage: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
 
   const { scrollY } = useScroll();
-  const heroOpacity  = useTransform(scrollY, [0, 400], [1, 0]);
-  const heroY        = useTransform(scrollY, [0, 400], [0, isMobile ? 0 : 50]);
-  const heroImgY     = useTransform(scrollY, [0, 800], [0, isMobile ? 0 : 150]);
-  const indicatorOpacity = useTransform(scrollY, [0, 120], [1, 0]);
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const heroY       = useTransform(scrollY, [0, 400], [0, isMobile ? 0 : 40]);
+  const heroImgY    = useTransform(scrollY, [0, 800], [0, isMobile ? 0 : 80]);
 
   return (
     <Box>
@@ -117,257 +116,389 @@ const HomePage: React.FC = () => {
         ref={heroRef}
         aria-label="Welcome"
         sx={{
-          minHeight:      "100vh",
-          display:        "flex",
-          alignItems:     "center",
-          justifyContent: "center",
-          position:       "relative",
-          overflow:       "hidden",
-          bgcolor:        tokens.colors.dark.bg,
+          minHeight: "100vh",
+          display:   "flex",
+          flexDirection: "column",
+          position:  "relative",
+          overflow:  "hidden",
+          bgcolor:   tokens.colors.dark.bg,
         }}
       >
         <Suspense fallback={null}><ThreeBackground /></Suspense>
 
-        {/* Full-bleed background image with parallax */}
-        <motion.div
-          style={{
-            position: "absolute",
-            inset: 0,
-            y: heroImgY,
-          }}
-        >
-          <Box
-            component="img"
-            src="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=1920&q=80"
-            alt=""
-            aria-hidden="true"
-            sx={{
-              width:          "100%",
-              height:         "130%",
-              objectFit:      "cover",
-              objectPosition: "center 40%",
-              filter:         "contrast(1.1) saturate(0.85) brightness(0.35)",
-            }}
-          />
-        </motion.div>
+        {/* Warm radial glow — right side */}
+        <Box aria-hidden="true" sx={{
+          position:   "absolute",
+          top: "50%", right: "-10%",
+          transform:  "translateY(-50%)",
+          width:      "60vw", height: "80vh",
+          background: "radial-gradient(ellipse at center, rgba(184,134,11,0.09) 0%, transparent 65%)",
+          pointerEvents: "none", zIndex: 1,
+        }} />
 
-        {/* Multi-layer gradient overlays */}
-        <Box
-          aria-hidden="true"
-          sx={{
-            position:   "absolute",
-            inset:      0,
-            background: `
-              linear-gradient(180deg, rgba(13,11,8,0.75) 0%, rgba(13,11,8,0.20) 35%, rgba(13,11,8,0.55) 80%, rgba(13,11,8,0.90) 100%),
-              linear-gradient(135deg, rgba(184,134,11,0.06) 0%, transparent 50%)
-            `,
-            zIndex:     1,
-          }}
-        />
+        {/* Corner accent lines */}
+        <Box aria-hidden="true" sx={{
+          position: "absolute", top: 24, left: 24,
+          width: 60, height: 60,
+          borderTop: `1px solid ${tokens.colors.primary.main}`,
+          borderLeft: `1px solid ${tokens.colors.primary.main}`,
+          opacity: 0.25, zIndex: 2,
+        }} />
+        <Box aria-hidden="true" sx={{
+          position: "absolute", bottom: 80, right: 24,
+          width: 60, height: 60,
+          borderBottom: `1px solid ${tokens.colors.primary.main}`,
+          borderRight:  `1px solid ${tokens.colors.primary.main}`,
+          opacity: 0.25, zIndex: 2,
+        }} />
 
-        {/* Radial warm spotlight */}
-        <Box
-          aria-hidden="true"
-          sx={{
-            position:      "absolute",
-            top:           "35%",
-            left:          "50%",
-            transform:     "translate(-50%, -50%)",
-            width:         { xs: "160vw", md: "100vw", xl: "80vw" },
-            height:        { xs: "80vh", md: "90vh" },
-            background:    "radial-gradient(ellipse at center, rgba(184,134,11,0.14) 0%, transparent 60%)",
-            pointerEvents: "none",
-            zIndex:        2,
-          }}
-        />
+        {/* ── Split content ── */}
+        <Box sx={{ flex: 1, display: "flex", alignItems: "center", position: "relative", zIndex: 10 }}>
+          <Container maxWidth="xl" sx={{
+            pt: { xs: "80px", md: "88px", lg: "92px", xl: "100px" },
+            pb: { xs: 8, md: 6 },
+            px: { xs: 3, sm: 4, lg: 8, xl: 10 },
+          }}>
+            <Box sx={{
+              display:             "grid",
+              gridTemplateColumns: { xs: "1fr", md: "54% 46%" },
+              gap:                 { xs: 0, md: 6, lg: 10, xl: 12 },
+              alignItems:          "center",
+            }}>
 
-        {/* Subtle vignette edges */}
-        <Box
-          aria-hidden="true"
-          sx={{
-            position:   "absolute",
-            inset:      0,
-            background: "radial-gradient(ellipse at center, transparent 50%, rgba(13,11,8,0.5) 100%)",
-            zIndex:     2,
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Centered content */}
-        <Container
-          maxWidth="lg"
-          sx={{
-            position:  "relative",
-            zIndex:    10,
-            textAlign: "center",
-            pt:        { xs: 10, md: 0 },
-            pb:        { xs: 12, md: 10 },
-          }}
-        >
-          <motion.div
-            variants={heroContainer}
-            initial="hidden"
-            animate="visible"
-            style={{ opacity: heroOpacity, y: heroY }}
-          >
-            {/* Eyebrow */}
-            <motion.div variants={heroItem}>
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, mb: { xs: 3, md: 4, xl: 5 } }}>
-                <Box sx={{ width: { xs: 24, md: 48, xl: 64 }, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-                <Typography
-                  variant="overline"
-                  sx={{
-                    color:         tokens.colors.primary.main,
-                    letterSpacing: "0.3em",
-                    fontSize:      { xs: "0.62rem", md: "0.72rem", xl: "0.82rem" },
-                  }}
-                >
-                  Authentic Sri Lankan Cuisine
-                </Typography>
-                <Box sx={{ width: { xs: 24, md: 48, xl: 64 }, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-              </Box>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.div variants={heroItem}>
-              <Typography
-                component="h1"
-                sx={{
-                  fontFamily:    tokens.fonts.display,
-                  fontSize:      { xs: "3.2rem", sm: "4.5rem", md: "6rem", lg: "8rem", xl: "10rem" },
-                  fontWeight:    400,
-                  lineHeight:    0.85,
-                  letterSpacing: "-0.03em",
-                  textTransform: "uppercase",
-                  color:         tokens.colors.dark.textPrimary,
-                  mb:            0.5,
-                  textShadow:    "0 4px 40px rgba(0,0,0,0.3)",
-                }}
+              {/* LEFT — Typography */}
+              <motion.div
+                variants={heroContainer}
+                initial="hidden"
+                animate="visible"
+                style={{ opacity: heroOpacity, y: heroY }}
               >
-                New
-              </Typography>
-              <Typography
-                component="div"
-                sx={{
-                  fontFamily:    tokens.fonts.display,
-                  fontSize:      { xs: "3.2rem", sm: "4.5rem", md: "6rem", lg: "8rem", xl: "10rem" },
-                  fontWeight:    400,
-                  lineHeight:    0.85,
-                  letterSpacing: "-0.03em",
-                  textTransform: "uppercase",
-                  color:         tokens.colors.primary.main,
-                  textShadow:    "0 4px 40px rgba(184,134,11,0.2)",
-                  mb:            0.5,
-                }}
+                {/* Eyebrow */}
+                <motion.div variants={heroItem}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: { xs: 3, md: 4, lg: 5 } }}>
+                    <Box sx={{ width: { xs: 28, lg: 40 }, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.7 }} />
+                    <Typography variant="overline" sx={{
+                      color:         tokens.colors.primary.main,
+                      letterSpacing: "0.3em",
+                      fontSize:      { xs: "0.62rem", md: "0.65rem", lg: "0.72rem" },
+                    }}>
+                      Authentic Sri Lankan Cuisine
+                    </Typography>
+                  </Box>
+                </motion.div>
+
+                {/* Display headline */}
+                <motion.div variants={heroItem}>
+                  <Box component="h1" sx={{ m: 0 }}>
+                    {/* "NEW" — ghost outline */}
+                    <Typography component="span" sx={{
+                      display:          "block",
+                      fontFamily:       tokens.fonts.display,
+                      fontSize:         { xs: "3.8rem", sm: "5rem", md: "6.2rem", lg: "7.5rem", xl: "9rem" },
+                      fontWeight:       400,
+                      lineHeight:       0.85,
+                      letterSpacing:    "-0.04em",
+                      textTransform:    "uppercase",
+                      color:            "transparent",
+                      WebkitTextStroke: { xs: "1px rgba(245,240,228,0.3)", lg: "1.5px rgba(245,240,228,0.35)" },
+                      userSelect:       "none",
+                    }}>
+                      New
+                    </Typography>
+                    {/* "NANTHU'S" — gold filled */}
+                    <Typography component="span" sx={{
+                      display:       "block",
+                      fontFamily:    tokens.fonts.display,
+                      fontSize:      { xs: "3.8rem", sm: "5rem", md: "6.2rem", lg: "7.5rem", xl: "9rem" },
+                      fontWeight:    400,
+                      lineHeight:    0.85,
+                      letterSpacing: "-0.04em",
+                      textTransform: "uppercase",
+                      color:         tokens.colors.primary.main,
+                      textShadow:    "0 0 120px rgba(184,134,11,0.35)",
+                    }}>
+                      Nanthu's
+                    </Typography>
+                    {/* "KITCHEN" — white */}
+                    <Typography component="span" sx={{
+                      display:       "block",
+                      fontFamily:    tokens.fonts.display,
+                      fontSize:      { xs: "3.8rem", sm: "5rem", md: "6.2rem", lg: "7.5rem", xl: "9rem" },
+                      fontWeight:    400,
+                      lineHeight:    0.85,
+                      letterSpacing: "-0.04em",
+                      textTransform: "uppercase",
+                      color:         tokens.colors.dark.textPrimary,
+                    }}>
+                      Kitchen
+                    </Typography>
+                  </Box>
+                </motion.div>
+
+                {/* Gold ornament divider */}
+                <motion.div variants={heroItem}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, my: { xs: 3.5, md: 4, lg: 5 } }}>
+                    <Box sx={{ width: { xs: 48, lg: 64 }, height: "1px", background: `linear-gradient(90deg, ${tokens.colors.primary.main}, transparent)` }} />
+                    <Box sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: tokens.colors.primary.main, opacity: 0.7 }} />
+                    <Box sx={{ width: 24, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.3 }} />
+                  </Box>
+                </motion.div>
+
+                {/* Tagline */}
+                <motion.div variants={heroItem}>
+                  <Typography sx={{
+                    color:      tokens.colors.dark.textSecondary,
+                    fontSize:   { xs: "0.9rem", md: "1rem", lg: "1.1rem", xl: "1.2rem" },
+                    lineHeight: 1.85,
+                    maxWidth:   { xs: 360, md: 460, lg: 520, xl: 580 },
+                    mb:         { xs: 4, md: 5, lg: 6 },
+                  }}>
+                    From the kitchens of Jaffna to the heart of the GTA —
+                    bold spices, fresh ingredients, and generations of flavour.
+                  </Typography>
+                </motion.div>
+
+                {/* CTA buttons */}
+                <motion.div variants={heroItem}>
+                  <Box sx={{ display: "flex", gap: { xs: 2, lg: 2.5 }, flexWrap: "wrap", mb: { xs: 4, md: 5, lg: 6 } }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      onClick={() => setLocationModalOpen(true)}
+                      sx={{
+                        px:         { xs: 3.5, md: 4.5, lg: 5.5 },
+                        py:         { xs: 1.5, md: 1.7, lg: 2 },
+                        fontWeight: 700,
+                        color:      tokens.colors.bg.base,
+                        fontSize:   { xs: "0.82rem", lg: "0.9rem" },
+                        letterSpacing: "0.06em",
+                      }}
+                    >
+                      Order Now
+                    </Button>
+                    <Button
+                      component={Link}
+                      to="/menu"
+                      variant="outlined"
+                      size="large"
+                      sx={{
+                        px:          { xs: 3.5, md: 4.5, lg: 5.5 },
+                        py:          { xs: 1.5, md: 1.7, lg: 2 },
+                        color:       tokens.colors.dark.textPrimary,
+                        borderColor: "rgba(245,240,228,0.18)",
+                        fontSize:    { xs: "0.82rem", lg: "0.9rem" },
+                        letterSpacing: "0.06em",
+                        "&:hover":   { borderColor: tokens.colors.primary.main, bgcolor: "rgba(184,134,11,0.07)" },
+                      }}
+                    >
+                      View Menu
+                    </Button>
+                  </Box>
+                </motion.div>
+
+                {/* Location pills */}
+                <motion.div variants={heroItem}>
+                  <Box sx={{ display: "flex", gap: { xs: 1.5, lg: 2 }, flexWrap: "wrap" }}>
+                    {[
+                      { label: "Markham", flag: "📍" },
+                      { label: "Scarborough", flag: "📍" },
+                    ].map(({ label, flag }) => (
+                      <Box key={label} sx={{
+                        display:      "flex",
+                        alignItems:   "center",
+                        gap:          0.8,
+                        px:           { xs: 2, lg: 2.5 },
+                        py:           { xs: 0.9, lg: 1.1 },
+                        border:       `1px solid rgba(245,240,228,0.12)`,
+                        borderRadius: "100px",
+                        bgcolor:      "rgba(245,240,228,0.05)",
+                      }}>
+                        <Typography sx={{ fontSize: { xs: "0.75rem", lg: "0.82rem" } }}>{flag}</Typography>
+                        <Typography sx={{
+                          color:         tokens.colors.dark.textTertiary,
+                          fontSize:      { xs: "0.72rem", lg: "0.78rem" },
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                        }}>
+                          {label}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </motion.div>
+              </motion.div>
+
+              {/* RIGHT — Image composition */}
+              <motion.div
+                initial={{ opacity: 0, x: 48, scale: 0.97 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                transition={{ delay: 0.5, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                style={{ y: heroImgY }}
               >
-                Nanthus
-              </Typography>
-              <Typography
-                component="div"
-                sx={{
-                  fontFamily:    tokens.fonts.display,
-                  fontSize:      { xs: "3.2rem", sm: "4.5rem", md: "6rem", lg: "8rem", xl: "10rem" },
-                  fontWeight:    400,
-                  lineHeight:    0.85,
-                  letterSpacing: "-0.03em",
-                  textTransform: "uppercase",
-                  color:         tokens.colors.dark.textPrimary,
-                  textShadow:    "0 4px 40px rgba(0,0,0,0.3)",
-                }}
-              >
-                Kitchen
-              </Typography>
-            </motion.div>
+                <Box sx={{
+                  position: "relative",
+                  height:   { md: 540, lg: 660, xl: 780 },
+                  display:  { xs: "none", md: "block" },
+                  pr:       { md: 3, lg: 5, xl: 6 },
+                }}>
+                  {/* Background decorative box */}
+                  <Box sx={{
+                    position:     "absolute",
+                    top: 24, right: 0,
+                    bottom: 0, left: 24,
+                    borderRadius: tokens.radius.lg,
+                    border:       `1px solid rgba(184,134,11,0.12)`,
+                    bgcolor:      "rgba(184,134,11,0.04)",
+                  }} />
 
-            {/* Gold divider */}
-            <motion.div variants={heroItem}>
-              <Box sx={{ display: "flex", justifyContent: "center", my: { xs: 3, md: 4, xl: 5 } }}>
-                <Box
-                  sx={{
-                    width:      { xs: 40, md: 64, xl: 80 },
-                    height:     "1.5px",
-                    background: `linear-gradient(90deg, transparent, ${tokens.colors.primary.main}, transparent)`,
-                  }}
-                />
-              </Box>
-            </motion.div>
+                  {/* Main image */}
+                  <Box sx={{
+                    position:     "absolute",
+                    top: 0, right: 24,
+                    bottom: 24, left: 0,
+                    borderRadius: tokens.radius.lg,
+                    overflow:     "hidden",
+                    border:       `1px solid rgba(245,240,228,0.08)`,
+                    boxShadow:    "0 32px 80px rgba(0,0,0,0.5)",
+                  }}>
+                    <Box
+                      component="img"
+                      src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=900&q=85"
+                      alt="Sri Lankan cuisine"
+                      sx={{
+                        width:      "100%",
+                        height:     "100%",
+                        objectFit:  "cover",
+                        objectPosition: "center",
+                        filter:     "contrast(1.08) saturate(1.1) brightness(0.88)",
+                        transition: "transform 8s ease",
+                      }}
+                    />
+                    {/* Cinematic overlay */}
+                    <Box sx={{
+                      position:   "absolute",
+                      inset:      0,
+                      background: "linear-gradient(160deg, rgba(184,134,11,0.06) 0%, rgba(13,11,8,0.35) 100%)",
+                    }} />
+                  </Box>
 
-            {/* Tagline */}
-            <motion.div variants={heroItem}>
-              <Typography
-                sx={{
-                  color:      tokens.colors.dark.textSecondary,
-                  fontSize:   { xs: "0.92rem", md: "1.1rem", xl: "1.3rem" },
-                  lineHeight: 1.8,
-                  maxWidth:   { xs: 340, md: 520, xl: 640 },
-                  mx:         "auto",
-                  mb:         { xs: 4, md: 5, xl: 6 },
-                }}
-              >
-                From the kitchens of Jaffna to the heart of the GTA —
-                bold spices, fresh ingredients, and generations of flavour.
-              </Typography>
-            </motion.div>
+                  {/* Floating badge — 10% off */}
+                  <motion.div
+                    animate={{ y: [0, -7, 0] }}
+                    transition={{ repeat: Infinity, duration: 3.2, ease: "easeInOut" }}
+                    style={{ position: "absolute", bottom: 64, left: -8, zIndex: 3 }}
+                  >
+                    <Box sx={{
+                      bgcolor:      tokens.colors.primary.main,
+                      borderRadius: tokens.radius.md,
+                      px:           2.5, py: 2,
+                      textAlign:    "center",
+                      boxShadow:    "0 12px 40px rgba(184,134,11,0.4)",
+                    }}>
+                      <Typography sx={{
+                        color:      tokens.colors.bg.base,
+                        fontFamily: tokens.fonts.display,
+                        fontSize:   { md: "2rem", lg: "2.4rem", xl: "2.8rem" },
+                        lineHeight: 1,
+                        fontWeight: 400,
+                      }}>
+                        10%
+                      </Typography>
+                      <Typography variant="caption" sx={{
+                        color:         tokens.colors.bg.base,
+                        opacity:       0.85,
+                        letterSpacing: "0.12em",
+                        textTransform: "uppercase",
+                        fontSize:      "0.52rem",
+                        display:       "block",
+                        mt:            0.3,
+                      }}>
+                        First Order
+                      </Typography>
+                    </Box>
+                  </motion.div>
 
-            {/* CTAs */}
-            <motion.div variants={heroItem}>
-              <Box sx={{ display: "flex", gap: { xs: 2, xl: 3 }, justifyContent: "center", flexWrap: "wrap" }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  onClick={() => setLocationModalOpen(true)}
-                  sx={{
-                    px:         { xs: 4, md: 5, xl: 6 },
-                    py:         { xs: 1.6, md: 1.8, xl: 2 },
-                    fontWeight: 700,
-                    color:      tokens.colors.bg.base,
-                    fontSize:   { xs: "0.82rem", xl: "0.92rem" },
-                  }}
-                >
-                  Order Now
-                </Button>
-                <Button
-                  component={Link}
-                  to="/menu"
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    px:          { xs: 4, md: 5, xl: 6 },
-                    py:          { xs: 1.6, md: 1.8, xl: 2 },
-                    color:       tokens.colors.dark.textPrimary,
-                    borderColor: "rgba(245,240,228,0.18)",
-                    fontSize:    { xs: "0.82rem", xl: "0.92rem" },
-                    "&:hover":   { borderColor: tokens.colors.primary.main, bgcolor: "rgba(184,134,11,0.08)" },
-                  }}
-                >
-                  View Menu
-                </Button>
-              </Box>
-            </motion.div>
-          </motion.div>
-        </Container>
+                  {/* Floating tag — dishes */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1, duration: 0.6 }}
+                    style={{ position: "absolute", top: 32, right: 8, zIndex: 3 }}
+                  >
+                    <Box sx={{
+                      bgcolor:        "rgba(13,11,8,0.82)",
+                      backdropFilter: "blur(16px)",
+                      border:         `1px solid rgba(184,134,11,0.2)`,
+                      borderRadius:   tokens.radius.sm,
+                      px: 2, py: 1.2,
+                      display:        "flex",
+                      alignItems:     "center",
+                      gap:            1,
+                    }}>
+                      <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: tokens.colors.primary.main }} />
+                      <Typography sx={{
+                        color:         tokens.colors.primary.light ?? tokens.colors.primary.main,
+                        fontSize:      "0.7rem",
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        fontWeight:    600,
+                      }}>
+                        50+ Dishes
+                      </Typography>
+                    </Box>
+                  </motion.div>
 
-        {/* Stats bar — anchored at bottom */}
-        <Box
-          sx={{
-            position:       "absolute",
-            bottom:         0,
-            left:           0,
-            right:          0,
-            zIndex:         10,
-            borderTop:      `1px solid ${tokens.colors.dark.borderSubtle}`,
-            bgcolor:        "rgba(13,11,8,0.55)",
-            backdropFilter: "blur(20px) saturate(150%)",
-          }}
-        >
-          <Container maxWidth="lg">
+                  {/* Floating tag — fresh daily */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.3, duration: 0.6 }}
+                    style={{ position: "absolute", bottom: 32, right: 8, zIndex: 3 }}
+                  >
+                    <Box sx={{
+                      bgcolor:        "rgba(13,11,8,0.82)",
+                      backdropFilter: "blur(16px)",
+                      border:         `1px solid rgba(245,240,228,0.08)`,
+                      borderRadius:   tokens.radius.sm,
+                      px: 2, py: 1.2,
+                      display:        "flex",
+                      alignItems:     "center",
+                      gap:            1,
+                    }}>
+                      <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#4CAF50" }} />
+                      <Typography sx={{
+                        color:         tokens.colors.dark.textSecondary,
+                        fontSize:      "0.7rem",
+                        letterSpacing: "0.12em",
+                        textTransform: "uppercase",
+                      }}>
+                        Fresh Daily
+                      </Typography>
+                    </Box>
+                  </motion.div>
+                </Box>
+              </motion.div>
+
+            </Box>
+          </Container>
+        </Box>
+
+        {/* ── Stats bar ── */}
+        <Box sx={{
+          position:       "relative",
+          zIndex:         10,
+          borderTop:      `1px solid ${tokens.colors.dark.borderSubtle}`,
+          bgcolor:        "rgba(13,11,8,0.6)",
+          backdropFilter: "blur(24px)",
+        }}>
+          <Container maxWidth="xl">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ delay: 1.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Box sx={{ display: "flex" }}>
                 {[
                   { v: "2",   l: "Locations" },
                   { v: "50+", l: "Dishes" },
@@ -377,32 +508,28 @@ const HomePage: React.FC = () => {
                   <Box
                     key={s.l}
                     sx={{
-                      px:          { xs: 2.5, sm: 3, md: 5, xl: 7 },
-                      py:          { xs: 2, md: 2.5, xl: 3 },
+                      flex:        1,
+                      px:          { xs: 1.5, md: 3, lg: 4 },
+                      py:          { xs: 2, md: 2.5, lg: 3 },
                       textAlign:   "center",
                       borderRight: i < 3 ? `1px solid ${tokens.colors.dark.borderSubtle}` : "none",
                     }}
                   >
-                    <Typography
-                      sx={{
-                        color:      tokens.colors.primary.main,
-                        fontFamily: tokens.fonts.display,
-                        fontSize:   { xs: "1.1rem", sm: "1.3rem", md: "1.6rem", xl: "2rem" },
-                        lineHeight: 1,
-                        mb:         0.3,
-                      }}
-                    >
+                    <Typography sx={{
+                      color:      tokens.colors.primary.main,
+                      fontFamily: tokens.fonts.display,
+                      fontSize:   { xs: "1.1rem", sm: "1.4rem", md: "1.7rem", lg: "2rem", xl: "2.4rem" },
+                      lineHeight: 1,
+                      mb:         0.4,
+                    }}>
                       {s.v}
                     </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color:         tokens.colors.dark.textTertiary,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        fontSize:      { xs: "0.48rem", sm: "0.54rem", md: "0.6rem", xl: "0.7rem" },
-                      }}
-                    >
+                    <Typography variant="caption" sx={{
+                      color:         tokens.colors.dark.textTertiary,
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      fontSize:      { xs: "0.46rem", sm: "0.54rem", md: "0.58rem", lg: "0.64rem" },
+                    }}>
                       {s.l}
                     </Typography>
                   </Box>
@@ -411,25 +538,6 @@ const HomePage: React.FC = () => {
             </motion.div>
           </Container>
         </Box>
-
-        {/* Scroll indicator — above stats bar */}
-        <motion.div
-          style={{ opacity: indicatorOpacity, position: "absolute", bottom: 85, left: "50%", x: "-50%", zIndex: 10 }}
-        >
-          <Box
-            sx={{
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5,
-              color: tokens.colors.dark.textTertiary,
-            }}
-          >
-            <Typography variant="caption" sx={{ letterSpacing: "0.2em", fontSize: "0.58rem", textTransform: "uppercase" }}>
-              Scroll
-            </Typography>
-            <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}>
-              <Box sx={{ width: "1px", height: 28, bgcolor: tokens.colors.primary.main, opacity: 0.5 }} />
-            </motion.div>
-          </Box>
-        </motion.div>
       </Box>
 
       {/* ── TICKER ───────────────────────────────────────────── */}
@@ -463,8 +571,8 @@ const HomePage: React.FC = () => {
           <Box
             sx={{
               display:             "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap:                 { xs: 1.5, md: 3 },
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" },
+              gap:                 { xs: 2, md: 3 },
             }}
           >
             {sectionCards.map((card, i) => (
@@ -481,7 +589,7 @@ const HomePage: React.FC = () => {
                   sx={{
                     display:       "block",
                     textDecoration:"none",
-                    p:             { xs: 2, md: 4 },
+                    p:             { xs: 3, md: 4 },
                     border:        `1px solid ${tokens.colors.border.faint}`,
                     borderRadius:  tokens.radius.md,
                     bgcolor:       tokens.colors.bg.card,

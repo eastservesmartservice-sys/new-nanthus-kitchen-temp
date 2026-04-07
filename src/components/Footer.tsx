@@ -64,7 +64,7 @@ const Footer: React.FC = () => (
       Nanthus
     </Box>
 
-    <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1, pt: { xs: 8, md: 10, xl: 12 }, pb: 4 }}>
+    <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, pt: { xs: 8, md: 10, xl: 12 }, pb: 4, px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
       {/* Top: Logo + tagline left, social right */}
       <Box
         sx={{

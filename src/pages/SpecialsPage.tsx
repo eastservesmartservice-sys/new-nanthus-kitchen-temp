@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Box, Container, Typography, Button, Chip } from "@mui/material";
+import PageBanner from "../components/PageBanner";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { tokens } from "../theme";
 
@@ -91,7 +92,7 @@ const SpecialCard: React.FC<SpecialCardProps> = ({ special, index }) => {
             <Box
               sx={{
                 position:     "relative",
-                height:       { xs: 300, md: 560 },
+                height:       { xs: 260, sm: 340, md: 480, lg: 540 },
                 borderRadius: tokens.radius.lg,
                 overflow:     "hidden",
                 border:       `1px solid ${tokens.colors.border.subtle}`,
@@ -154,7 +155,7 @@ const SpecialCard: React.FC<SpecialCardProps> = ({ special, index }) => {
                 component="h2"
                 sx={{
                   fontFamily:    tokens.fonts.display,
-                  fontSize:      { xs: "2.5rem", md: "3.5rem", lg: "4rem" },
+                  fontSize:      { xs: "2.2rem", md: "3rem", lg: "3.8rem" },
                   fontWeight:    400,
                   textTransform: "uppercase",
                   color:         tokens.colors.text.primary,
@@ -223,53 +224,13 @@ const SpecialCard: React.FC<SpecialCardProps> = ({ special, index }) => {
 
 const SpecialsPage: React.FC = () => (
   <Box sx={{ bgcolor: tokens.colors.bg.surface }}>
-    {/* Page header */}
-    <Box
-      sx={{
-        pt:       { xs: 14, md: 18 },
-        pb:       { xs: 6, md: 8 },
-        bgcolor:  tokens.colors.dark.bg,
-        borderBottom:`1px solid ${tokens.colors.dark.borderSubtle}`,
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <Box
-        aria-hidden="true"
-        sx={{
-          position:   "absolute",
-          top: "50%", right: "-3%",
-          transform:  "translateY(-50%)",
-          fontFamily: tokens.fonts.display,
-          fontSize:   "18vw",
-          color:      tokens.colors.primary.main,
-          opacity:    0.04, lineHeight: 1,
-          userSelect: "none", pointerEvents: "none",
-        }}
-      >
-        SPECIALS
-      </Box>
-      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-          <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-          <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>Chef's Selection</Typography>
-        </Box>
-        <Typography
-          component="h1"
-          sx={{
-            fontFamily: tokens.fonts.display, fontSize: { xs: "2.8rem", md: "4.5rem" },
-            fontWeight: 400, textTransform: "uppercase", color: tokens.colors.dark.textPrimary,
-            lineHeight: 0.92, letterSpacing: "-0.02em",
-          }}
-        >
-          Today's{" "}
-          <Box component="span" sx={{ color: tokens.colors.primary.main }}>Specials</Box>
-        </Typography>
-        <Typography sx={{ color: tokens.colors.dark.textTertiary, mt: 2, fontSize: "0.9rem" }}>
-          Fresh, seasonal offerings made with care — every single day.
-        </Typography>
-      </Container>
-    </Box>
+    <PageBanner
+      eyebrow="Chef's Selection"
+      title="Today's"
+      highlight="Specials"
+      subtitle="Fresh, seasonal offerings made with care — every single day."
+      watermark="Specials"
+    />
 
     {/* Specials */}
     {specials.map((special, i) => (

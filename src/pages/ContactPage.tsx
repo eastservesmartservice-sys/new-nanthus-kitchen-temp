@@ -12,6 +12,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import PageBanner from "../components/PageBanner";
 import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -75,69 +76,21 @@ const ContactPage: React.FC = () => {
 
   return (
     <Box sx={{ bgcolor: tokens.colors.bg.base }}>
-      {/* ── Page header ── */}
-      <Box
-        sx={{
-          pt:       { xs: 14, md: 18 },
-          pb:       { xs: 8, md: 12 },
-          position: "relative",
-          overflow: "hidden",
-          bgcolor:  tokens.colors.dark.bg,
-          borderBottom: `1px solid ${tokens.colors.dark.borderSubtle}`,
-        }}
-      >
-        <Box
-          aria-hidden="true"
-          sx={{
-            position:   "absolute",
-            top: "50%", right: "-2%",
-            transform:  "translateY(-50%)",
-            fontFamily: tokens.fonts.display,
-            fontSize:   "18vw",
-            color:      tokens.colors.primary.main,
-            opacity:    0.04,
-            lineHeight: 1,
-            userSelect: "none",
-            pointerEvents: "none",
-          }}
-        >
-          CONTACT
-        </Box>
-
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-            <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-            <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>Get In Touch</Typography>
-          </Box>
-          <Typography
-            component="h1"
-            sx={{
-              fontFamily:    tokens.fonts.display,
-              fontSize:      { xs: "2.8rem", md: "5rem" },
-              fontWeight:    400,
-              textTransform: "uppercase",
-              color:         tokens.colors.dark.textPrimary,
-              lineHeight:    0.9,
-              letterSpacing: "-0.02em",
-              mb: 2,
-            }}
-          >
-            Let's{" "}
-            <Box component="span" sx={{ color: tokens.colors.primary.main }}>Connect</Box>
-          </Typography>
-          <Typography sx={{ color: tokens.colors.dark.textTertiary, fontSize: "0.95rem", maxWidth: 480, lineHeight: 1.7 }}>
-            Questions, catering enquiries, or just want to say hello — we'd love to hear from you.
-          </Typography>
-        </Container>
-      </Box>
+      <PageBanner
+        eyebrow="Get In Touch"
+        title="Let's"
+        highlight="Connect"
+        subtitle="Questions, catering enquiries, or just want to say hello — we'd love to hear from you."
+        watermark="Contact"
+      />
 
       {/* ── Main content ── */}
-      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 14 } }}>
+      <Container maxWidth="xl" sx={{ py: { xs: 8, md: 14 }, px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
         <Box
           sx={{
             display:             "grid",
-            gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
-            gap:                 { xs: 8, lg: 12 },
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap:                 { xs: 6, md: 8, lg: 12 },
             alignItems:          "start",
           }}
         >

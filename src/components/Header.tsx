@@ -14,6 +14,7 @@ const navItems = [
   { label: "Home",     path: "/" },
   { label: "Menu",     path: "/menu" },
   { label: "Specials", path: "/specials" },
+  { label: "Gallery",  path: "/gallery" },
   { label: "Order",    path: "/order" },
   { label: "Catering", path: "/catering" },
   { label: "Contact",  path: "/contact" },
@@ -51,7 +52,7 @@ const Header: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
-  const isDarkHero = location.pathname === '/' || location.pathname === '/catering';
+  const isDarkHero = location.pathname === '/';
 
   useEffect(() => {
     const onScroll = () => {
@@ -97,8 +98,8 @@ const Header: React.FC = () => {
         <Toolbar
           sx={{
             justifyContent: "space-between",
-            px: { xs: 2.5, sm: 4, lg: 8, xl: 10 },
-            minHeight: { xs: 68, md: 76, xl: 84 },
+            px: { xs: 2.5, sm: 4, md: 5, lg: 8, xl: 10 },
+            minHeight: { xs: 64, md: 72, lg: 76, xl: 84 },
           }}
         >
           {/* Logo */}

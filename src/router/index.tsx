@@ -8,6 +8,7 @@ const SpecialsPage = lazy(() => import("../pages/SpecialsPage"));
 const OrderPage    = lazy(() => import("../pages/OrderPage"));
 const CateringPage = lazy(() => import("../pages/CateringPage"));
 const ContactPage  = lazy(() => import("../pages/ContactPage"));
+const GalleryPage  = lazy(() => import("../pages/GalleryPage"));
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { path: "/order",    element: <Suspense fallback={null}><OrderPage /></Suspense> },
       { path: "/catering", element: <Suspense fallback={null}><CateringPage /></Suspense> },
       { path: "/contact",  element: <Suspense fallback={null}><ContactPage /></Suspense> },
+      { path: "/gallery",  element: <Suspense fallback={null}><GalleryPage /></Suspense> },
       // Legacy redirects
       { path: "/our-menu",   element: <Navigate to="/menu" replace /> },
       { path: "/home",       element: <Navigate to="/" replace /> },
