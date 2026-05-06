@@ -2,12 +2,18 @@ import React, { useState, useRef, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import {
   Box, Container, Typography, Button, useMediaQuery, useTheme,
+  TextField, CircularProgress, InputAdornment,
 } from "@mui/material";
 import { motion, useScroll, useTransform } from "framer-motion";
 import type { Variants } from "framer-motion";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 
 const ThreeBackground = lazy(() => import("../components/ThreeBackground"));
 import LocationSelectionModal from "../components/LocationSelectionModal";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { tokens } from "../theme";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
@@ -17,11 +23,11 @@ import GroupsIcon from "@mui/icons-material/Groups";
 
 // ── Marquee ticker ───────────────────────────────────────────────────────────
 const TICKER_ITEMS = [
-  "Kothu", "Biryani", "Banana Leaf", "Jaffna Curry", "Lamprais",
-  "Chicken 65", "Shawarma", "Butter Chicken", "Seafood Kool", "Idiyappam",
+  "home.ticker.kothu", "home.ticker.biryani", "home.ticker.bananaLeaf", "home.ticker.jaffnaCurry", "home.ticker.lamprais",
+  "home.ticker.chicken65", "home.ticker.shawarma", "home.ticker.butterChicken", "home.ticker.seafoodKool", "home.ticker.idiyappam",
 ];
 
-const Ticker: React.FC = () => {
+const Ticker: React.FC<{ t: TFunction }> = ({ t }) => {
   const repeated = [...TICKER_ITEMS, ...TICKER_ITEMS];
   return (
     <Box
@@ -50,7 +56,7 @@ const Ticker: React.FC = () => {
                   px:            { xs: 2.5, md: 3.5 },
                 }}
               >
-                {item}
+                {t(item)}
               </Typography>
               <Box component="span" sx={{ width: 4, height: 4, bgcolor: `${tokens.colors.bg.base}70`, borderRadius: "50%", flexShrink: 0 }} />
             </Box>
@@ -61,28 +67,425 @@ const Ticker: React.FC = () => {
   );
 };
 
+// ── Newsletter section state type ────────────────────────────────────────────
+type NewsletterStatus = "idle" | "loading" | "success" | "already" | "error";
+
+// ── Newsletter Section ────────────────────────────────────────────────────────
+const NewsletterSection: React.FC<{ t: TFunction }> = ({ t }) => {
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [status, setStatus] = useState<NewsletterStatus>("idle");
+  const [emailError, setEmailError] = useState("");
+
+  React.useEffect(() => {
+    if (status === "success" || status === "already") {
+      const timer = setTimeout(() => setStatus("idle"), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
+
+  const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+
+  const validateEmail = (value: string): boolean => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(value.trim());
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEmailError("");
+
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+
+    setStatus("loading");
+
+    try {
+      const body: Record<string, string> = {
+        email: email.trim().toLowerCase(),
+        source: "website_homepage",
+      };
+      if (firstName.trim()) body.firstName = firstName.trim();
+
+      const res = await fetch(`${API_BASE}/newsletter/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (res.status === 201 || res.status === 200) {
+        setStatus("success");
+        setEmail("");
+        setFirstName("");
+      } else if (res.status === 409) {
+        setStatus("already");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const perks = [
+    t("newsletter.perks.deals"),
+    t("newsletter.perks.new"),
+    t("newsletter.perks.events"),
+  ];
+
+  const isSuccess = status === "success" || status === "already";
+
+  return (
+    <Box
+      component="section"
+      aria-label="Newsletter"
+      sx={{
+        bgcolor:  "transparent",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Dark background with grid texture */}
+      <Box
+        aria-hidden="true"
+        sx={{
+          position:        "absolute",
+          inset:           0,
+          bgcolor:         tokens.colors.dark.surface,
+          backgroundImage: `
+            linear-gradient(${tokens.colors.dark.borderFaint} 1px, transparent 1px),
+            linear-gradient(90deg, ${tokens.colors.dark.borderFaint} 1px, transparent 1px)
+          `,
+          backgroundSize:  "48px 48px",
+          opacity:         1,
+        }}
+      />
+
+      {/* Gold radial glow — left */}
+      <Box
+        aria-hidden="true"
+        sx={{
+          position:   "absolute",
+          top:        "50%",
+          left:       "-5%",
+          transform:  "translateY(-50%)",
+          width:      "50vw",
+          height:     "80vh",
+          background: "radial-gradient(ellipse at center, rgba(184,134,11,0.10) 0%, transparent 65%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <Container
+        maxWidth="lg"
+        sx={{ position: "relative", zIndex: 1, py: { xs: 10, md: 14 } }}
+      >
+        <Box
+          sx={{
+            display:             "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap:                 { xs: 6, md: 10, lg: 14 },
+            alignItems:          "center",
+          }}
+        >
+          {/* ── Left: Copy ── */}
+          <motion.div
+            initial={{ opacity: 0, x: -32 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+              <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.7 }} />
+              <Typography
+                variant="overline"
+                sx={{ color: tokens.colors.primary.main, letterSpacing: "0.25em", fontSize: "0.65rem" }}
+              >
+                {t("newsletter.eyebrow")}
+              </Typography>
+            </Box>
+
+            <Typography
+              component="h2"
+              sx={{
+                fontFamily:    tokens.fonts.display,
+                fontSize:      { xs: "2.4rem", sm: "3rem", md: "3.2rem", lg: "3.8rem" },
+                fontWeight:    400,
+                lineHeight:    0.92,
+                textTransform: "uppercase",
+                letterSpacing: "-0.02em",
+                color:         tokens.colors.dark.textPrimary,
+                mb:            "0.2em",
+              }}
+            >
+              {t("newsletter.heading1")}{" "}
+              <Box component="span" sx={{ color: tokens.colors.primary.main }}>
+                {t("newsletter.heading2")}
+              </Box>
+            </Typography>
+
+            {/* Gold divider */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, my: 3 }}>
+              <Box sx={{ width: 48, height: "1px", background: `linear-gradient(90deg, ${tokens.colors.primary.main}, transparent)` }} />
+              <Box sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: tokens.colors.primary.main, opacity: 0.7 }} />
+              <Box sx={{ width: 24, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.3 }} />
+            </Box>
+
+            <Typography
+              sx={{
+                color:      tokens.colors.dark.textSecondary,
+                fontSize:   { xs: "0.9rem", md: "0.95rem" },
+                lineHeight: 1.85,
+                mb:         4,
+                maxWidth:   460,
+              }}
+            >
+              {t("newsletter.body")}
+            </Typography>
+
+            {/* Perks */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+              {perks.map((perk) => (
+                <Box
+                  key={perk}
+                  sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                >
+                  <CheckCircleOutlineIcon
+                    sx={{ color: tokens.colors.primary.main, fontSize: "1.1rem", flexShrink: 0 }}
+                  />
+                  <Typography
+                    sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.88rem" }}
+                  >
+                    {perk}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </motion.div>
+
+          {/* ── Right: Form ── */}
+          <motion.div
+            initial={{ opacity: 0, x: 32 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Box
+              sx={{
+                bgcolor:        "rgba(13,11,8,0.70)",
+                backdropFilter: "blur(24px)",
+                border:         `1px solid ${tokens.colors.dark.borderLight}`,
+                borderRadius:   tokens.radius.lg,
+                p:              { xs: 3.5, md: 4.5, lg: 5 },
+                boxShadow:      "0 24px 64px rgba(0,0,0,0.36)",
+                position:       "relative",
+                overflow:       "hidden",
+              }}
+            >
+              {/* Card corner accent */}
+              <Box
+                aria-hidden="true"
+                sx={{
+                  position: "absolute", top: 0, right: 0,
+                  width: 100, height: 100,
+                  background: `radial-gradient(circle at top right, rgba(184,134,11,0.14) 0%, transparent 65%)`,
+                  pointerEvents: "none",
+                }}
+              />
+
+              {isSuccess ? (
+                /* ── Success state ── */
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Box sx={{ textAlign: "center", py: { xs: 3, md: 4 } }}>
+                    <Box
+                      sx={{
+                        width: 64, height: 64,
+                        borderRadius: "50%",
+                        bgcolor: tokens.colors.primary.glow,
+                        border: `1px solid ${tokens.colors.dark.borderLight}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        mx: "auto", mb: 3,
+                      }}
+                    >
+                      <CheckCircleOutlineIcon sx={{ color: tokens.colors.primary.main, fontSize: "2rem" }} />
+                    </Box>
+                    <Typography
+                      sx={{
+                        fontFamily: tokens.fonts.display,
+                        fontSize: { xs: "1.6rem", md: "2rem" },
+                        fontWeight: 400,
+                        color: tokens.colors.dark.textPrimary,
+                        textTransform: "uppercase",
+                        letterSpacing: "-0.01em",
+                        mb: 1.5,
+                      }}
+                    >
+                      {status === "already"
+                        ? t("newsletter.alreadySubscribed")
+                        : t("newsletter.successHeading")}
+                    </Typography>
+                    {status === "success" && (
+                      <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.9rem", lineHeight: 1.7 }}>
+                        {t("newsletter.successBody")}
+                      </Typography>
+                    )}
+                  </Box>
+                </motion.div>
+              ) : (
+                /* ── Form state ── */
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                  <Typography
+                    sx={{
+                      fontFamily:    tokens.fonts.display,
+                      fontSize:      { xs: "1.3rem", md: "1.5rem" },
+                      fontWeight:    400,
+                      color:         tokens.colors.dark.textPrimary,
+                      textTransform: "uppercase",
+                      letterSpacing: "-0.01em",
+                      mb:            0.5,
+                    }}
+                  >
+                    {t("newsletter.heading1")}{" "}
+                    <Box component="span" sx={{ color: tokens.colors.primary.main }}>
+                      {t("newsletter.heading2")}
+                    </Box>
+                  </Typography>
+                  <Typography sx={{ color: tokens.colors.dark.textTertiary, fontSize: "0.8rem", mb: 3 }}>
+                    {t("newsletter.privacyNote")}
+                  </Typography>
+
+                  {/* First name */}
+                  <TextField
+                    fullWidth
+                    type="text"
+                    placeholder={t("newsletter.namePlaceholder")}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    disabled={status === "loading"}
+                    inputProps={{ maxLength: 100, "aria-label": "First name" }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonOutlineIcon sx={{ color: tokens.colors.dark.textTertiary, fontSize: "1.1rem" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      mb: 2,
+                      "& .MuiOutlinedInput-root": {
+                        bgcolor:      "rgba(245,240,228,0.04)",
+                        borderRadius: tokens.radius.sm,
+                        fontSize:     "0.88rem",
+                        color:        tokens.colors.dark.textPrimary,
+                        "& fieldset": { borderColor: tokens.colors.dark.borderSubtle },
+                        "&:hover fieldset": { borderColor: tokens.colors.dark.borderLight },
+                        "&.Mui-focused fieldset": { borderColor: tokens.colors.primary.main },
+                      },
+                      "& input::placeholder": { color: tokens.colors.dark.textTertiary },
+                      "& input": { py: 1.4 },
+                    }}
+                  />
+
+                  {/* Email */}
+                  <TextField
+                    fullWidth
+                    required
+                    type="email"
+                    placeholder={t("newsletter.emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError(""); }}
+                    disabled={status === "loading"}
+                    error={!!emailError}
+                    helperText={emailError || (status === "error" ? t("newsletter.errorGeneric") : "")}
+                    inputProps={{ maxLength: 254, "aria-label": "Email address" }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MailOutlineIcon sx={{ color: tokens.colors.dark.textTertiary, fontSize: "1.1rem" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      mb: 2.5,
+                      "& .MuiOutlinedInput-root": {
+                        bgcolor:      "rgba(245,240,228,0.04)",
+                        borderRadius: tokens.radius.sm,
+                        fontSize:     "0.88rem",
+                        color:        tokens.colors.dark.textPrimary,
+                        "& fieldset": { borderColor: tokens.colors.dark.borderSubtle },
+                        "&:hover fieldset": { borderColor: tokens.colors.dark.borderLight },
+                        "&.Mui-focused fieldset": { borderColor: tokens.colors.primary.main },
+                        "&.Mui-error fieldset": { borderColor: "#ef4444" },
+                      },
+                      "& input::placeholder": { color: tokens.colors.dark.textTertiary },
+                      "& input": { py: 1.4 },
+                      "& .MuiFormHelperText-root": { color: "#ef4444", ml: 0, mt: 0.8 },
+                    }}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disabled={status === "loading"}
+                    sx={{
+                      py:            1.6,
+                      fontWeight:    700,
+                      color:         tokens.colors.bg.base,
+                      fontSize:      "0.82rem",
+                      letterSpacing: "0.08em",
+                      borderRadius:  tokens.radius.sm,
+                      position:      "relative",
+                    }}
+                  >
+                    {status === "loading" ? (
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <CircularProgress size={16} sx={{ color: tokens.colors.bg.base }} />
+                        {t("newsletter.subscribing")}
+                      </Box>
+                    ) : (
+                      t("newsletter.subscribe")
+                    )}
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </motion.div>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
 // ── Section Cards ────────────────────────────────────────────────────────────
 const sectionCards = [
   {
     icon:        <RestaurantMenuIcon sx={{ fontSize: "1.5rem" }} />,
-    title:       "Full Menu",
-    desc:        "50+ dishes from Kothu to Biryani, Jaffna curries to international favourites.",
+    title:       "home.cardMenuTitle",
+    desc:        "home.cardMenuDesc",
     path:        "/menu",
-    cta:         "Browse Menu",
+    cta:         "home.cardMenuCta",
   },
   {
     icon:        <StarIcon sx={{ fontSize: "1.5rem" }} />,
-    title:       "Today's Specials",
-    desc:        "Everyday lunch boxes & weekend soup — made fresh every morning.",
+    title:       "home.cardSpecialsTitle",
+    desc:        "home.cardSpecialsDesc",
     path:        "/specials",
-    cta:         "See Specials",
+    cta:         "home.cardSpecialsCta",
   },
   {
     icon:        <GroupsIcon sx={{ fontSize: "1.5rem" }} />,
-    title:       "Catering",
-    desc:        "Corporate events, weddings & parties catered with authentic Sri Lankan flavour.",
+    title:       "home.cardCateringTitle",
+    desc:        "home.cardCateringDesc",
     path:        "/catering",
-    cta:         "Enquire Now",
+    cta:         "home.cardCateringCta",
   },
 ];
 
@@ -102,6 +505,7 @@ const HomePage: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
@@ -182,7 +586,7 @@ const HomePage: React.FC = () => {
                       letterSpacing: "0.3em",
                       fontSize:      { xs: "0.62rem", md: "0.65rem", lg: "0.72rem" },
                     }}>
-                      Authentic Sri Lankan Cuisine
+                      {t("home.eyebrow")}
                     </Typography>
                   </Box>
                 </motion.div>
@@ -203,7 +607,7 @@ const HomePage: React.FC = () => {
                       WebkitTextStroke: { xs: "1px rgba(245,240,228,0.3)", lg: "1.5px rgba(245,240,228,0.35)" },
                       userSelect:       "none",
                     }}>
-                      New
+                      {t("home.heroNew")}
                     </Typography>
                     {/* "NANTHU'S" — gold filled */}
                     <Typography component="span" sx={{
@@ -217,7 +621,7 @@ const HomePage: React.FC = () => {
                       color:         tokens.colors.primary.main,
                       textShadow:    "0 0 120px rgba(184,134,11,0.35)",
                     }}>
-                      Nanthu's
+                      {t("home.heroNanthus")}
                     </Typography>
                     {/* "KITCHEN" — white */}
                     <Typography component="span" sx={{
@@ -230,7 +634,7 @@ const HomePage: React.FC = () => {
                       textTransform: "uppercase",
                       color:         tokens.colors.dark.textPrimary,
                     }}>
-                      Kitchen
+                      {t("home.heroKitchen")}
                     </Typography>
                   </Box>
                 </motion.div>
@@ -253,8 +657,7 @@ const HomePage: React.FC = () => {
                     maxWidth:   { xs: 360, md: 460, lg: 520, xl: 580 },
                     mb:         { xs: 4, md: 5, lg: 6 },
                   }}>
-                    From the kitchens of Jaffna to the heart of the GTA —
-                    bold spices, fresh ingredients, and generations of flavour.
+                    {t("home.tagline")}
                   </Typography>
                 </motion.div>
 
@@ -275,7 +678,7 @@ const HomePage: React.FC = () => {
                         letterSpacing: "0.06em",
                       }}
                     >
-                      Order Now
+                      {t("nav.orderNow")}
                     </Button>
                     <Button
                       component={Link}
@@ -292,7 +695,7 @@ const HomePage: React.FC = () => {
                         "&:hover":   { borderColor: tokens.colors.primary.main, bgcolor: "rgba(184,134,11,0.07)" },
                       }}
                     >
-                      View Menu
+                      {t("home.viewMenu")}
                     </Button>
                   </Box>
                 </motion.div>
@@ -301,8 +704,8 @@ const HomePage: React.FC = () => {
                 <motion.div variants={heroItem}>
                   <Box sx={{ display: "flex", gap: { xs: 1.5, lg: 2 }, flexWrap: "wrap" }}>
                     {[
-                      { label: "Markham", flag: "📍" },
-                      { label: "Scarborough", flag: "📍" },
+                      { label: t("locations.markham.name"), flag: "📍" },
+                      { label: t("locations.scarborough.name"), flag: "📍" },
                     ].map(({ label, flag }) => (
                       <Box key={label} sx={{
                         display:      "flex",
@@ -365,7 +768,7 @@ const HomePage: React.FC = () => {
                     <Box
                       component="img"
                       src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=900&q=85"
-                      alt="Sri Lankan cuisine"
+                      alt={t("home.heroImageAlt")}
                       sx={{
                         width:      "100%",
                         height:     "100%",
@@ -414,7 +817,7 @@ const HomePage: React.FC = () => {
                         display:       "block",
                         mt:            0.3,
                       }}>
-                        First Order
+                        {t("home.badgeFirstOrder")}
                       </Typography>
                     </Box>
                   </motion.div>
@@ -444,7 +847,7 @@ const HomePage: React.FC = () => {
                         textTransform: "uppercase",
                         fontWeight:    600,
                       }}>
-                        50+ Dishes
+                        {t("home.badgeDishes")}
                       </Typography>
                     </Box>
                   </motion.div>
@@ -473,7 +876,7 @@ const HomePage: React.FC = () => {
                         letterSpacing: "0.12em",
                         textTransform: "uppercase",
                       }}>
-                        Fresh Daily
+                        {t("home.badgeFreshDaily")}
                       </Typography>
                     </Box>
                   </motion.div>
@@ -500,10 +903,10 @@ const HomePage: React.FC = () => {
             >
               <Box sx={{ display: "flex" }}>
                 {[
-                  { v: "2",   l: "Locations" },
-                  { v: "50+", l: "Dishes" },
-                  { v: "GTA", l: "Serving" },
-                  { v: "10%", l: "First Order" },
+                  { v: "2",   l: t("home.statLocations") },
+                  { v: "50+", l: t("home.statDishes") },
+                  { v: "GTA", l: t("home.statServing") },
+                  { v: "10%", l: t("home.statFirstOrder") },
                 ].map((s, i) => (
                   <Box
                     key={s.l}
@@ -528,7 +931,7 @@ const HomePage: React.FC = () => {
                       color:         tokens.colors.dark.textTertiary,
                       letterSpacing: "0.14em",
                       textTransform: "uppercase",
-                      fontSize:      { xs: "0.46rem", sm: "0.54rem", md: "0.58rem", lg: "0.64rem" },
+                      fontSize:      { xs: "0.6rem", sm: "0.65rem", md: "0.7rem", lg: "0.75rem" },
                     }}>
                       {s.l}
                     </Typography>
@@ -541,7 +944,7 @@ const HomePage: React.FC = () => {
       </Box>
 
       {/* ── TICKER ───────────────────────────────────────────── */}
-      <Ticker />
+      <Ticker t={t} />
 
       {/* ── SECTION CARDS ────────────────────────────────────── */}
       <Box
@@ -553,7 +956,7 @@ const HomePage: React.FC = () => {
           <Box sx={{ mb: { xs: 6, md: 10 }, textAlign: "center" }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, mb: 1.5 }}>
               <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-              <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>Explore</Typography>
+              <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>{t("home.explore")}</Typography>
               <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
             </Box>
             <Typography
@@ -564,7 +967,7 @@ const HomePage: React.FC = () => {
                 letterSpacing: "-0.01em", lineHeight: 0.95,
               }}
             >
-              What We Offer
+              {t("home.whatWeOffer")}
             </Typography>
           </Box>
 
@@ -624,7 +1027,7 @@ const HomePage: React.FC = () => {
                       fontSize:   "1.05rem", mb: 1.5,
                     }}
                   >
-                    {card.title}
+                    {t(card.title)}
                   </Typography>
                   <Typography
                     sx={{
@@ -634,7 +1037,7 @@ const HomePage: React.FC = () => {
                       mb:         3,
                     }}
                   >
-                    {card.desc}
+                    {t(card.desc)}
                   </Typography>
                   <Box
                     sx={{
@@ -648,7 +1051,7 @@ const HomePage: React.FC = () => {
                       textTransform:"uppercase",
                     }}
                   >
-                    {card.cta}
+                    {t(card.cta)}
                     <ArrowForwardIcon sx={{ fontSize: "0.9rem" }} />
                   </Box>
                 </Box>
@@ -698,7 +1101,7 @@ const HomePage: React.FC = () => {
                   <Box
                     component="img"
                     src="https://images.pexels.com/photos/5176006/pexels-photo-5176006.jpeg?auto=compress&cs=tinysrgb&w=900"
-                    alt="Sri Lankan dishes"
+                    alt={t("home.featureImageAlt")}
                     loading="lazy"
                     sx={{
                       width: "100%", height: "100%", objectFit: "cover",
@@ -733,7 +1136,7 @@ const HomePage: React.FC = () => {
                     10%
                   </Typography>
                   <Typography variant="caption" sx={{ color: tokens.colors.text.tertiary, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-                    First Order
+                    {t("home.badgeFirstOrder")}
                   </Typography>
                 </Box>
               </Box>
@@ -748,7 +1151,7 @@ const HomePage: React.FC = () => {
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
                 <Box sx={{ width: 28, height: "1px", bgcolor: tokens.colors.primary.main, opacity: 0.6 }} />
-                <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>Our Story</Typography>
+                <Typography variant="overline" sx={{ color: tokens.colors.primary.main }}>{t("home.ourStory")}</Typography>
               </Box>
               <Typography
                 component="h2"
@@ -759,18 +1162,15 @@ const HomePage: React.FC = () => {
                 }}
               >
                 A Taste of{" "}
-                <Box component="span" sx={{ color: tokens.colors.primary.main }}>Jaffna</Box>
+                <Box component="span" sx={{ color: tokens.colors.primary.main }}>{t("home.jaffna")}</Box>
               </Typography>
               <Typography sx={{ color: tokens.colors.text.secondary, lineHeight: 1.85, mb: 4, fontSize: "0.95rem" }}>
-                New Nanthus Kitchen brings the bold, aromatic flavours of Sri Lanka's
-                northern Jaffna region to the heart of Canada. Every dish is crafted
-                with traditional recipes, freshly sourced ingredients, and a deep
-                passion for authentic cuisine.
+                {t("home.aboutBody")}
               </Typography>
               {[
-                { icon: <DeliveryDiningIcon sx={{ fontSize: "1rem" }}/>, text: "Fresh cooked daily — never reheated" },
-                { icon: <StarIcon sx={{ fontSize: "1rem" }}/>,           text: "Authentic Jaffna recipes, generations old" },
-                { icon: <GroupsIcon sx={{ fontSize: "1rem" }}/>,         text: "Two convenient GTA locations" },
+                { icon: <DeliveryDiningIcon sx={{ fontSize: "1rem" }}/>, text: t("home.feature1") },
+                { icon: <StarIcon sx={{ fontSize: "1rem" }}/>,           text: t("home.feature2") },
+                { icon: <GroupsIcon sx={{ fontSize: "1rem" }}/>,         text: t("home.feature3") },
               ].map((item, i) => (
                 <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
                   <Box
@@ -800,13 +1200,16 @@ const HomePage: React.FC = () => {
                   size="large"
                   sx={{ px: 4, py: 1.6, fontWeight: 700, color: tokens.colors.bg.base, fontSize: "0.82rem" }}
                 >
-                  Explore Menu
+                  {t("home.exploreMenu")}
                 </Button>
               </Box>
             </motion.div>
           </Box>
         </Container>
       </Box>
+
+      {/* ── NEWSLETTER ───────────────────────────────────────── */}
+      <NewsletterSection t={t} />
 
       {/* ── CTA BANNER ───────────────────────────────────────── */}
       <Box
@@ -840,7 +1243,7 @@ const HomePage: React.FC = () => {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 2 }}>
-              Ready to Order?
+              {t("home.readyToOrder")}
             </Typography>
             <Typography
               component="h2"
@@ -855,11 +1258,11 @@ const HomePage: React.FC = () => {
                 mb:            3,
               }}
             >
-              Pick Up Fresh{" "}
-              <Box component="span" sx={{ color: tokens.colors.primary.main }}>Today</Box>
+              {t("home.pickUpFresh")}{" "}
+              <Box component="span" sx={{ color: tokens.colors.primary.main }}>{t("home.today")}</Box>
             </Typography>
             <Typography sx={{ color: tokens.colors.dark.textTertiary, mb: 5, fontSize: "0.95rem" }}>
-              Order online and collect from Markham or Scarborough — ready in 20–30 minutes.
+              {t("home.ctaBody")}
             </Typography>
             <Button
               variant="contained"
@@ -868,7 +1271,7 @@ const HomePage: React.FC = () => {
               onClick={() => setLocationModalOpen(true)}
               sx={{ px: 5, py: 1.8, fontWeight: 700, color: tokens.colors.bg.base, fontSize: "0.85rem" }}
             >
-              Order Now
+              {t("nav.orderNow")}
             </Button>
           </motion.div>
         </Container>

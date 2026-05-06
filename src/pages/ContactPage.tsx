@@ -17,6 +17,9 @@ import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import SendIcon from "@mui/icons-material/Send";
+import { useTranslation } from "react-i18next";
 import { tokens } from "../theme";
 
 const locations = [
@@ -34,25 +37,29 @@ const locations = [
     city: "Markham, ON L3S 0B6",
     phones: ["(289) 554-5999"],
     hours: "Mon–Sun: 11:00 AM – 9:30 PM",
-    mapLink: "https://maps.google.com/?q=30+Karachi+Dr,+Markham,+ON",
+    mapLink: "https://maps.google.com/?q=72-30+Karachi+Dr,+Markham,+ON",
   },
 ];
 
 const enquiryTypes = [
-  "General Enquiry",
-  "Catering Request",
-  "Feedback",
-  "Partnership",
-  "Other",
+  { key: "contact.typeGeneral",    value: "General Enquiry" },
+  { key: "contact.typeCatering",   value: "Catering Request" },
+  { key: "contact.typeFeedback",   value: "Feedback" },
+  { key: "contact.typePartnership", value: "Partnership" },
+  { key: "contact.typeOther",      value: "Other" },
 ];
 
 const inputSx = {
   "& .MuiOutlinedInput-root": {
     bgcolor: tokens.colors.bg.base,
     borderRadius: tokens.radius.sm,
-    "& fieldset": { borderColor: tokens.colors.border.subtle },
-    "&:hover fieldset": { borderColor: tokens.colors.border.light },
-    "&.Mui-focused fieldset": { borderColor: tokens.colors.primary.main },
+    transition: tokens.transitions.normal,
+    "& fieldset": { borderColor: tokens.colors.border.subtle, transition: tokens.transitions.normal },
+    "&:hover fieldset": { borderColor: tokens.colors.border.medium },
+    "&.Mui-focused fieldset": {
+      borderColor: tokens.colors.primary.main,
+      boxShadow:   `0 0 0 3px ${tokens.colors.primary.glow}`,
+    },
   },
   "& .MuiInputLabel-root": { color: tokens.colors.text.tertiary },
   "& .MuiInputLabel-root.Mui-focused": { color: tokens.colors.primary.main },
@@ -63,13 +70,15 @@ const inputSx = {
 const ContactPage: React.FC = () => {
   const [form, setForm] = useState({ name: "", email: "", type: "", message: "" });
   const [sent, setSent] = useState(false);
+  const { t } = useTranslation();
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.warn("Contact form submission not yet connected to backend");
     setSent(true);
     setForm({ name: "", email: "", type: "", message: "" });
   };
@@ -77,11 +86,11 @@ const ContactPage: React.FC = () => {
   return (
     <Box sx={{ bgcolor: tokens.colors.bg.base }}>
       <PageBanner
-        eyebrow="Get In Touch"
-        title="Let's"
-        highlight="Connect"
-        subtitle="Questions, catering enquiries, or just want to say hello — we'd love to hear from you."
-        watermark="Contact"
+        eyebrow={t("contact.eyebrow")}
+        title={t("contact.title")}
+        highlight={t("contact.highlight")}
+        subtitle={t("contact.subtitle")}
+        watermark={t("contact.watermark")}
       />
 
       {/* ── Main content ── */}
@@ -101,104 +110,126 @@ const ContactPage: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Typography
-              component="h2"
-              sx={{
-                fontFamily:    tokens.fonts.display,
-                fontSize:      { xs: "1.8rem", md: "2.25rem" },
-                textTransform: "uppercase",
-                color:         tokens.colors.text.primary,
-                lineHeight:    0.95,
-                letterSpacing: "-0.01em",
-                mb: 1,
-              }}
-            >
-              Send a{" "}
-              <Box component="span" sx={{ color: tokens.colors.primary.main }}>Message</Box>
-            </Typography>
-            <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem", mb: 5 }}>
-              We typically respond within 24 hours.
-            </Typography>
+            {/* Form container with bracket decorations */}
+            <Box sx={{ position: "relative" }}>
+              {/* Top-left bracket */}
+              <Box aria-hidden="true" sx={{
+                position: "absolute",
+                top: -12, left: -12,
+                width: 28, height: 28,
+                borderTop: `2px solid ${tokens.colors.primary.main}`,
+                borderLeft: `2px solid ${tokens.colors.primary.main}`,
+                opacity: 0.35,
+              }} />
 
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-            >
-              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 3 }}>
-                <TextField
-                  label="Your Name"
-                  value={form.name}
-                  onChange={handleChange("name")}
-                  required
-                  fullWidth
-                  sx={inputSx}
-                />
-                <TextField
-                  label="Email Address"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange("email")}
-                  required
-                  fullWidth
-                  sx={inputSx}
-                />
-              </Box>
-
-              <FormControl fullWidth sx={inputSx}>
-                <InputLabel>Enquiry Type</InputLabel>
-                <Select
-                  value={form.type}
-                  label="Enquiry Type"
-                  onChange={handleChange("type")}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        bgcolor: tokens.colors.bg.base,
-                        border: `1px solid ${tokens.colors.border.subtle}`,
-                        boxShadow: tokens.shadows.md,
-                        "& .MuiMenuItem-root": {
-                          color: tokens.colors.text.secondary,
-                          "&:hover": { bgcolor: tokens.colors.bg.card, color: tokens.colors.text.primary },
-                          "&.Mui-selected": { bgcolor: tokens.colors.primary.glow, color: tokens.colors.primary.main },
-                        },
-                      },
-                    },
-                  }}
-                >
-                  {enquiryTypes.map((t) => (
-                    <MenuItem key={t} value={t}>{t}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <TextField
-                label="Message"
-                value={form.message}
-                onChange={handleChange("message")}
-                required
-                fullWidth
-                multiline
-                rows={5}
-                sx={inputSx}
-              />
-
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
+              <Typography
+                component="h2"
                 sx={{
-                  alignSelf:  "flex-start",
-                  px:         5,
-                  py:         1.7,
-                  fontWeight: 700,
-                  color:      tokens.colors.bg.base,
-                  fontSize:   "0.85rem",
+                  fontFamily:    tokens.fonts.display,
+                  fontSize:      { xs: "1.8rem", md: "2.4rem" },
+                  textTransform: "uppercase",
+                  color:         tokens.colors.text.primary,
+                  lineHeight:    0.95,
+                  letterSpacing: "-0.01em",
+                  mb:            1,
                 }}
               >
-                Send Message
-              </Button>
+                Send a{" "}
+                <Box component="span" sx={{ color: tokens.colors.primary.main }}>
+                  {t("contact.formHeading2")}
+                </Box>
+              </Typography>
+              <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem", mb: 5, lineHeight: 1.7 }}>
+                {t("contact.formSubtext")}
+              </Typography>
+
+              <Box
+                component="form"
+                onSubmit={handleSubmit}
+                sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+              >
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 3 }}>
+                  <TextField
+                    label={t("contact.nameLabel")}
+                    value={form.name}
+                    onChange={handleChange("name")}
+                    required
+                    fullWidth
+                    sx={inputSx}
+                  />
+                  <TextField
+                    label={t("contact.emailLabel")}
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange("email")}
+                    required
+                    fullWidth
+                    sx={inputSx}
+                  />
+                </Box>
+
+                <FormControl fullWidth sx={inputSx} required>
+                  <InputLabel>{t("contact.typeLabel")}</InputLabel>
+                  <Select
+                    value={form.type}
+                    label={t("contact.typeLabel")}
+                    onChange={handleChange("type")}
+                    required
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          bgcolor: tokens.colors.bg.base,
+                          border: `1px solid ${tokens.colors.border.subtle}`,
+                          boxShadow: tokens.shadows.lg,
+                          borderRadius: tokens.radius.md,
+                          "& .MuiMenuItem-root": {
+                            color: tokens.colors.text.secondary,
+                            fontSize: "0.9rem",
+                            "&:hover": { bgcolor: tokens.colors.bg.card, color: tokens.colors.text.primary },
+                            "&.Mui-selected": { bgcolor: tokens.colors.primary.glow, color: tokens.colors.primary.main },
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    {enquiryTypes.map((et) => (
+                      <MenuItem key={et.value} value={et.value}>{t(et.key)}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  label={t("contact.messageLabel")}
+                  value={form.message}
+                  onChange={handleChange("message")}
+                  required
+                  fullWidth
+                  multiline
+                  rows={5}
+                  sx={inputSx}
+                />
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  className="btn-shimmer"
+                  endIcon={<SendIcon sx={{ fontSize: "1rem !important", transition: "transform 0.25s ease" }} />}
+                  sx={{
+                    alignSelf:  "flex-start",
+                    px:         5,
+                    py:         1.7,
+                    fontWeight: 700,
+                    color:      tokens.colors.bg.base,
+                    fontSize:   "0.85rem",
+                    background: `linear-gradient(135deg, ${tokens.colors.primary.main} 0%, ${tokens.colors.primary.dark} 100%)`,
+                    "&:hover .MuiButton-endIcon": { transform: "translateX(3px)" },
+                  }}
+                >
+                  {t("contact.sendMessage")}
+                </Button>
+              </Box>
             </Box>
           </motion.div>
 
@@ -213,22 +244,24 @@ const ContactPage: React.FC = () => {
               component="h2"
               sx={{
                 fontFamily:    tokens.fonts.display,
-                fontSize:      { xs: "1.8rem", md: "2.25rem" },
+                fontSize:      { xs: "1.8rem", md: "2.4rem" },
                 textTransform: "uppercase",
                 color:         tokens.colors.text.primary,
                 lineHeight:    0.95,
                 letterSpacing: "-0.01em",
-                mb: 1,
+                mb:            1,
               }}
             >
               Our{" "}
-              <Box component="span" sx={{ color: tokens.colors.primary.main }}>Locations</Box>
+              <Box component="span" sx={{ color: tokens.colors.primary.main }}>
+                {t("contact.locationHeading2")}
+              </Box>
             </Typography>
-            <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem", mb: 5 }}>
-              Walk in or call us directly.
+            <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem", mb: 5, lineHeight: 1.7 }}>
+              {t("contact.locationSubtext")}
             </Typography>
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               {locations.map((loc, i) => (
                 <motion.div
                   key={loc.name}
@@ -241,18 +274,29 @@ const ContactPage: React.FC = () => {
                     sx={{
                       p:            { xs: 3, md: 4 },
                       border:       `1px solid ${tokens.colors.border.subtle}`,
-                      borderRadius: tokens.radius.lg,
+                      borderRadius: tokens.radius.xl,
                       bgcolor:      tokens.colors.bg.card,
                       position:     "relative",
                       overflow:     "hidden",
                       transition:   `all ${tokens.transitions.spring}`,
                       "&:hover": {
-                        borderColor: tokens.colors.border.medium,
+                        borderColor: tokens.colors.primary.main,
                         boxShadow:   tokens.shadows.gold,
                         transform:   "translateY(-4px)",
                       },
                     }}
                   >
+                    {/* Top gold accent line on hover */}
+                    <Box sx={{
+                      position:   "absolute",
+                      top:        0, left: 0, right: 0,
+                      height:     "2px",
+                      background: `linear-gradient(90deg, transparent, ${tokens.colors.primary.main}, transparent)`,
+                      opacity:    0,
+                      transition: `opacity ${tokens.transitions.normal}`,
+                      ".MuiBox-root:hover &": { opacity: 1 },
+                    }} />
+
                     {/* Location name watermark */}
                     <Box
                       aria-hidden="true"
@@ -262,8 +306,9 @@ const ContactPage: React.FC = () => {
                         right:      12,
                         fontFamily: tokens.fonts.display,
                         fontSize:   "5rem",
-                        color:      tokens.colors.primary.main,
-                        opacity:    0.06,
+                        color:      "transparent",
+                        WebkitTextStroke: `1px ${tokens.colors.primary.main}`,
+                        opacity:    0.05,
                         lineHeight: 1,
                         userSelect: "none",
                         pointerEvents: "none",
@@ -276,7 +321,7 @@ const ContactPage: React.FC = () => {
                     <Typography
                       sx={{
                         fontFamily:    tokens.fonts.display,
-                        fontSize:      "1.3rem",
+                        fontSize:      "1.4rem",
                         textTransform: "uppercase",
                         color:         tokens.colors.text.primary,
                         letterSpacing: "-0.01em",
@@ -288,30 +333,64 @@ const ContactPage: React.FC = () => {
 
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                       <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                        <LocationOnIcon sx={{ color: tokens.colors.primary.main, flexShrink: 0, fontSize: "1.1rem", mt: 0.15 }} />
+                        <Box sx={{
+                          width:        32, height: 32,
+                          borderRadius: "50%",
+                          bgcolor:      tokens.colors.primary.glow,
+                          border:       `1px solid ${tokens.colors.border.subtle}`,
+                          display:      "flex",
+                          alignItems:   "center",
+                          justifyContent: "center",
+                          flexShrink:   0,
+                          mt:           0.1,
+                        }}>
+                          <LocationOnIcon sx={{ color: tokens.colors.primary.main, fontSize: "1rem" }} />
+                        </Box>
                         <Box>
-                          <Typography sx={{ color: tokens.colors.text.primary, fontSize: "0.9rem", fontWeight: 500 }}>{loc.address}</Typography>
-                          <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.85rem" }}>{loc.city}</Typography>
-                          <Typography
+                          <Typography sx={{ color: tokens.colors.text.primary, fontSize: "0.9rem", fontWeight: 500 }}>
+                            {loc.address}
+                          </Typography>
+                          <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.85rem" }}>
+                            {loc.city}
+                          </Typography>
+                          <Box
                             component="a"
                             href={loc.mapLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{
+                              display:        "inline-flex",
+                              alignItems:     "center",
+                              gap:            0.5,
                               color:          tokens.colors.primary.main,
                               fontSize:       "0.78rem",
                               textDecoration: "none",
+                              mt:             0.5,
                               opacity:        0.8,
                               "&:hover":      { opacity: 1 },
+                              transition:     tokens.transitions.fast,
                             }}
                           >
-                            View on map →
-                          </Typography>
+                            {t("contact.viewOnMap")}
+                            <OpenInNewIcon sx={{ fontSize: "0.75rem" }} />
+                          </Box>
                         </Box>
                       </Box>
 
                       <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                        <PhoneIcon sx={{ color: tokens.colors.primary.main, flexShrink: 0, fontSize: "1.1rem", mt: 0.15 }} />
+                        <Box sx={{
+                          width:        32, height: 32,
+                          borderRadius: "50%",
+                          bgcolor:      tokens.colors.primary.glow,
+                          border:       `1px solid ${tokens.colors.border.subtle}`,
+                          display:      "flex",
+                          alignItems:   "center",
+                          justifyContent: "center",
+                          flexShrink:   0,
+                          mt:           0.1,
+                        }}>
+                          <PhoneIcon sx={{ color: tokens.colors.primary.main, fontSize: "0.95rem" }} />
+                        </Box>
                         <Box>
                           {loc.phones.map((phone) => (
                             <Typography
@@ -334,7 +413,18 @@ const ContactPage: React.FC = () => {
                       </Box>
 
                       <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                        <AccessTimeIcon sx={{ color: tokens.colors.primary.main, flexShrink: 0, fontSize: "1.1rem" }} />
+                        <Box sx={{
+                          width:        32, height: 32,
+                          borderRadius: "50%",
+                          bgcolor:      tokens.colors.primary.glow,
+                          border:       `1px solid ${tokens.colors.border.subtle}`,
+                          display:      "flex",
+                          alignItems:   "center",
+                          justifyContent: "center",
+                          flexShrink:   0,
+                        }}>
+                          <AccessTimeIcon sx={{ color: tokens.colors.primary.main, fontSize: "0.95rem" }} />
+                        </Box>
                         <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.85rem" }}>
                           {loc.hours}
                         </Typography>
@@ -358,13 +448,15 @@ const ContactPage: React.FC = () => {
           onClose={() => setSent(false)}
           severity="success"
           sx={{
-            bgcolor: tokens.colors.bg.card,
-            color: tokens.colors.text.primary,
-            border: `1px solid ${tokens.colors.border.medium}`,
+            bgcolor:      tokens.colors.dark.card,
+            color:        tokens.colors.dark.textPrimary,
+            border:       `1px solid ${tokens.colors.dark.borderLight}`,
+            borderRadius: tokens.radius.md,
+            boxShadow:    tokens.shadows.gold,
             "& .MuiAlert-icon": { color: tokens.colors.primary.main },
           }}
         >
-          Message sent! We'll be in touch soon.
+          {t("contact.successMessage")}
         </Alert>
       </Snackbar>
     </Box>

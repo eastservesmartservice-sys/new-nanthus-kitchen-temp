@@ -1,4 +1,24 @@
-/* ─── Reset ──────────────────────────────────────────────────── */
+/* ─── Google Fonts ───────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ─── CSS Custom Properties ──────────────────────────────────────────────── */
+:root {
+  --gold:          #B8860B;
+  --gold-light:    #E6B800;
+  --gold-dark:     #8B6200;
+  --gold-glow:     rgba(184,134,11,0.10);
+  --gold-glow2:    rgba(184,134,11,0.05);
+  --cream:         #FDFAF4;
+  --cream-warm:    #F5F0E4;
+  --dark-bg:       #0D0B08;
+  --dark-surface:  #1A1610;
+  --text-primary:  #1A1208;
+  --radius-pill:   9999px;
+  --transition:    300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --spring:        650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -6,20 +26,21 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  background-color: #FDFAF4;
+  background-color: var(--cream);
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ─── Film Grain ──────────────────────────────────────────────── */
+/* ─── Film Grain ──────────────────────────────────────────────────────────── */
 .grain-overlay {
   position: fixed;
   top: -50%; left: -50%;
   width: 200%; height: 200%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.022;
+  opacity: 0.025;
   will-change: transform;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1.2s steps(1) infinite;
@@ -38,7 +59,7 @@ body {
   90%    { transform:translate(-10%,10%) }
 }
 
-/* ─── Marquee ────────────────────────────────────────────────── */
+/* ─── Marquee ─────────────────────────────────────────────────────────────── */
 @keyframes marquee-scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -51,7 +72,7 @@ body {
 }
 .marquee-track:hover { animation-play-state: paused; }
 
-/* ─── Page transition wrapper ────────────────────────────────── */
+/* ─── Page transition wrapper ──────────────────────────────────────────────── */
 .page-enter {
   opacity: 0;
   transform: translateY(12px);
@@ -62,7 +83,7 @@ body {
   transition: opacity 400ms ease, transform 400ms ease;
 }
 
-/* ─── Scrollbar ──────────────────────────────────────────────── */
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
 body::-webkit-scrollbar { display: none; }
 body { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -71,23 +92,27 @@ body { -ms-overflow-style: none; scrollbar-width: none; }
 ::-webkit-scrollbar-thumb { background: #C9B98A; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #B8860B; }
 
-/* ─── Focus ──────────────────────────────────────────────────── */
+/* ─── Focus ───────────────────────────────────────────────────────────────── */
 :focus-visible { outline: 2px solid #B8860B; outline-offset: 2px; }
 
-/* ─── Skip link ──────────────────────────────────────────────── */
+/* ─── Skip link ───────────────────────────────────────────────────────────── */
 .skip-link {
   position: absolute; left: -9999px; z-index: 9999;
   padding: 1rem 1.5rem;
   background: #B8860B; color: #FDFAF4;
   font-family: 'Poppins', sans-serif;
   font-weight: 600; text-decoration: none;
+  border-radius: 0 0 8px 8px;
 }
-.skip-link:focus { left: 10px; top: 10px; }
+.skip-link:focus { left: 10px; top: 0; }
 
-/* ─── Selection ──────────────────────────────────────────────── */
+/* ─── Selection ───────────────────────────────────────────────────────────── */
 ::selection { background: #B8860B; color: #FDFAF4; }
 
-/* ─── Reduced motion ─────────────────────────────────────────── */
+/* ─── Placeholder ─────────────────────────────────────────────────────────── */
+::placeholder { color: rgba(26,18,8,0.38); }
+
+/* ─── Reduced motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -97,21 +122,21 @@ body { -ms-overflow-style: none; scrollbar-width: none; }
   .grain-overlay { display: none; }
 }
 
-/* ─── Gold shimmer animation for decorative elements ─────────── */
+/* ─── Gold shimmer ────────────────────────────────────────────────────────── */
 @keyframes shimmer {
   0%   { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 .gold-shimmer {
-  background: linear-gradient(90deg, #B8860B 0%, #E6B800 40%, #8B6200 60%, #B8860B 100%);
+  background: linear-gradient(90deg, #8B6200 0%, #E6B800 30%, #FFF8DC 50%, #E6B800 70%, #8B6200 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: shimmer 4s linear infinite;
+  animation: shimmer 3.5s linear infinite;
 }
 
-/* ─── Particle canvas background ─────────────────────────────── */
+/* ─── Particle canvas ─────────────────────────────────────────────────────── */
 .particle-canvas {
   position: absolute;
   top: 0; left: 0;
@@ -121,51 +146,51 @@ body { -ms-overflow-style: none; scrollbar-width: none; }
   display: block;
 }
 
-/* ─── Smooth image loading ───────────────────────────────────── */
+/* ─── Smooth image loading ───────────────────────────────────────────────── */
 img { display: block; }
 
-/* ─── Gold border glow on hover utility ─────────────────────── */
+/* ─── Gold border glow hover ─────────────────────────────────────────────── */
 .gold-hover {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .gold-hover:hover {
   border-color: rgba(184,134,11,0.40) !important;
-  box-shadow: 0 0 20px rgba(184,134,11,0.10);
+  box-shadow: 0 0 24px rgba(184,134,11,0.12), 0 8px 32px rgba(0,0,0,0.08);
 }
 
-/* ─── Gold gradient divider ──────────────────────────────────── */
+/* ─── Gold gradient divider ──────────────────────────────────────────────── */
 .gold-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(184,134,11,0.35) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(184,134,11,0.45) 50%, transparent 100%);
 }
 
-/* ─── Dark section scrollbar ─────────────────────────────────── */
+/* ─── Dark section scrollbar ─────────────────────────────────────────────── */
 .dark-section::-webkit-scrollbar-track { background: #1A1610; }
 .dark-section::-webkit-scrollbar-thumb { background: rgba(184,134,11,0.5); border-radius: 4px; }
 .dark-section::-webkit-scrollbar-thumb:hover { background: #B8860B; }
 
-/* ─── Subtle CTA pulse ──────────────────────────────────────── */
+/* ─── Subtle CTA pulse ───────────────────────────────────────────────────── */
 @keyframes subtle-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(184,134,11,0.12); }
-  50% { box-shadow: 0 0 36px rgba(184,134,11,0.22); }
+  0%, 100% { box-shadow: 0 0 20px rgba(184,134,11,0.15), 0 4px 16px rgba(0,0,0,0.10); }
+  50%       { box-shadow: 0 0 40px rgba(184,134,11,0.28), 0 8px 24px rgba(0,0,0,0.12); }
 }
 .cta-glow { animation: subtle-glow 2.5s ease-in-out infinite; }
 
-/* ─── Float animation ────────────────────────────────────────── */
+/* ─── Float animation ────────────────────────────────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-8px); }
 }
 .float { animation: float 3s ease-in-out infinite; }
 
-/* ─── Fade in up (CSS-only for non-JS contexts) ─────────────── */
+/* ─── Fade in up ─────────────────────────────────────────────────────────── */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .fade-in-up { animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
-/* ─── Image cinematic treatment ──────────────────────────────── */
+/* ─── Image cinematic treatment ──────────────────────────────────────────── */
 .img-cinematic {
   filter: contrast(1.05) saturate(1.1);
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
@@ -175,13 +200,13 @@ img { display: block; }
   filter: contrast(1.08) saturate(1.15);
 }
 
-/* ─── Dark section base ──────────────────────────────────────── */
+/* ─── Dark section base ──────────────────────────────────────────────────── */
 .section-dark {
   background-color: #0D0B08;
   color: #F5F0E4;
 }
 
-/* ─── Enhanced link underline animation ──────────────────────── */
+/* ─── Link underline animation ───────────────────────────────────────────── */
 .link-underline {
   position: relative;
   text-decoration: none;
@@ -193,35 +218,108 @@ img { display: block; }
   left: 0;
   width: 0;
   height: 1px;
-  background: #B8860B;
-  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  background: linear-gradient(90deg, #B8860B, #E6B800);
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.link-underline:hover::after {
-  width: 100%;
-}
+.link-underline:hover::after { width: 100%; }
 
-/* ─── Smooth image reveal on load ────────────────────────────── */
-img[loading="lazy"] {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-img[loading="lazy"].loaded,
-img[loading="lazy"][complete] {
-  opacity: 1;
-}
-/* Fallback for when the img is already loaded */
-img[loading="lazy"] {
-  opacity: 1;
-}
+/* ─── Smooth image reveal ────────────────────────────────────────────────── */
+img[loading="lazy"] { opacity: 1; }
 
-/* ─── Mobile touch feedback ──────────────────────────────────── */
+/* ─── Mobile touch feedback ──────────────────────────────────────────────── */
 @media (hover: none) {
   button, a, [role="button"] {
     -webkit-tap-highlight-color: rgba(184,134,11,0.12);
   }
 }
 
-/* ─── Smooth section transitions ─────────────────────────────── */
-section {
+/* ─── Section base ───────────────────────────────────────────────────────── */
+section { position: relative; }
+
+/* ─── Animated gradient border ───────────────────────────────────────────── */
+@keyframes borderRotate {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ─── Gold pulse ring ────────────────────────────────────────────────────── */
+@keyframes goldRing {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(184,134,11,0.35); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 12px rgba(184,134,11,0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(184,134,11,0); }
+}
+.gold-pulse { animation: goldRing 2s ease-out infinite; }
+
+/* ─── Glassmorphism panel ────────────────────────────────────────────────── */
+.glass-dark {
+  background: rgba(13,11,8,0.72);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(184,134,11,0.16);
+}
+.glass-light {
+  background: rgba(253,250,244,0.82);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(120,90,20,0.12);
+}
+
+/* ─── Premium button hover ───────────────────────────────────────────────── */
+@keyframes btnShimmer {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+.btn-shimmer {
   position: relative;
+  overflow: hidden;
+}
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transition: none;
+}
+.btn-shimmer:hover::after {
+  animation: btnShimmer 0.55s ease forwards;
+}
+
+/* ─── Noise texture overlay ──────────────────────────────────────────────── */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── Hover card lift ────────────────────────────────────────────────────── */
+.card-lift {
+  transition: transform var(--spring), box-shadow var(--spring);
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(184,134,11,0.08);
+}
+
+/* ─── Typing cursor blink ────────────────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ─── Scroll-fade reveal ─────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
 }

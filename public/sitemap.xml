@@ -10,7 +10,7 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://newnanthuskitchen.com/" />
   </url>
   <url>
-    <loc>https://newnanthuskitchen.com/our-menu</loc>
+    <loc>https://newnanthuskitchen.com/menu</loc>
     <lastmod>2025-12-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -34,9 +34,15 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://newnanthuskitchen.com/contact-us</loc>
+    <loc>https://newnanthuskitchen.com/contact</loc>
     <lastmod>2025-12-14</lastmod>
     <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://newnanthuskitchen.com/gallery</loc>
+    <lastmod>2025-12-14</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 </urlset>

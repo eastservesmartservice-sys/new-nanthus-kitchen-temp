@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import CloseIcon from "@mui/icons-material/Close";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import PageBanner from "../components/PageBanner";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { tokens } from "../theme";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -38,102 +40,102 @@ const galleryItems: GalleryItem[] = [
   {
     id: 1, type: "image", orientation: "landscape",
     src:  "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=1200&q=85",
-    alt:  "Sri Lankan banana leaf rice",
-    caption: "Traditional Banana Leaf Rice",
+    alt:  "gallery.alts.bananaLeafRice",
+    caption: "gallery.captions.bananaLeafRice",
   },
   {
     id: 2, type: "image", orientation: "portrait",
     src:  "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800&q=85",
-    alt:  "Kothu roti being prepared",
-    caption: "Fresh Kothu Roti",
+    alt:  "gallery.alts.kothuRoti",
+    caption: "gallery.captions.kothuRoti",
   },
   {
     id: 3, type: "video", orientation: "landscape",
     src:        "https://www.youtube.com/embed/b1RivKCRMRQ",
     thumb:      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80",
     previewSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    alt:   "Kitchen in action",
-    caption: "A Day in Our Kitchen",
+    alt:   "gallery.alts.kitchenAction",
+    caption: "gallery.captions.kitchenAction",
   },
   {
     id: 4, type: "image", orientation: "square",
     src:  "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=85",
-    alt:  "Biryani",
-    caption: "Chicken Biryani",
+    alt:  "gallery.alts.biryani",
+    caption: "gallery.captions.biryani",
   },
   {
     id: 5, type: "image", orientation: "portrait",
     src:  "https://images.unsplash.com/photo-1574484284002-952d92456975?w=800&q=85",
-    alt:  "Lamb skewer",
-    caption: "Grilled Lamb Skewers",
+    alt:  "gallery.alts.lambSkewer",
+    caption: "gallery.captions.lambSkewer",
   },
   {
     id: 6, type: "video", orientation: "portrait",
     src:        "https://www.youtube.com/embed/P3ALwKeSEYs",
     thumb:      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80",
     previewSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    alt:   "Catering event",
-    caption: "Catering Highlights",
+    alt:   "gallery.alts.cateringEvent",
+    caption: "gallery.captions.cateringEvent",
   },
   {
     id: 7, type: "image", orientation: "square",
     src:  "https://images.unsplash.com/photo-1517244683847-7456b63c5969?w=800&q=85",
-    alt:  "Seafood platter",
-    caption: "Seafood Platter",
+    alt:  "gallery.alts.seafoodPlatter",
+    caption: "gallery.captions.seafoodPlatter",
   },
   {
     id: 8, type: "image", orientation: "landscape",
     src:  "https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=1200&q=85",
-    alt:  "Butter chicken",
-    caption: "Butter Chicken",
+    alt:  "gallery.alts.butterChicken",
+    caption: "gallery.captions.butterChicken",
   },
   {
     id: 9, type: "video", orientation: "square",
     src:        "https://www.youtube.com/embed/LX2bSZdBRmo",
     thumb:      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80",
     previewSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-    alt:   "Street food preparation",
-    caption: "Behind the Counter",
+    alt:   "gallery.alts.streetFood",
+    caption: "gallery.captions.streetFood",
   },
   {
     id: 10, type: "image", orientation: "portrait",
     src:  "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800&q=85",
-    alt:  "Samosas",
-    caption: "Fresh Samosas",
+    alt:  "gallery.alts.samosas",
+    caption: "gallery.captions.samosas",
   },
   {
     id: 11, type: "image", orientation: "square",
     src:  "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=85",
-    alt:  "Restaurant ambiance",
-    caption: "Dine With Us",
+    alt:  "gallery.alts.ambiance",
+    caption: "gallery.captions.ambiance",
   },
   {
     id: 12, type: "video", orientation: "landscape",
     src:        "https://www.youtube.com/embed/6stlCkUDG_s",
     thumb:      "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=1200&q=80",
     previewSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-    alt:   "Food plating",
-    caption: "Plated to Perfection",
+    alt:   "gallery.alts.foodPlating",
+    caption: "gallery.captions.foodPlating",
   },
   {
     id: 13, type: "image", orientation: "landscape",
     src:  "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=1200&q=85",
-    alt:  "Noodles dish",
-    caption: "Nanthu's Special Noodles",
+    alt:  "gallery.alts.noodles",
+    caption: "gallery.captions.noodles",
   },
   {
     id: 14, type: "image", orientation: "square",
     src:  "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&q=85",
-    alt:  "Fried rice",
-    caption: "Shawarma Fried Rice",
+    alt:  "gallery.alts.friedRice",
+    caption: "gallery.captions.friedRice",
   },
   {
     id: 15, type: "video", orientation: "portrait",
     src:        "https://www.youtube.com/embed/YQ-CnKtUBwc",
     thumb:      "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=800&q=80",
     previewSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-    alt:   "Chef preparing meal",
-    caption: "Made With Love",
+    alt:   "gallery.alts.chefPreparing",
+    caption: "gallery.captions.chefPreparing",
   },
 ];
 
@@ -143,9 +145,10 @@ interface LightboxProps {
   onClose: () => void;
   onPrev:  () => void;
   onNext:  () => void;
+  t:       TFunction;
 }
 
-const Lightbox: React.FC<LightboxProps> = ({ item, onClose, onPrev, onNext }) => (
+const Lightbox: React.FC<LightboxProps> = ({ item, onClose, onPrev, onNext, t }) => (
   <Dialog
     open
     fullScreen
@@ -162,7 +165,7 @@ const Lightbox: React.FC<LightboxProps> = ({ item, onClose, onPrev, onNext }) =>
   >
     <IconButton
       onClick={onClose}
-      aria-label="Close"
+      aria-label={t("gallery.close")}
       sx={{
         position: "fixed", top: 20, right: 20, zIndex: 10,
         color:    tokens.colors.dark.textPrimary,
@@ -175,7 +178,7 @@ const Lightbox: React.FC<LightboxProps> = ({ item, onClose, onPrev, onNext }) =>
 
     <IconButton
       onClick={onPrev}
-      aria-label="Previous"
+      aria-label={t("gallery.previous")}
       sx={{
         position: "fixed", left: { xs: 8, md: 24 }, top: "50%",
         transform: "translateY(-50%)", zIndex: 10,
@@ -189,7 +192,7 @@ const Lightbox: React.FC<LightboxProps> = ({ item, onClose, onPrev, onNext }) =>
 
     <IconButton
       onClick={onNext}
-      aria-label="Next"
+      aria-label={t("gallery.next")}
       sx={{
         position: "fixed", right: { xs: 8, md: 24 }, top: "50%",
         transform: "translateY(-50%)", zIndex: 10,
@@ -245,7 +248,7 @@ const Lightbox: React.FC<LightboxProps> = ({ item, onClose, onPrev, onNext }) =>
           <Box
             component="img"
             src={item.src}
-            alt={item.alt}
+            alt={t(item.alt)}
             sx={{
               maxWidth:     "90vw",
               maxHeight:    "80vh",
@@ -263,7 +266,7 @@ const Lightbox: React.FC<LightboxProps> = ({ item, onClose, onPrev, onNext }) =>
             letterSpacing: "0.08em",
             textAlign:     "center",
           }}>
-            {item.caption}
+            {t(item.caption)}
           </Typography>
         )}
       </motion.div>
@@ -276,9 +279,10 @@ interface CardProps {
   item:    GalleryItem;
   index:   number;
   onClick: () => void;
+  t:       TFunction;
 }
 
-const GalleryCard: React.FC<CardProps> = ({ item, index, onClick }) => {
+const GalleryCard: React.FC<CardProps> = ({ item, index, onClick, t }) => {
   const [hovered, setHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -319,14 +323,14 @@ const GalleryCard: React.FC<CardProps> = ({ item, index, onClick }) => {
         }}
         tabIndex={0}
         role="button"
-        aria-label={`View ${item.alt}`}
+        aria-label={t("gallery.viewImage", { alt: t(item.alt) })}
         onKeyDown={(e) => e.key === "Enter" && onClick()}
       >
         {/* Poster image — always visible, fades out when preview plays */}
         <Box
           component="img"
           src={item.type === "video" ? item.thumb : item.src}
-          alt={item.alt}
+          alt={t(item.alt)}
           loading="lazy"
           sx={{
             position:   "absolute",
@@ -412,7 +416,7 @@ const GalleryCard: React.FC<CardProps> = ({ item, index, onClick }) => {
               fontWeight:    500,
               letterSpacing: "0.04em",
             }}>
-              {item.caption}
+              {t(item.caption)}
             </Typography>
           </Box>
         )}
@@ -436,7 +440,7 @@ const GalleryCard: React.FC<CardProps> = ({ item, index, onClick }) => {
               fontWeight:    700,
               letterSpacing: "0.1em",
             }}>
-              VIDEO
+              {t("gallery.video")}
             </Typography>
           </Box>
         )}
@@ -451,6 +455,7 @@ const GalleryPage: React.FC = () => {
   const isMd  = useMediaQuery(theme.breakpoints.up("md"));
   const isSm  = useMediaQuery(theme.breakpoints.up("sm"));
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const { t } = useTranslation();
 
   const columns = isMd ? 3 : isSm ? 2 : 1;
 
@@ -479,11 +484,11 @@ const GalleryPage: React.FC = () => {
   return (
     <Box sx={{ bgcolor: tokens.colors.bg.base }}>
       <PageBanner
-        eyebrow="Our Story in Pictures"
-        title="Food &"
-        highlight="Moments"
-        subtitle="A glimpse into our kitchen, our dishes, and the events we've been honoured to be part of."
-        watermark="Gallery"
+        eyebrow={t("gallery.eyebrow")}
+        title={t("gallery.title")}
+        highlight={t("gallery.highlight")}
+        subtitle={t("gallery.subtitle")}
+        watermark={t("gallery.watermark")}
       />
 
       <Container
@@ -502,6 +507,7 @@ const GalleryPage: React.FC = () => {
                     item={item}
                     index={globalIndex}
                     onClick={() => openLightbox(globalIndex)}
+                    t={t}
                   />
                 );
               })}
@@ -522,7 +528,7 @@ const GalleryPage: React.FC = () => {
             letterSpacing: "0.12em",
             textTransform: "uppercase",
           }}>
-            Follow us on Instagram for daily updates
+            {t("gallery.followInstagram")}
           </Typography>
         </Box>
       </Container>
@@ -533,6 +539,7 @@ const GalleryPage: React.FC = () => {
           onClose={closeLightbox}
           onPrev={prevItem}
           onNext={nextItem}
+          t={t}
         />
       )}
     </Box>

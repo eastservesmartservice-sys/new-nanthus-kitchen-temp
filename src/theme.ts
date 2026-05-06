@@ -1,8 +1,8 @@
 import { createTheme } from "@mui/material/styles";
 
 /**
- * NEW NANTHUS KITCHEN — Design System
- * Warm light theme with dark-gold palette
+ * NEW NANTHUS KITCHEN — Design System v2
+ * Warm light theme with dark-gold palette — Elevated
  */
 
 export const tokens = {
@@ -61,11 +61,14 @@ export const tokens = {
     spring: '650ms cubic-bezier(0.22, 1, 0.36, 1)',
   },
   shadows: {
-    sm:     '0 2px 12px rgba(0,0,0,0.08)',
-    md:     '0 6px 24px rgba(0,0,0,0.12)',
-    lg:     '0 12px 48px rgba(0,0,0,0.16)',
-    gold:   '0 0 24px rgba(184,134,11,0.22), 0 4px 16px rgba(0,0,0,0.10)',
-    goldLg: '0 0 48px rgba(184,134,11,0.18), 0 8px 32px rgba(0,0,0,0.12)',
+    sm:       '0 2px 12px rgba(0,0,0,0.08)',
+    md:       '0 6px 24px rgba(0,0,0,0.12)',
+    lg:       '0 12px 48px rgba(0,0,0,0.16)',
+    xl:       '0 24px 64px rgba(0,0,0,0.20)',
+    gold:     '0 0 24px rgba(184,134,11,0.28), 0 4px 20px rgba(0,0,0,0.12)',
+    goldLg:   '0 0 52px rgba(184,134,11,0.22), 0 12px 40px rgba(0,0,0,0.14)',
+    goldDeep: '0 0 0 1px rgba(184,134,11,0.15), 0 8px 32px rgba(184,134,11,0.12), 0 24px 64px rgba(0,0,0,0.20)',
+    inner:    'inset 0 1px 0 rgba(255,255,255,0.06)',
   },
   radius: {
     xs:   '4px',
@@ -73,7 +76,15 @@ export const tokens = {
     md:   '12px',
     lg:   '20px',
     xl:   '28px',
+    xxl:  '40px',
     pill: '9999px',
+  },
+  gradients: {
+    gold:        'linear-gradient(135deg, #B8860B 0%, #E6B800 50%, #B8860B 100%)',
+    goldShimmer: 'linear-gradient(90deg, #8B6200 0%, #E6B800 30%, #FFF8DC 50%, #E6B800 70%, #8B6200 100%)',
+    darkFade:    'linear-gradient(180deg, rgba(13,11,8,0) 0%, rgba(13,11,8,0.9) 100%)',
+    glassLight:  'linear-gradient(135deg, rgba(253,250,244,0.85) 0%, rgba(245,240,228,0.70) 100%)',
+    glassDark:   'linear-gradient(135deg, rgba(26,22,16,0.85) 0%, rgba(13,11,8,0.70) 100%)',
   },
 };
 
@@ -185,6 +196,21 @@ const theme = createTheme({
           textTransform: 'uppercase',
           fontSize:      '0.78rem',
           transition:    tokens.transitions.normal,
+          position:      'relative',
+          overflow:      'hidden',
+          '&::after': {
+            content:    '""',
+            position:   'absolute',
+            top:        0,
+            left:       '-100%',
+            width:      '60%',
+            height:     '100%',
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
+            transition: 'none',
+          },
+          '&:hover::after': {
+            animation: 'btnShimmer 0.55s ease forwards',
+          },
           '&:focus-visible': {
             outline:       `2px solid ${tokens.colors.primary.main}`,
             outlineOffset: 2,
@@ -192,7 +218,12 @@ const theme = createTheme({
         },
         contained: {
           boxShadow: 'none',
-          '&:hover': { boxShadow: tokens.shadows.gold, transform: 'translateY(-2px)' },
+          background: `linear-gradient(135deg, ${tokens.colors.primary.main} 0%, ${tokens.colors.primary.dark} 100%)`,
+          '&:hover': {
+            boxShadow: tokens.shadows.gold,
+            transform: 'translateY(-2px)',
+            background: `linear-gradient(135deg, ${tokens.colors.primary.light} 0%, ${tokens.colors.primary.main} 100%)`,
+          },
           '&:active': { transform: 'translateY(0)' },
         },
         outlined: {
@@ -214,9 +245,13 @@ const theme = createTheme({
           '& .MuiOutlinedInput-root': {
             borderRadius: tokens.radius.sm,
             color: tokens.colors.text.primary,
-            '& fieldset':             { borderColor: tokens.colors.border.subtle },
-            '&:hover fieldset':       { borderColor: tokens.colors.border.light },
-            '&.Mui-focused fieldset': { borderColor: tokens.colors.primary.main },
+            transition: tokens.transitions.normal,
+            '& fieldset':             { borderColor: tokens.colors.border.subtle, transition: tokens.transitions.normal },
+            '&:hover fieldset':       { borderColor: tokens.colors.border.medium },
+            '&.Mui-focused fieldset': {
+              borderColor: tokens.colors.primary.main,
+              boxShadow:   `0 0 0 3px ${tokens.colors.primary.glow}`,
+            },
           },
           '& .MuiInputLabel-root': {
             color: tokens.colors.text.tertiary,
@@ -249,6 +284,58 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '@media (max-width:600px)': { paddingLeft: 20, paddingRight: 20 },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          transition: tokens.transitions.normal,
+          '&:focus-visible': {
+            outline:       `2px solid ${tokens.colors.primary.main}`,
+            outlineOffset: 2,
+          },
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: tokens.colors.dark.elevated,
+          color:           tokens.colors.dark.textPrimary,
+          border:          `1px solid ${tokens.colors.dark.borderSubtle}`,
+          borderRadius:    tokens.radius.xs,
+          fontSize:        '0.72rem',
+          letterSpacing:   '0.04em',
+        },
+        arrow: {
+          color: tokens.colors.dark.elevated,
+        },
+      },
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          borderRadius:    tokens.radius.pill,
+          backgroundColor: tokens.colors.bg.card,
+        },
+        bar: {
+          borderRadius:    tokens.radius.pill,
+          background:      `linear-gradient(90deg, ${tokens.colors.primary.dark}, ${tokens.colors.primary.light})`,
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: tokens.colors.border.faint,
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: tokens.radius.md,
         },
       },
     },

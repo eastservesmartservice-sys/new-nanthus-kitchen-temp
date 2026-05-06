@@ -12,6 +12,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { tokens } from "../theme";
 
 interface LocationSelectionModalProps {
@@ -55,6 +56,7 @@ const LocationSelectionModal = ({
   onClose,
 }: LocationSelectionModalProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { t } = useTranslation();
 
   const handleLocationSelect = (orderLink: string) => {
     window.open(orderLink, "_blank", "noopener,noreferrer");
@@ -76,7 +78,7 @@ const LocationSelectionModal = ({
               color: tokens.colors.dark.textPrimary,
               border: `1px solid ${tokens.colors.dark.borderLight}`,
               m: { xs: 2, md: 3 },
-              boxShadow: "0 32px 64px -16px rgba(0,0,0,0.6), 0 0 0 1px rgba(184,134,11,0.08)",
+              boxShadow: `0 40px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(184,134,11,0.10)`,
               overflow: "hidden",
               position: "relative",
               maxWidth: { xs: "100%", md: 680, xl: 780 },
@@ -85,13 +87,13 @@ const LocationSelectionModal = ({
           slotProps={{
             backdrop: {
               sx: {
-                bgcolor: "rgba(13,11,8,0.75)",
-                backdropFilter: "blur(8px)",
+                bgcolor: "rgba(10,8,5,0.80)",
+                backdropFilter: "blur(12px)",
               },
             },
           }}
         >
-          {/* Decorative top accent */}
+          {/* Decorative top accent — animated gradient */}
           <Box
             aria-hidden="true"
             sx={{
@@ -100,7 +102,22 @@ const LocationSelectionModal = ({
               left: 0,
               right: 0,
               height: "2px",
-              background: `linear-gradient(90deg, transparent 0%, ${tokens.colors.primary.main} 50%, transparent 100%)`,
+              background: `linear-gradient(90deg, transparent 0%, ${tokens.colors.primary.dark} 20%, ${tokens.colors.primary.main} 40%, ${tokens.colors.primary.light} 50%, ${tokens.colors.primary.main} 60%, ${tokens.colors.primary.dark} 80%, transparent 100%)`,
+              boxShadow: `0 0 16px rgba(184,134,11,0.4)`,
+            }}
+          />
+
+          {/* Background grid pattern */}
+          <Box
+            aria-hidden="true"
+            sx={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `linear-gradient(${tokens.colors.dark.borderFaint} 1px, transparent 1px),
+                                linear-gradient(90deg, ${tokens.colors.dark.borderFaint} 1px, transparent 1px)`,
+              backgroundSize: "40px 40px",
+              opacity: 0.5,
+              pointerEvents: "none",
             }}
           />
 
@@ -109,12 +126,12 @@ const LocationSelectionModal = ({
             aria-hidden="true"
             sx={{
               position: "absolute",
-              top: "-40%",
+              top: "-30%",
               left: "50%",
               transform: "translateX(-50%)",
               width: "120%",
-              height: "60%",
-              background: "radial-gradient(ellipse at center, rgba(184,134,11,0.06) 0%, transparent 70%)",
+              height: "80%",
+              background: "radial-gradient(ellipse at center, rgba(184,134,11,0.07) 0%, transparent 65%)",
               pointerEvents: "none",
             }}
           />
@@ -148,19 +165,18 @@ const LocationSelectionModal = ({
                     sx={{
                       width: 28,
                       height: "1px",
-                      bgcolor: tokens.colors.primary.main,
-                      opacity: 0.5,
+                      background: `linear-gradient(90deg, ${tokens.colors.primary.main}, transparent)`,
                     }}
                   />
                   <Typography
                     variant="overline"
                     sx={{
                       color: tokens.colors.primary.main,
-                      letterSpacing: "0.25em",
+                      letterSpacing: "0.28em",
                       fontSize: { xs: "0.58rem", md: "0.64rem", xl: "0.72rem" },
                     }}
                   >
-                    Order Online
+                    {t("locationModal.orderOnline")}
                   </Typography>
                 </Box>
                 <Typography
@@ -171,27 +187,28 @@ const LocationSelectionModal = ({
                     fontSize: { xs: "1.5rem", md: "1.8rem", xl: "2rem" },
                     color: tokens.colors.dark.textPrimary,
                     textTransform: "uppercase",
-                    letterSpacing: "-0.01em",
+                    letterSpacing: "-0.02em",
                   }}
                 >
-                  Choose Location
+                  {t("locationModal.chooseLocation")}
                 </Typography>
               </Box>
               <IconButton
-                aria-label="close"
+                aria-label={t("locationModal.close")}
                 onClick={onClose}
                 sx={{
                   color: tokens.colors.dark.textTertiary,
                   border: `1px solid ${tokens.colors.dark.borderSubtle}`,
                   borderRadius: tokens.radius.sm,
-                  width: { xs: 36, md: 40 },
-                  height: { xs: 36, md: 40 },
+                  width: { xs: 40, md: 44 },
+                  height: { xs: 40, md: 44 },
                   mt: 0.5,
                   transition: tokens.transitions.fast,
                   "&:hover": {
-                    bgcolor: "rgba(184,134,11,0.1)",
+                    bgcolor: "rgba(184,134,11,0.12)",
                     borderColor: tokens.colors.primary.main,
                     color: tokens.colors.dark.textPrimary,
+                    transform: "rotate(90deg)",
                   },
                 }}
               >
@@ -214,9 +231,10 @@ const LocationSelectionModal = ({
                 mb: { xs: 3, md: 3.5 },
                 fontSize: { xs: "0.85rem", md: "0.92rem", xl: "1rem" },
                 maxWidth: 400,
+                lineHeight: 1.65,
               }}
             >
-              Select your nearest location to start your order
+              {t("locationModal.selectNearest")}
             </Typography>
 
             <motion.div
@@ -234,26 +252,34 @@ const LocationSelectionModal = ({
                 {locations.map((location, index) => (
                   <motion.div key={location.name} variants={cardItem}>
                     <Box
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e: React.KeyboardEvent) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleLocationSelect(location.orderLink);
+                        }
+                      }}
                       onMouseEnter={() => setHoveredIndex(index)}
                       onMouseLeave={() => setHoveredIndex(null)}
                       onClick={() => handleLocationSelect(location.orderLink)}
                       sx={{
                         position: "relative",
                         border: `1.5px solid ${hoveredIndex === index ? tokens.colors.primary.main : tokens.colors.dark.borderLight}`,
-                        borderRadius: { xs: "12px", md: "14px" },
+                        borderRadius: { xs: "14px", md: "16px" },
                         p: { xs: 2.5, md: 3, xl: 3.5 },
-                        transition: "all 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
+                        transition: "all 0.38s cubic-bezier(0.22, 1, 0.36, 1)",
                         cursor: "pointer",
                         bgcolor: hoveredIndex === index ? tokens.colors.dark.elevated : tokens.colors.dark.card,
-                        transform: hoveredIndex === index ? "translateY(-3px)" : "none",
+                        transform: hoveredIndex === index ? "translateY(-4px)" : "none",
                         boxShadow: hoveredIndex === index
-                          ? "0 12px 32px -8px rgba(0,0,0,0.4), 0 0 0 1px rgba(184,134,11,0.12)"
+                          ? tokens.shadows.goldDeep
                           : "none",
                         overflow: "hidden",
                         "&:active": { transform: "translateY(0)" },
                       }}
                     >
-                      {/* Card top glow on hover */}
+                      {/* Top glow on hover */}
                       <Box
                         aria-hidden="true"
                         sx={{
@@ -261,11 +287,12 @@ const LocationSelectionModal = ({
                           top: 0,
                           left: 0,
                           right: 0,
-                          height: "1.5px",
+                          height: "2px",
                           background: hoveredIndex === index
                             ? `linear-gradient(90deg, transparent, ${tokens.colors.primary.main}, transparent)`
                             : "transparent",
                           transition: "background 0.35s ease",
+                          boxShadow: hoveredIndex === index ? `0 0 12px rgba(184,134,11,0.5)` : "none",
                         }}
                       />
 
@@ -280,15 +307,16 @@ const LocationSelectionModal = ({
                       >
                         <Box
                           sx={{
-                            width: { xs: 40, md: 44, xl: 48 },
-                            height: { xs: 40, md: 44, xl: 48 },
-                            borderRadius: "10px",
-                            bgcolor: "rgba(184,134,11,0.1)",
-                            border: "1px solid rgba(184,134,11,0.15)",
+                            width: { xs: 42, md: 46, xl: 50 },
+                            height: { xs: 42, md: 46, xl: 50 },
+                            borderRadius: "12px",
+                            bgcolor: hoveredIndex === index ? "rgba(184,134,11,0.16)" : "rgba(184,134,11,0.09)",
+                            border: `1px solid ${hoveredIndex === index ? tokens.colors.primary.main : "rgba(184,134,11,0.18)"}`,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             flexShrink: 0,
+                            transition: tokens.transitions.normal,
                           }}
                         >
                           <LocationOnIcon
@@ -302,10 +330,11 @@ const LocationSelectionModal = ({
                           sx={{
                             fontFamily: tokens.fonts.display,
                             fontWeight: 400,
-                            fontSize: { xs: "1.25rem", md: "1.4rem", xl: "1.55rem" },
-                            color: tokens.colors.dark.textPrimary,
+                            fontSize: { xs: "1.3rem", md: "1.45rem", xl: "1.6rem" },
+                            color: hoveredIndex === index ? tokens.colors.dark.textPrimary : "rgba(245,240,228,0.88)",
                             textTransform: "uppercase",
-                            letterSpacing: "0.02em",
+                            letterSpacing: "-0.01em",
+                            transition: tokens.transitions.fast,
                           }}
                         >
                           {location.name}
@@ -356,6 +385,7 @@ const LocationSelectionModal = ({
                         variant="contained"
                         color="primary"
                         fullWidth
+                        className="btn-shimmer"
                         endIcon={
                           <ArrowForwardIcon
                             sx={{
@@ -365,19 +395,23 @@ const LocationSelectionModal = ({
                           />
                         }
                         sx={{
-                          py: { xs: 1.2, md: 1.4, xl: 1.5 },
+                          py: { xs: 1.3, md: 1.5, xl: 1.6 },
                           fontWeight: 600,
-                          fontSize: { xs: "0.8rem", md: "0.85rem", xl: "0.92rem" },
+                          fontSize: { xs: "0.82rem", md: "0.86rem", xl: "0.92rem" },
                           color: tokens.colors.dark.bg,
                           textTransform: "none",
                           borderRadius: "10px",
                           letterSpacing: "0.02em",
+                          background: `linear-gradient(135deg, ${tokens.colors.primary.main} 0%, ${tokens.colors.primary.dark} 100%)`,
+                          "&:hover": {
+                            background: `linear-gradient(135deg, ${tokens.colors.primary.light} 0%, ${tokens.colors.primary.main} 100%)`,
+                          },
                           "&:hover .MuiButton-endIcon": {
-                            transform: "translateX(3px)",
+                            transform: "translateX(4px)",
                           },
                         }}
                       >
-                        Order from {location.name}
+                        {t("locationModal.orderFrom", { name: location.name })}
                       </Button>
                     </Box>
                   </motion.div>
@@ -401,7 +435,7 @@ const LocationSelectionModal = ({
                   letterSpacing: "0.04em",
                 }}
               >
-                Orders are fulfilled through our online ordering partner
+                {t("locationModal.partnerNote")}
               </Typography>
             </Box>
           </DialogContent>

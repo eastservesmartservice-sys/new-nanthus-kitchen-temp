@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import theme from "../theme";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -12,17 +13,20 @@ const pageVariants = {
   exit:    { opacity: 0, y: -12, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] as [number, number, number, number] } },
 };
 
-const pageTitles: Record<string, string> = {
-  "/":          "New Nanthu's Kitchen | Authentic Sri Lankan Cuisine",
-  "/menu":      "Our Menu | New Nanthu's Kitchen",
-  "/specials":  "Specials | New Nanthu's Kitchen",
-  "/order":     "Order Pickup | New Nanthu's Kitchen",
-  "/catering":  "Catering | New Nanthu's Kitchen",
-  "/contact":   "Contact Us | New Nanthu's Kitchen",
+const pageTitleKeys: Record<string, string> = {
+  "/":          "layout.pageTitles.home",
+  "/menu":      "layout.pageTitles.menu",
+  "/specials":  "layout.pageTitles.specials",
+  "/order":     "layout.pageTitles.order",
+  "/catering":  "layout.pageTitles.catering",
+  "/contact":   "layout.pageTitles.contact",
+  "/gallery":   "layout.pageTitles.gallery",
+  "*":          "layout.pageTitles.notFound",
 };
 
 export default function Layout() {
   const location = useLocation();
+  const { t } = useTranslation();
 
   // Scroll to top on page change
   useEffect(() => {
@@ -31,14 +35,15 @@ export default function Layout() {
 
   // Document title
   useEffect(() => {
-    document.title = pageTitles[location.pathname] ?? pageTitles["/"];
-  }, [location.pathname]);
+    const key = pageTitleKeys[location.pathname] ?? pageTitleKeys["/"];
+    document.title = t(key);
+  }, [location.pathname, t]);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="grain-overlay" aria-hidden="true" />
-      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <a href="#main-content" className="skip-link">{t("layout.skipToContent")}</a>
 
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
         <Header />

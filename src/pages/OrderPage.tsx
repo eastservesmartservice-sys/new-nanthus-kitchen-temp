@@ -6,6 +6,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { useTranslation } from "react-i18next";
 import { tokens } from "../theme";
 
 const locations = [
@@ -28,29 +30,41 @@ const locations = [
 ];
 
 const steps = [
-  { num: "01", title: "Choose Location",  desc: "Select your nearest Nanthus location below" },
-  { num: "02", title: "Browse & Order",   desc: "Pick from our full menu of 50+ dishes" },
-  { num: "03", title: "Collect Fresh",    desc: "Ready in 20–30 minutes — hot & fresh" },
+  { num: "order.step1Num", title: "order.step1Title",  desc: "order.step1Desc" },
+  { num: "order.step2Num", title: "order.step2Title",   desc: "order.step2Desc" },
+  { num: "order.step3Num", title: "order.step3Title",    desc: "order.step3Desc" },
 ];
+
+const stepIcons = ["🔍", "🛒", "🏃"];
 
 const OrderPage: React.FC = () => {
   const [hovered, setHovered] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   return (
     <Box sx={{ bgcolor: tokens.colors.bg.base }}>
       <PageBanner
-        eyebrow="Pickup Only"
-        title="Order for"
-        highlight="Pickup"
-        subtitle="Authentic Jaffna cuisine, ready in 20–30 minutes. Pick up from either of our two GTA locations — no delivery, always fresh."
-        watermark="Order"
+        eyebrow={t("order.eyebrow")}
+        title={t("order.title")}
+        highlight={t("order.highlight")}
+        subtitle={t("order.subtitle")}
+        watermark={t("order.watermark")}
       >
         <Box sx={{ display: "flex", gap: { xs: 2, md: 4 }, flexWrap: "wrap" }}>
           {[
-            { icon: <AccessTimeIcon sx={{ fontSize: "1rem" }} />, text: "20–30 Min Ready" },
-            { icon: <LocalOfferIcon sx={{ fontSize: "1rem" }} />, text: "10% Off First Order" },
+            { icon: <AccessTimeIcon sx={{ fontSize: "1rem" }} />, text: t("order.perkReady") },
+            { icon: <LocalOfferIcon sx={{ fontSize: "1rem" }} />, text: t("order.perkDiscount") },
           ].map((perk, i) => (
-            <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box key={i} sx={{
+              display:      "flex",
+              alignItems:   "center",
+              gap:          1,
+              px:           2,
+              py:           0.75,
+              borderRadius: tokens.radius.pill,
+              bgcolor:      "rgba(184,134,11,0.08)",
+              border:       `1px solid rgba(184,134,11,0.2)`,
+            }}>
               <Box sx={{ color: tokens.colors.primary.main }}>{perk.icon}</Box>
               <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.85rem" }}>{perk.text}</Typography>
             </Box>
@@ -61,9 +75,12 @@ const OrderPage: React.FC = () => {
       {/* ── How it works ── */}
       <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: tokens.colors.bg.base }}>
         <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
-          <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 5, textAlign: "center" }}>
-            How It Works
-          </Typography>
+          <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
+            <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 1.5 }}>
+              {t("order.howItWorks")}
+            </Typography>
+            <Box className="gold-divider" sx={{ maxWidth: 200, mx: "auto" }} />
+          </Box>
           <Box
             sx={{
               display:             "grid",
@@ -81,54 +98,83 @@ const OrderPage: React.FC = () => {
               >
                 <Box
                   sx={{
-                    p:            { xs: 3, md: 4 },
-                    border:       `1px solid ${tokens.colors.border.faint}`,
-                    borderRadius: tokens.radius.md,
+                    p:            { xs: 3.5, md: 4.5 },
+                    border:       `1px solid ${tokens.colors.border.subtle}`,
+                    borderRadius: tokens.radius.lg,
                     bgcolor:      tokens.colors.bg.card,
                     position:     "relative",
                     overflow:     "hidden",
                     height:       "100%",
                     transition:   `all ${tokens.transitions.spring}`,
-                    '&:hover': {
-                      borderColor: tokens.colors.border.medium,
-                      transform:   'translateY(-4px)',
+                    "&:hover": {
+                      borderColor: tokens.colors.primary.main,
+                      transform:   "translateY(-6px)",
                       boxShadow:   tokens.shadows.gold,
                     },
                   }}
                 >
+                  {/* Step icon circle */}
+                  <Box sx={{
+                    width:        56,
+                    height:       56,
+                    borderRadius: "50%",
+                    bgcolor:      tokens.colors.primary.glow,
+                    border:       `1px solid ${tokens.colors.border.subtle}`,
+                    display:      "flex",
+                    alignItems:   "center",
+                    justifyContent:"center",
+                    fontSize:     "1.5rem",
+                    mb:           2.5,
+                  }}>
+                    {stepIcons[i]}
+                  </Box>
+
+                  {/* Ghost step number */}
                   <Typography
                     aria-hidden="true"
                     sx={{
                       position:   "absolute",
                       top: -16, right: 12,
                       fontFamily: tokens.fonts.display,
-                      fontSize:   "5rem",
+                      fontSize:   "5.5rem",
                       color:      tokens.colors.primary.main,
-                      opacity:    0.07, lineHeight: 1,
+                      opacity:    0.06, lineHeight: 1,
                       userSelect: "none",
                     }}
                   >
-                    {step.num}
+                    {t(step.num)}
                   </Typography>
-                  <Typography
-                    sx={{
-                      color:      tokens.colors.primary.main,
-                      fontFamily: tokens.fonts.display,
-                      fontSize:   "1.1rem",
-                      mb:         1.5,
-                    }}
-                  >
-                    {step.num}
+
+                  <Typography sx={{
+                    color:      tokens.colors.primary.main,
+                    fontFamily: tokens.fonts.display,
+                    fontSize:   "0.78rem",
+                    mb:         1,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}>
+                    Step {t(step.num)}
                   </Typography>
-                  <Typography sx={{ color: tokens.colors.text.primary, fontWeight: 600, fontSize: "1rem", mb: 0.75 }}>
-                    {step.title}
+                  <Typography sx={{ color: tokens.colors.text.primary, fontWeight: 600, fontSize: "1.05rem", mb: 1 }}>
+                    {t(step.title)}
                   </Typography>
-                  <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.85rem", lineHeight: 1.6 }}>
-                    {step.desc}
+                  <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.87rem", lineHeight: 1.65 }}>
+                    {t(step.desc)}
                   </Typography>
                 </Box>
               </motion.div>
             ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ── Decorative separator ── */}
+      <Box sx={{ py: { xs: 0, md: 0 } }}>
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box className="gold-divider" sx={{ flex: 1 }} />
+            <Box sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: tokens.colors.primary.main, opacity: 0.5 }} />
+            <Box className="gold-divider" sx={{ flex: 1 }} />
           </Box>
         </Container>
       </Box>
@@ -138,17 +184,17 @@ const OrderPage: React.FC = () => {
         <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
           <Box sx={{ textAlign: "center", mb: { xs: 6, md: 10 } }}>
             <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 1.5 }}>
-              Choose Your Location
+              {t("order.chooseLocation")}
             </Typography>
             <Typography
               component="h2"
               sx={{
-                fontFamily: tokens.fonts.display, fontSize: { xs: "2rem", md: "3rem" },
+                fontFamily: tokens.fonts.display, fontSize: { xs: "2.2rem", md: "3.2rem" },
                 fontWeight: 400, textTransform: "uppercase", color: tokens.colors.text.primary,
-                lineHeight: 0.95, letterSpacing: "-0.01em",
+                lineHeight: 0.95, letterSpacing: "-0.02em",
               }}
             >
-              Two GTA Locations
+              {t("order.twoLocations")}
             </Typography>
           </Box>
 
@@ -171,17 +217,17 @@ const OrderPage: React.FC = () => {
                   onMouseEnter={() => setHovered(loc.name)}
                   onMouseLeave={() => setHovered(null)}
                   sx={{
-                    border:       `1px solid ${hovered === loc.name ? tokens.colors.border.medium : tokens.colors.border.subtle}`,
-                    borderRadius: tokens.radius.lg,
+                    border:       `1px solid ${hovered === loc.name ? tokens.colors.primary.main : tokens.colors.border.subtle}`,
+                    borderRadius: tokens.radius.xl,
                     overflow:     "hidden",
                     bgcolor:      tokens.colors.bg.card,
                     transition:   `all ${tokens.transitions.spring}`,
-                    transform:    hovered === loc.name ? "translateY(-6px) scale(1.01)" : "none",
+                    transform:    hovered === loc.name ? "translateY(-8px) scale(1.01)" : "none",
                     boxShadow:    hovered === loc.name ? tokens.shadows.goldLg : tokens.shadows.sm,
                   }}
                 >
                   {/* Image */}
-                  <Box sx={{ height: { xs: 200, md: 240 }, overflow: "hidden", position: "relative" }}>
+                  <Box sx={{ height: { xs: 220, md: 260 }, overflow: "hidden", position: "relative" }}>
                     <Box
                       component="img"
                       src={loc.image}
@@ -190,31 +236,43 @@ const OrderPage: React.FC = () => {
                       sx={{
                         width: "100%", height: "100%", objectFit: "cover",
                         transition: `transform ${tokens.transitions.spring}, filter ${tokens.transitions.slow}`,
-                        transform:  hovered === loc.name ? "scale(1.06)" : "scale(1)",
-                        filter:     hovered === loc.name ? 'contrast(1.08) saturate(1.15)' : 'contrast(1.05) saturate(1.1)',
+                        transform:  hovered === loc.name ? "scale(1.08)" : "scale(1)",
+                        filter:     hovered === loc.name ? "contrast(1.1) saturate(1.2)" : "contrast(1.05) saturate(1.1)",
                       }}
                     />
-                    {/* Image overlay — keeps text readable over photo */}
-                    <Box
-                      sx={{
-                        position:   "absolute",
-                        inset:      0,
-                        background: "linear-gradient(to top, rgba(12,10,7,0.75) 0%, transparent 60%)",
-                      }}
-                    />
-                    <Typography
-                      sx={{
-                        position:      "absolute",
-                        bottom:        16, left: 20,
+                    {/* Cinematic overlay */}
+                    <Box sx={{
+                      position:   "absolute",
+                      inset:      0,
+                      background: "linear-gradient(to top, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.08) 55%, transparent 100%)",
+                    }} />
+                    {/* Location name on image */}
+                    <Box sx={{
+                      position: "absolute",
+                      bottom: 20, left: 24,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 0.5,
+                    }}>
+                      <Typography sx={{
                         fontFamily:    tokens.fonts.display,
-                        fontSize:      "1.8rem",
+                        fontSize:      "2rem",
                         textTransform: "uppercase",
                         color:         "white",
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      {loc.name}
-                    </Typography>
+                        letterSpacing: "-0.02em",
+                        lineHeight:    1,
+                        textShadow:    "0 2px 12px rgba(0,0,0,0.4)",
+                      }}>
+                        {loc.name}
+                      </Typography>
+                      {/* Gold accent line */}
+                      <Box sx={{
+                        width:      hovered === loc.name ? "60px" : "32px",
+                        height:     "2px",
+                        background: `linear-gradient(90deg, ${tokens.colors.primary.main}, transparent)`,
+                        transition: `width ${tokens.transitions.spring}`,
+                      }} />
+                    </Box>
                   </Box>
 
                   {/* Info */}
@@ -258,15 +316,19 @@ const OrderPage: React.FC = () => {
                       color="primary"
                       fullWidth
                       size="large"
+                      className="btn-shimmer"
+                      endIcon={<OpenInNewIcon sx={{ fontSize: "0.9rem !important", transition: "transform 0.25s ease" }} />}
                       sx={{
                         mt:         3,
                         fontWeight: 700,
                         color:      tokens.colors.bg.base,
                         fontSize:   "0.82rem",
-                        py:         1.5,
+                        py:         1.6,
+                        background: `linear-gradient(135deg, ${tokens.colors.primary.main} 0%, ${tokens.colors.primary.dark} 100%)`,
+                        "&:hover .MuiButton-endIcon": { transform: "translate(2px, -2px)" },
                       }}
                     >
-                      Order from {loc.name}
+                      {t("order.orderFrom", { name: loc.name })}
                     </Button>
                   </Box>
                 </Box>
