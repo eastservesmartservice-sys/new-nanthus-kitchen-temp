@@ -1,259 +1,229 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Container, Typography, Button } from "@mui/material";
-import { motion } from "framer-motion";
-import PageBanner from "../components/PageBanner";
-import { useTranslation } from "react-i18next";
-import { tokens } from "../theme";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { Box, Button, Chip, Container, Stack, Typography } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
+import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
+import PageBanner from "../components/PageBanner";
+import SectionHeading from "../components/SectionHeading";
+import { cateringServices, pageImages } from "../data/site";
+import { tokens } from "../theme";
 
-const services = [
-  {
-    num:      "01",
-    title:    "catering.corporateTitle",
-    desc:     "catering.corporateDesc",
-    features: ["catering.corporate.f1", "catering.corporate.f2", "catering.corporate.f3"],
-  },
-  {
-    num:      "02",
-    title:    "catering.weddingsTitle",
-    desc:     "catering.weddingsDesc",
-    features: ["catering.weddings.f1", "catering.weddings.f2", "catering.weddings.f3"],
-  },
-  {
-    num:      "03",
-    title:    "catering.culturalTitle",
-    desc:     "catering.culturalDesc",
-    features: ["catering.cultural.f1", "catering.cultural.f2", "catering.cultural.f3"],
-  },
+const process = [
+  "Tell us your guest count and date",
+  "Choose a menu style and service needs",
+  "Confirm pickup or event logistics",
 ];
 
-const CateringPage: React.FC = () => {
-  const { t } = useTranslation();
+const accentColors = [
+  { bg: "rgba(245,166,35,0.1)", border: "rgba(245,166,35,0.25)", text: tokens.colors.saffron.main },
+  { bg: tokens.colors.secondary.pale, border: tokens.colors.secondary.glow, text: tokens.colors.secondary.main },
+  { bg: "rgba(245,166,35,0.08)", border: "rgba(245,166,35,0.2)", text: tokens.colors.saffron.main },
+];
 
+export default function CateringPage() {
   return (
-  <Box sx={{ bgcolor: tokens.colors.bg.base }}>
+    <Box>
+      <PageBanner
+        eyebrow="Catering"
+        title="Sri Lankan food for"
+        highlight="bigger tables"
+        subtitle="Event trays, family portions, cultural gatherings, office meals, and milestone spreads planned around your guest count."
+        image={pageImages.catering}
+        imageAlt="Catering table with shared dishes"
+      >
+        <Stack direction="row" gap={1} flexWrap="wrap">
+          <Chip icon={<GroupsOutlinedIcon />} label="Small and large groups" />
+          <Chip icon={<EventAvailableOutlinedIcon />} label="Custom menu guidance" />
+        </Stack>
+      </PageBanner>
 
-    <PageBanner
-      eyebrow={t("catering.eyebrow")}
-      title={t("catering.title")}
-      highlight={t("catering.highlight")}
-      subtitle={t("catering.subtitle")}
-      watermark={t("catering.watermark")}
-    />
+      <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 }, py: { xs: 6, md: 9 } }}>
+        <SectionHeading
+          eyebrow="Formats"
+          title="Choose the service style"
+          body="Each catering request starts with the event shape, then we build portions and dishes around it."
+        />
 
-    <Container maxWidth="xl" sx={{ py: { xs: 8, md: 12 }, px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
-
-      {/* ── Services list ── */}
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
-        {services.map((service, i) => (
-          <motion.div
-            key={service.num}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: 2.5, mt: 4 }}>
+          {cateringServices.map((service, index) => (
             <Box
+              key={service.title}
               sx={{
-                display:             "grid",
-                gridTemplateColumns: { xs: "1fr", md: "80px 1fr 1fr" },
-                gap:                 { xs: 2, md: 6 },
-                py:                  { xs: 5, md: 7 },
-                borderTop:           `1px solid ${tokens.colors.border.subtle}`,
-                "&:last-child":      { borderBottom: `1px solid ${tokens.colors.border.subtle}` },
-                transition:          `all ${tokens.transitions.spring}`,
-                position:            "relative",
-                overflow:            "hidden",
-                // Hover gold left accent
-                "&::before": {
-                  content:    '""',
-                  position:   "absolute",
-                  left:       0,
-                  top:        0,
-                  bottom:     0,
-                  width:      "3px",
-                  background: `linear-gradient(180deg, transparent, ${tokens.colors.primary.main}, transparent)`,
-                  opacity:    0,
-                  transition: `opacity ${tokens.transitions.normal}`,
-                },
+                bgcolor: tokens.colors.bg.card,
+                border: `1px solid ${tokens.colors.line.subtle}`,
+                borderRadius: tokens.radius.xl,
+                p: { xs: 2.5, md: 3 },
+                minHeight: 320,
+                transition: tokens.transitions.spring,
+                position: "relative",
+                overflow: "hidden",
                 "&:hover": {
-                  bgcolor: tokens.colors.primary.glow2,
-                  "&::before": { opacity: 1 },
+                  borderColor: accentColors[index]!.border,
+                  boxShadow: tokens.shadows.md,
+                  transform: "translateY(-4px)",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "3px",
+                  bgcolor: accentColors[index]!.text,
+                  opacity: 0.7,
                 },
               }}
             >
-              {/* Number — large ghost watermark */}
-              <Box sx={{ position: "relative" }}>
-                <Typography sx={{
-                  color:      tokens.colors.primary.main,
-                  fontFamily: tokens.fonts.display,
-                  fontSize:   { xs: "1rem", md: "1.1rem" },
-                  opacity:    0.55,
-                  pt:         { xs: 0, md: 0.5 },
-                }}>
-                  {service.num}
-                </Typography>
-                {/* Ghost number */}
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 48,
+                  height: 48,
+                  borderRadius: tokens.radius.md,
+                  bgcolor: accentColors[index]!.bg,
+                  border: `1px solid ${accentColors[index]!.border}`,
+                  mb: 2,
+                }}
+              >
                 <Typography
-                  aria-hidden="true"
-                  sx={{
-                    display:      { xs: "none", md: "block" },
-                    position:     "absolute",
-                    top:          "50%",
-                    left:         "50%",
-                    transform:    "translate(-50%, -50%)",
-                    fontFamily:   tokens.fonts.display,
-                    fontSize:     "8rem",
-                    color:        tokens.colors.primary.main,
-                    opacity:      0.04,
-                    lineHeight:   1,
-                    userSelect:   "none",
-                    pointerEvents:"none",
-                    whiteSpace:   "nowrap",
-                  }}
+                  className="stat-num"
+                  sx={{ fontSize: "1.4rem", color: accentColors[index]!.text, lineHeight: 1 }}
                 >
-                  {service.num}
+                  0{index + 1}
                 </Typography>
               </Box>
-
-              <Box>
-                <Typography sx={{
-                  fontFamily:    tokens.fonts.display,
-                  fontSize:      { xs: "1.8rem", md: "2rem", lg: "2.2rem" },
-                  textTransform: "uppercase",
-                  color:         tokens.colors.text.primary,
-                  lineHeight:    0.95,
-                  mb:            2,
-                }}>
-                {t(service.title)}
-              </Typography>
-                <Typography sx={{ color: tokens.colors.text.secondary, fontSize: "0.92rem", lineHeight: 1.75 }}>
-                  {t(service.desc)}
-                </Typography>
-              </Box>
-
-              <Box>
-                {service.features.map((f) => (
-                  <Box key={f} sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1.8 }}>
-                    <Box sx={{
-                      width:        20,
-                      height:       20,
-                      borderRadius: "50%",
-                      bgcolor:      tokens.colors.primary.glow,
-                      border:       `1px solid rgba(184,134,11,0.25)`,
-                      display:      "flex",
-                      alignItems:   "center",
-                      justifyContent:"center",
-                      flexShrink:   0,
-                      mt:           0.1,
-                    }}>
-                      <CheckCircleOutlineIcon sx={{ color: tokens.colors.primary.main, fontSize: "0.85rem" }} />
-                    </Box>
-                    <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem", lineHeight: 1.6 }}>
-                      {t(f)}
-                    </Typography>
-                  </Box>
+              <Typography sx={{ fontWeight: 700, fontSize: "1.18rem", mb: 1 }}>{service.title}</Typography>
+              <Typography sx={{ color: tokens.colors.text.secondary, mb: 2.5, lineHeight: 1.7 }}>{service.description}</Typography>
+              <Stack gap={1}>
+                {service.details.map((detail) => (
+                  <Stack key={detail} direction="row" gap={1} alignItems="center">
+                    <CheckCircleOutlineIcon sx={{ color: tokens.colors.secondary.main, fontSize: "1rem", flexShrink: 0 }} />
+                    <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.86rem" }}>{detail}</Typography>
+                  </Stack>
                 ))}
-              </Box>
+              </Stack>
             </Box>
-          </motion.div>
-        ))}
-      </Box>
+          ))}
+        </Box>
+      </Container>
 
-      {/* ── Bottom CTA ── */}
-      <Box sx={{ mt: { xs: 8, md: 12 } }}>
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <Box sx={{
-            position:     "relative",
-            p:            { xs: 4, md: 7 },
-            border:       `1px solid ${tokens.colors.dark.borderSubtle}`,
-            borderRadius: tokens.radius.xl,
-            bgcolor:      tokens.colors.dark.bg,
-            textAlign:    "center",
-            overflow:     "hidden",
-          }}>
-            {/* Background grid */}
-            <Box
-              aria-hidden="true"
-              sx={{
-                position:        "absolute",
-                inset:           0,
-                backgroundImage: `linear-gradient(${tokens.colors.dark.borderFaint} 1px, transparent 1px),
-                                  linear-gradient(90deg, ${tokens.colors.dark.borderFaint} 1px, transparent 1px)`,
-                backgroundSize:  "48px 48px",
-                opacity:         0.8,
-                pointerEvents:   "none",
-              }}
-            />
-            {/* Gold radial glow */}
-            <Box
-              aria-hidden="true"
-              sx={{
-                position:      "absolute",
-                top:           "50%",
-                left:          "50%",
-                transform:     "translate(-50%, -50%)",
-                width:         "80%",
-                height:        "150%",
-                background:    "radial-gradient(ellipse at center, rgba(184,134,11,0.08) 0%, transparent 65%)",
-                pointerEvents: "none",
-              }}
-            />
-            <Box sx={{ position: "relative", zIndex: 1 }}>
-              <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 2 }}>
-                {t("catering.readyToPlan")}
-              </Typography>
-              <Typography sx={{
-                fontFamily:    tokens.fonts.display,
-                fontSize:      { xs: "2rem", md: "3rem" },
-                textTransform: "uppercase",
-                color:         tokens.colors.dark.textPrimary,
-                mb:            2,
-                letterSpacing: "-0.02em",
-                lineHeight:    0.92,
-              }}>
-                {t("catering.ctaHeading1")}{" "}
-                <Box component="span" sx={{ color: tokens.colors.primary.main }}>
-                  {t("catering.ctaHeading2")}
+      {/* ── Planning process ──────────────────────────────────────────── */}
+      <Box component="section" sx={{ bgcolor: tokens.colors.bg.inverse, py: { xs: 7, md: 10 } }}>
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "0.9fr 1.1fr" }, gap: { xs: 5, md: 7 }, alignItems: "center" }}>
+            <Stack gap={3}>
+              <Box>
+                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 2.5 }}>
+                  <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: tokens.colors.primary.main }} />
+                  <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: tokens.colors.dark.textTertiary }}>
+                    Planning
+                  </Typography>
                 </Box>
-              </Typography>
-              <Typography sx={{ color: tokens.colors.dark.textTertiary, mb: 4, fontSize: "0.9rem", maxWidth: 420, mx: "auto" }}>
-                {t("catering.ctaBody")}
-              </Typography>
+                <Typography sx={{ fontFamily: tokens.fonts.display, fontSize: { xs: "2.1rem", md: "3rem" }, lineHeight: 1.05, color: tokens.colors.dark.textPrimary, mb: 2 }}>
+                  A simple catering sequence
+                </Typography>
+                <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.98rem", lineHeight: 1.8 }}>
+                  Send the event details first. We will help you shape the menu instead of making you guess portions.
+                </Typography>
+              </Box>
               <Button
                 component={Link}
                 to="/contact"
                 variant="contained"
-                color="primary"
-                size="large"
-                className="btn-shimmer"
-                endIcon={<ArrowForwardIcon sx={{ transition: "transform 0.25s ease" }} />}
+                endIcon={<ArrowForwardIcon />}
                 sx={{
-                  px:         5,
-                  py:         1.7,
+                  alignSelf: "flex-start",
+                  bgcolor: tokens.colors.primary.main,
+                  color: tokens.colors.text.primary,
                   fontWeight: 700,
-                  color:      tokens.colors.bg.base,
-                  fontSize:   "0.85rem",
-                  background: `linear-gradient(135deg, ${tokens.colors.primary.main} 0%, ${tokens.colors.primary.dark} 100%)`,
-                  "&:hover .MuiButton-endIcon": { transform: "translateX(4px)" },
+                  "&:hover": { bgcolor: tokens.colors.primary.light },
                 }}
               >
-                {t("catering.contactUs")}
+                Start a catering request
               </Button>
-            </Box>
+            </Stack>
+            <Stack gap={1.5}>
+              {process.map((step, index) => (
+                <Box
+                  key={step}
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "56px 1fr",
+                    alignItems: "center",
+                    gap: 2,
+                    bgcolor: tokens.colors.dark.surface,
+                    border: `1px solid ${tokens.colors.dark.borderSubtle}`,
+                    borderRadius: tokens.radius.xl,
+                    p: 2,
+                    transition: tokens.transitions.fast,
+                    "&:hover": { borderColor: tokens.colors.dark.borderLight },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: tokens.radius.md,
+                      bgcolor: index === 1 ? tokens.colors.secondary.pale : "rgba(245,166,35,0.15)",
+                      color: index === 1 ? tokens.colors.secondary.main : tokens.colors.primary.main,
+                      display: "grid",
+                      placeItems: "center",
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                    }}
+                  >
+                    {index + 1}
+                  </Box>
+                  <Typography sx={{ fontWeight: 700, color: tokens.colors.dark.textPrimary }}>{step}</Typography>
+                </Box>
+              ))}
+            </Stack>
           </Box>
-        </motion.div>
+        </Container>
       </Box>
-    </Container>
-  </Box>
-  );
-};
 
-export default CateringPage;
+      {/* ── CTA ───────────────────────────────────────────────────────── */}
+      <Box component="section" sx={{ py: { xs: 7, md: 10 } }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2.5, md: 6 }, textAlign: "center" }}>
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 1,
+              px: 1.5,
+              py: 0.75,
+              borderRadius: "999px",
+              border: `1px solid ${tokens.colors.line.medium}`,
+              bgcolor: tokens.colors.bg.warm,
+              mb: 3,
+            }}
+          >
+            <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: tokens.colors.secondary.main }} />
+            <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: tokens.colors.text.tertiary }}>
+              Event menu
+            </Typography>
+          </Box>
+          <Typography sx={{ fontFamily: tokens.fonts.display, fontSize: { xs: "2.2rem", md: "3.4rem" }, lineHeight: 1, mb: 2 }}>
+            Build a spread that feels familiar and generous.
+          </Typography>
+          <Typography sx={{ color: tokens.colors.text.secondary, maxWidth: 720, mx: "auto", mb: 4, lineHeight: 1.8 }}>
+            Mix mains, rice dishes, vegetarian plates, short eats, and sweets into a menu that works for your event timing.
+          </Typography>
+          <Button
+            component={Link}
+            to="/contact"
+            variant="contained"
+            size="large"
+            endIcon={<ArrowForwardIcon />}
+            sx={{ bgcolor: tokens.colors.text.primary, color: tokens.colors.text.inverse, "&:hover": { bgcolor: tokens.colors.primary.dark } }}
+          >
+            Contact catering
+          </Button>
+        </Container>
+      </Box>
+    </Box>
+  );
+}

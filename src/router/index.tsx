@@ -1,13 +1,7 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { Box, CircularProgress } from "@mui/material";
 import Layout from "../components/Layout";
-
-const PageLoader = () => (
-  <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
-    <CircularProgress sx={{ color: "#B8860B" }} />
-  </Box>
-);
+import PageLoader from "../components/PageLoader";
 
 const HomePage     = lazy(() => import("../pages/HomePage"));
 const MenuPage     = lazy(() => import("../pages/MenuPage"));

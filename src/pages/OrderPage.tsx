@@ -1,344 +1,238 @@
-import React, { useState } from "react";
-import { Box, Container, Typography, Button } from "@mui/material";
-import PageBanner from "../components/PageBanner";
-import { motion } from "framer-motion";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import PhoneIcon from "@mui/icons-material/Phone";
+import { Box, Button, Chip, Container, Stack, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import LocalDiningOutlinedIcon from "@mui/icons-material/LocalDiningOutlined";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { useTranslation } from "react-i18next";
+import PhoneIcon from "@mui/icons-material/Phone";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import PageBanner from "../components/PageBanner";
+import SectionHeading from "../components/SectionHeading";
+import { locations, pageImages } from "../data/site";
 import { tokens } from "../theme";
 
-const locations = [
-  {
-    name:      "Scarborough",
-    address:   "80 Nashdene Rd",
-    city:      "Scarborough, ON M1V 5E4",
-    phones:    ["(416) 299-1999", "(416) 388-4791"],
-    orderLink: "https://www.eastserve.ca/ordering/restaurant/menu?company_uid=b26cb912-8916-4de5-ae9e-bdcab2c08fa8&restaurant_uid=548c1a41-011d-488a-8876-d7815c9181d7&facebook=true",
-    image:     "https://images.pexels.com/photos/34070063/pexels-photo-34070063.jpeg?auto=compress&cs=tinysrgb&w=800",
-  },
-  {
-    name:      "Markham",
-    address:   "72-30 Karachi Dr",
-    city:      "Markham, ON L3S 0B6",
-    phones:    ["(289) 554-5999"],
-    orderLink: "https://www.eastserve.ca/ordering/restaurant/menu?company_uid=b26cb912-8916-4de5-ae9e-bdcab2c08fa8&restaurant_uid=d171d5c5-0412-4013-b588-c52b5513f592&facebook=true",
-    image:     "https://images.pexels.com/photos/5176006/pexels-photo-5176006.jpeg?auto=compress&cs=tinysrgb&w=800",
-  },
-];
-
 const steps = [
-  { num: "order.step1Num", title: "order.step1Title",  desc: "order.step1Desc" },
-  { num: "order.step2Num", title: "order.step2Title",   desc: "order.step2Desc" },
-  { num: "order.step3Num", title: "order.step3Title",    desc: "order.step3Desc" },
+  {
+    icon: <LocationOnOutlinedIcon />,
+    title: "Choose a counter",
+    body: "Pick Scarborough or Markham before browsing the ordering menu.",
+  },
+  {
+    icon: <ShoppingBagOutlinedIcon />,
+    title: "Build the order",
+    body: "Add mains, short eats, drinks, and specials through the ordering partner.",
+  },
+  {
+    icon: <LocalDiningOutlinedIcon />,
+    title: "Collect fresh",
+    body: "Arrive at the counter when your pickup window is ready.",
+  },
 ];
 
-const stepIcons = ["🔍", "🛒", "🏃"];
-
-const OrderPage: React.FC = () => {
-  const [hovered, setHovered] = useState<string | null>(null);
-  const { t } = useTranslation();
-
+export default function OrderPage() {
   return (
-    <Box sx={{ bgcolor: tokens.colors.bg.base }}>
+    <Box>
       <PageBanner
-        eyebrow={t("order.eyebrow")}
-        title={t("order.title")}
-        highlight={t("order.highlight")}
-        subtitle={t("order.subtitle")}
-        watermark={t("order.watermark")}
+        eyebrow="Pickup only"
+        title="Order from"
+        highlight="your counter"
+        subtitle="Online ordering redirects to our pickup partner. Choose the location nearest to you before placing the order."
+        image={pageImages.order}
+        imageAlt="Restaurant table with shared dishes"
       >
-        <Box sx={{ display: "flex", gap: { xs: 2, md: 4 }, flexWrap: "wrap" }}>
-          {[
-            { icon: <AccessTimeIcon sx={{ fontSize: "1rem" }} />, text: t("order.perkReady") },
-            { icon: <LocalOfferIcon sx={{ fontSize: "1rem" }} />, text: t("order.perkDiscount") },
-          ].map((perk, i) => (
-            <Box key={i} sx={{
-              display:      "flex",
-              alignItems:   "center",
-              gap:          1,
-              px:           2,
-              py:           0.75,
-              borderRadius: tokens.radius.pill,
-              bgcolor:      "rgba(184,134,11,0.08)",
-              border:       `1px solid rgba(184,134,11,0.2)`,
-            }}>
-              <Box sx={{ color: tokens.colors.primary.main }}>{perk.icon}</Box>
-              <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.85rem" }}>{perk.text}</Typography>
-            </Box>
-          ))}
-        </Box>
+        <Stack direction="row" gap={1} flexWrap="wrap">
+          <Chip icon={<AccessTimeIcon />} label="20–30 minute pickup" />
+          <Chip label="10% first order offer" />
+        </Stack>
       </PageBanner>
 
-      {/* ── How it works ── */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: tokens.colors.bg.base }}>
-        <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
-          <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
-            <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 1.5 }}>
-              {t("order.howItWorks")}
-            </Typography>
-            <Box className="gold-divider" sx={{ maxWidth: 200, mx: "auto" }} />
-          </Box>
-          <Box
-            sx={{
-              display:             "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
-              gap:                 { xs: 2.5, md: 4 },
-            }}
-          >
-            {steps.map((step, i) => (
-              <motion.div
-                key={step.num}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Box
-                  sx={{
-                    p:            { xs: 3.5, md: 4.5 },
-                    border:       `1px solid ${tokens.colors.border.subtle}`,
-                    borderRadius: tokens.radius.lg,
-                    bgcolor:      tokens.colors.bg.card,
-                    position:     "relative",
-                    overflow:     "hidden",
-                    height:       "100%",
-                    transition:   `all ${tokens.transitions.spring}`,
-                    "&:hover": {
-                      borderColor: tokens.colors.primary.main,
-                      transform:   "translateY(-6px)",
-                      boxShadow:   tokens.shadows.gold,
-                    },
-                  }}
-                >
-                  {/* Step icon circle */}
-                  <Box sx={{
-                    width:        56,
-                    height:       56,
-                    borderRadius: "50%",
-                    bgcolor:      tokens.colors.primary.glow,
-                    border:       `1px solid ${tokens.colors.border.subtle}`,
-                    display:      "flex",
-                    alignItems:   "center",
-                    justifyContent:"center",
-                    fontSize:     "1.5rem",
-                    mb:           2.5,
-                  }}>
-                    {stepIcons[i]}
-                  </Box>
+      <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 }, py: { xs: 6, md: 9 } }}>
+        <SectionHeading
+          eyebrow="Counters"
+          title="Choose where you want to pick up"
+          body="Both counters follow the same ordering flow. The links below open in a new tab."
+        />
 
-                  {/* Ghost step number */}
-                  <Typography
-                    aria-hidden="true"
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5, mt: 4 }}>
+          {locations.map((location) => {
+            const isPrimary = location.accent === "tomato";
+            const accentColor = isPrimary ? tokens.colors.primary.main : tokens.colors.secondary.main;
+            return (
+              <Box
+                key={location.id}
+                sx={{
+                  border: `1px solid ${tokens.colors.line.subtle}`,
+                  borderRadius: tokens.radius.xl,
+                  overflow: "hidden",
+                  bgcolor: tokens.colors.bg.card,
+                  transition: tokens.transitions.spring,
+                  "&:hover": {
+                    borderColor: accentColor,
+                    boxShadow: isPrimary ? tokens.shadows.orange : tokens.shadows.blue,
+                  },
+                  "&:hover .order-img": { transform: "scale(1.04)" },
+                }}
+              >
+                <Box sx={{ height: { xs: 240, md: 310 }, position: "relative", overflow: "hidden" }}>
+                  <Box
+                    component="img"
+                    src={location.image}
+                    alt={`${location.name} pickup location`}
+                    className="order-img image-cover"
+                    sx={{ transition: "transform 0.7s ease" }}
+                  />
+                  <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(23,27,23,0.02) 0%, rgba(23,27,23,0.82) 100%)" }} />
+                  <Box
                     sx={{
-                      position:   "absolute",
-                      top: -16, right: 12,
-                      fontFamily: tokens.fonts.display,
-                      fontSize:   "5.5rem",
-                      color:      tokens.colors.primary.main,
-                      opacity:    0.06, lineHeight: 1,
-                      userSelect: "none",
+                      position: "absolute",
+                      top: 18,
+                      right: 18,
+                      px: 1.5,
+                      py: 0.6,
+                      borderRadius: "999px",
+                      bgcolor: accentColor,
+                      color: isPrimary ? tokens.colors.text.primary : "#fff",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
                     }}
                   >
-                    {t(step.num)}
-                  </Typography>
-
-                  <Typography sx={{
-                    color:      tokens.colors.primary.main,
-                    fontFamily: tokens.fonts.display,
-                    fontSize:   "0.78rem",
-                    mb:         1,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                  }}>
-                    Step {t(step.num)}
-                  </Typography>
-                  <Typography sx={{ color: tokens.colors.text.primary, fontWeight: 600, fontSize: "1.05rem", mb: 1 }}>
-                    {t(step.title)}
-                  </Typography>
-                  <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.87rem", lineHeight: 1.65 }}>
-                    {t(step.desc)}
+                    Open daily
+                  </Box>
+                  <Typography
+                    sx={{
+                      position: "absolute",
+                      left: 24,
+                      bottom: 22,
+                      color: tokens.colors.text.inverse,
+                      fontFamily: tokens.fonts.display,
+                      fontSize: { xs: "2rem", md: "2.7rem" },
+                      lineHeight: 1,
+                    }}
+                  >
+                    {location.name}
                   </Typography>
                 </Box>
-              </motion.div>
-            ))}
-          </Box>
-        </Container>
-      </Box>
 
-      {/* ── Decorative separator ── */}
-      <Box sx={{ py: { xs: 0, md: 0 } }}>
-        <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Box className="gold-divider" sx={{ flex: 1 }} />
-            <Box sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: tokens.colors.primary.main, opacity: 0.5 }} />
-            <Box className="gold-divider" sx={{ flex: 1 }} />
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ── Location cards ── */}
-      <Box sx={{ py: { xs: 8, md: 14 }, bgcolor: tokens.colors.bg.surface }}>
-        <Container maxWidth="xl" sx={{ px: { xs: 2.5, sm: 4, lg: 8, xl: 10 } }}>
-          <Box sx={{ textAlign: "center", mb: { xs: 6, md: 10 } }}>
-            <Typography variant="overline" sx={{ color: tokens.colors.primary.main, display: "block", mb: 1.5 }}>
-              {t("order.chooseLocation")}
-            </Typography>
-            <Typography
-              component="h2"
-              sx={{
-                fontFamily: tokens.fonts.display, fontSize: { xs: "2.2rem", md: "3.2rem" },
-                fontWeight: 400, textTransform: "uppercase", color: tokens.colors.text.primary,
-                lineHeight: 0.95, letterSpacing: "-0.02em",
-              }}
-            >
-              {t("order.twoLocations")}
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              display:             "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-              gap:                 { xs: 3, md: 4 },
-            }}
-          >
-            {locations.map((loc, i) => (
-              <motion.div
-                key={loc.name}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Box
-                  onMouseEnter={() => setHovered(loc.name)}
-                  onMouseLeave={() => setHovered(null)}
-                  sx={{
-                    border:       `1px solid ${hovered === loc.name ? tokens.colors.primary.main : tokens.colors.border.subtle}`,
-                    borderRadius: tokens.radius.xl,
-                    overflow:     "hidden",
-                    bgcolor:      tokens.colors.bg.card,
-                    transition:   `all ${tokens.transitions.spring}`,
-                    transform:    hovered === loc.name ? "translateY(-8px) scale(1.01)" : "none",
-                    boxShadow:    hovered === loc.name ? tokens.shadows.goldLg : tokens.shadows.sm,
-                  }}
-                >
-                  {/* Image */}
-                  <Box sx={{ height: { xs: 220, md: 260 }, overflow: "hidden", position: "relative" }}>
-                    <Box
-                      component="img"
-                      src={loc.image}
-                      alt={`${loc.name} location`}
-                      loading="lazy"
-                      sx={{
-                        width: "100%", height: "100%", objectFit: "cover",
-                        transition: `transform ${tokens.transitions.spring}, filter ${tokens.transitions.slow}`,
-                        transform:  hovered === loc.name ? "scale(1.08)" : "scale(1)",
-                        filter:     hovered === loc.name ? "contrast(1.1) saturate(1.2)" : "contrast(1.05) saturate(1.1)",
-                      }}
-                    />
-                    {/* Cinematic overlay */}
-                    <Box sx={{
-                      position:   "absolute",
-                      inset:      0,
-                      background: "linear-gradient(to top, rgba(10,8,5,0.82) 0%, rgba(10,8,5,0.08) 55%, transparent 100%)",
-                    }} />
-                    {/* Location name on image */}
-                    <Box sx={{
-                      position: "absolute",
-                      bottom: 20, left: 24,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 0.5,
-                    }}>
-                      <Typography sx={{
-                        fontFamily:    tokens.fonts.display,
-                        fontSize:      "2rem",
-                        textTransform: "uppercase",
-                        color:         "white",
-                        letterSpacing: "-0.02em",
-                        lineHeight:    1,
-                        textShadow:    "0 2px 12px rgba(0,0,0,0.4)",
-                      }}>
-                        {loc.name}
-                      </Typography>
-                      {/* Gold accent line */}
-                      <Box sx={{
-                        width:      hovered === loc.name ? "60px" : "32px",
-                        height:     "2px",
-                        background: `linear-gradient(90deg, ${tokens.colors.primary.main}, transparent)`,
-                        transition: `width ${tokens.transitions.spring}`,
-                      }} />
-                    </Box>
-                  </Box>
-
-                  {/* Info */}
-                  <Box sx={{ p: { xs: 3, md: 4 } }}>
-                    <Box sx={{ display: "flex", gap: 2, mb: 2.5 }}>
-                      <LocationOnIcon sx={{ color: tokens.colors.primary.main, flexShrink: 0, mt: 0.2 }} />
-                      <Box>
-                        <Typography sx={{ color: tokens.colors.text.primary, fontWeight: 500, fontSize: "0.95rem" }}>
-                          {loc.address}
-                        </Typography>
-                        <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.85rem" }}>
-                          {loc.city}
-                        </Typography>
+                <Stack gap={1.8} sx={{ p: { xs: 2.5, md: 3 } }}>
+                  <Typography sx={{ color: tokens.colors.text.secondary }}>
+                    {location.address}, {location.city}
+                  </Typography>
+                  <Stack direction="row" gap={1.2} alignItems="center">
+                    <AccessTimeIcon sx={{ color: accentColor, fontSize: "1rem" }} />
+                    <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem" }}>{location.hours}</Typography>
+                  </Stack>
+                  {location.phones.map((phone) => (
+                    <Stack key={phone} direction="row" gap={1.2} alignItems="center">
+                      <PhoneIcon sx={{ color: accentColor, fontSize: "1rem" }} />
+                      <Box
+                        component="a"
+                        href={`tel:${phone.replace(/\D/g, "")}`}
+                        sx={{ color: tokens.colors.text.secondary, textDecoration: "none", fontSize: "0.88rem", "&:hover": { color: tokens.colors.text.primary } }}
+                      >
+                        {phone}
                       </Box>
-                    </Box>
-
-                    {loc.phones.map((phone, pi) => (
-                      <Box key={pi} sx={{ display: "flex", gap: 2, alignItems: "center", mb: 1 }}>
-                        <PhoneIcon sx={{ color: tokens.colors.primary.main, fontSize: "1rem", flexShrink: 0 }} />
-                        <Typography
-                          component="a"
-                          href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
-                          sx={{
-                            color: tokens.colors.text.secondary, fontSize: "0.9rem",
-                            textDecoration: "none",
-                            "&:hover": { color: tokens.colors.primary.main },
-                            transition: tokens.transitions.fast,
-                          }}
-                        >
-                          {phone}
-                        </Typography>
-                      </Box>
-                    ))}
-
+                    </Stack>
+                  ))}
+                  <Stack direction={{ xs: "column", sm: "row" }} gap={1.2} sx={{ pt: 0.5 }}>
                     <Button
                       component="a"
-                      href={loc.orderLink}
+                      href={location.orderLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       variant="contained"
-                      color="primary"
-                      fullWidth
-                      size="large"
-                      className="btn-shimmer"
-                      endIcon={<OpenInNewIcon sx={{ fontSize: "0.9rem !important", transition: "transform 0.25s ease" }} />}
+                      endIcon={<OpenInNewIcon />}
                       sx={{
-                        mt:         3,
+                        bgcolor: isPrimary ? tokens.colors.primary.main : tokens.colors.secondary.main,
+                        color: isPrimary ? tokens.colors.text.primary : "#fff",
                         fontWeight: 700,
-                        color:      tokens.colors.bg.base,
-                        fontSize:   "0.82rem",
-                        py:         1.6,
-                        background: `linear-gradient(135deg, ${tokens.colors.primary.main} 0%, ${tokens.colors.primary.dark} 100%)`,
-                        "&:hover .MuiButton-endIcon": { transform: "translate(2px, -2px)" },
+                        "&:hover": {
+                          bgcolor: isPrimary ? tokens.colors.primary.light : tokens.colors.secondary.light,
+                        },
                       }}
                     >
-                      {t("order.orderFrom", { name: loc.name })}
+                      Order from {location.name}
                     </Button>
-                  </Box>
+                    <Button
+                      component="a"
+                      href={location.mapLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="outlined"
+                      sx={{ borderColor: tokens.colors.line.medium, color: tokens.colors.text.secondary, "&:hover": { borderColor: tokens.colors.text.primary, color: tokens.colors.text.primary } }}
+                    >
+                      View map
+                    </Button>
+                  </Stack>
+                </Stack>
+              </Box>
+            );
+          })}
+        </Box>
+      </Container>
+
+      {/* ── How it works ──────────────────────────────────────────────── */}
+      <Box component="section" sx={{ bgcolor: tokens.colors.bg.inverse, py: { xs: 7, md: 10 } }}>
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
+          <SectionHeading eyebrow="Flow" title="How pickup ordering works" align="center" dark />
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: 2, mt: 4 }}>
+            {steps.map((step, index) => (
+              <Box
+                key={step.title}
+                sx={{
+                  bgcolor: tokens.colors.dark.surface,
+                  border: `1px solid ${tokens.colors.dark.borderSubtle}`,
+                  borderRadius: tokens.radius.xl,
+                  p: { xs: 2.5, md: 3 },
+                  position: "relative",
+                  overflow: "hidden",
+                  "&::before": {
+                    content: `"0${index + 1}"`,
+                    position: "absolute",
+                    top: -10,
+                    right: 16,
+                    fontFamily: tokens.fonts.display,
+                    fontSize: "5rem",
+                    fontWeight: 700,
+                    color: "rgba(251,250,246,0.04)",
+                    lineHeight: 1,
+                    pointerEvents: "none",
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: tokens.radius.md,
+                    display: "grid",
+                    placeItems: "center",
+                    bgcolor: index === 1 ? tokens.colors.secondary.pale : "rgba(245,166,35,0.15)",
+                    color: index === 1 ? tokens.colors.secondary.main : tokens.colors.primary.main,
+                    mb: 2,
+                  }}
+                >
+                  {step.icon}
                 </Box>
-              </motion.div>
+                <Typography sx={{ fontWeight: 700, fontSize: "1.08rem", mb: 1, color: tokens.colors.dark.textPrimary }}>{step.title}</Typography>
+                <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.9rem", lineHeight: 1.7 }}>{step.body}</Typography>
+              </Box>
             ))}
+          </Box>
+          <Box sx={{ textAlign: "center", mt: 5 }}>
+            <Button
+              href="/menu"
+              component="a"
+              variant="outlined"
+              endIcon={<ArrowForwardIcon />}
+              sx={{ borderColor: tokens.colors.dark.borderLight, color: tokens.colors.dark.textSecondary, "&:hover": { borderColor: tokens.colors.dark.textPrimary, color: tokens.colors.dark.textPrimary } }}
+            >
+              Preview menu first
+            </Button>
           </Box>
         </Container>
       </Box>
     </Box>
   );
-};
-
-export default OrderPage;
+}

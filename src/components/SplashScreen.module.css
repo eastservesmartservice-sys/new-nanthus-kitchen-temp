@@ -1,0 +1,235 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background: #0f0c07;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Background food image ─────────────────────────────────────────────── */
+.backgroundImage {
+  position: absolute;
+  inset: 0;
+  background-image: url("/welcome.png");
+  background-size: cover;
+  background-position: center center;
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+/* ── Dark cinematic overlay ────────────────────────────────────────────── */
+.darkOverlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 50%,
+    rgba(15, 12, 7, 0.35) 0%,
+    rgba(15, 12, 7, 0.82) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Warm gold ambient wash ────────────────────────────────────────────── */
+.gradientWash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 48% at 50% 44%,
+    rgba(245, 166, 35, 0.13) 0%,
+    rgba(216, 150, 39, 0.05) 55%,
+    transparent 80%
+  );
+  pointer-events: none;
+}
+
+/* ── Light rays ────────────────────────────────────────────────────────── */
+.raysContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ray {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5px;
+  height: 56vh;
+  background: linear-gradient(
+    180deg,
+    rgba(245, 166, 35, 0.55) 0%,
+    rgba(216, 150, 39, 0.22) 45%,
+    transparent 100%
+  );
+  border-radius: 2px;
+  filter: blur(1.2px);
+  pointer-events: none;
+  transform-origin: top center;
+}
+
+/* ── Floating motes ────────────────────────────────────────────────────── */
+.mote {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(245, 166, 35, 0.95) 0%,
+    rgba(216, 150, 39, 0.3) 100%
+  );
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+/* ── Gold hairline rulers ──────────────────────────────────────────────── */
+.rulerTop {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(245, 166, 35, 0.15) 15%,
+    rgba(216, 150, 39, 0.4) 50%,
+    rgba(245, 166, 35, 0.15) 85%,
+    transparent 100%
+  );
+  margin-top: -160px;
+  transform-origin: center;
+}
+
+.rulerBottom {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(245, 166, 35, 0.15) 15%,
+    rgba(216, 150, 39, 0.4) 50%,
+    rgba(245, 166, 35, 0.15) 85%,
+    transparent 100%
+  );
+  margin-top: 132px;
+  transform-origin: center;
+}
+
+/* ── Content stack ─────────────────────────────────────────────────────── */
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  gap: 0;
+}
+
+/* ── Logo wrapper with glow ────────────────────────────────────────────── */
+.logoWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.logoGlow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(245, 166, 35, 0.22) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  filter: blur(18px);
+}
+
+/* ── Logo image ────────────────────────────────────────────────────────── */
+.logo {
+  height: 88px;
+  width: auto;
+  display: block;
+  position: relative;
+  filter: drop-shadow(0 0 32px rgba(245, 166, 35, 0.45))
+    drop-shadow(0 4px 18px rgba(0, 0, 0, 0.6)) brightness(1.08);
+}
+
+/* ── Gold rule ─────────────────────────────────────────────────────────── */
+.rule {
+  width: 56px;
+  height: 2px;
+  background: linear-gradient(90deg, #c07a10 0%, #f5a623 55%, #e88050 100%);
+  border-radius: 2px;
+  margin-bottom: 20px;
+  transform-origin: center;
+  box-shadow: 0 0 12px rgba(245, 166, 35, 0.5);
+}
+
+/* ── Tamil welcome title ───────────────────────────────────────────────── */
+.tamilText {
+  font-family: "Noto Sans Tamil", "Latha", "Tamil MN", serif;
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  text-align: center;
+  text-shadow:
+    0 0 36px rgba(255, 208, 146, 0.25),
+    0 3px 0 rgba(0, 0, 0, 0.48);
+  margin: 0;
+}
+
+/* ── Tamil welcome label ────────────────────────────────────────────────── */
+.welcomeLabel {
+  margin: 12px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.95rem, 2.1vw, 1.08rem);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: rgba(255, 246, 227, 0.92);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.welcomeCaption {
+  margin: 14px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.9rem, 1.9vw, 1rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.76);
+  text-align: center;
+  max-width: 30rem;
+  line-height: 1.75;
+}
+
+/* ── Exit curtain ──────────────────────────────────────────────────────── */
+.curtain {
+  position: absolute;
+  inset: 0;
+  background: #faf8f3;
+  z-index: 10;
+}
+
+/* ── Progress bar ──────────────────────────────────────────────────────── */
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #c07a10 0%, #f5a623 55%, #19766f 100%);
+  transform-origin: left;
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.4);
+}
