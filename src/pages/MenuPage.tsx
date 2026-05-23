@@ -4,7 +4,6 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import PageBanner from "../components/PageBanner";
 import LocationSelectionModal from "../components/LocationSelectionModal";
-import SectionHeading from "../components/SectionHeading";
 import { locations, pageImages } from "../data/site";
 import { useMenu } from "../hooks/useMenu";
 import type { LocationId } from "../hooks/useMenu";
