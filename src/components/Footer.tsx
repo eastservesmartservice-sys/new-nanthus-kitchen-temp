@@ -68,6 +68,8 @@ export default function Footer() {
               component="img"
               src="/new_nanthus_kitchen_logo.png"
               alt="New Nanthus Kitchen"
+              loading="lazy"
+              decoding="async"
               sx={{ width: { xs: 130, md: 160 }, display: "block" }}
             />
             <Typography sx={{ color: tokens.colors.dark.textSecondary, maxWidth: 320, lineHeight: 1.8 }}>

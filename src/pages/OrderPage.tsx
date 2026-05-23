@@ -79,6 +79,8 @@ export default function OrderPage() {
                     component="img"
                     src={location.image}
                     alt={`${location.name} pickup location`}
+                    loading="lazy"
+                    decoding="async"
                     className="order-img image-cover"
                     sx={{ transition: "transform 0.7s ease" }}
                   />

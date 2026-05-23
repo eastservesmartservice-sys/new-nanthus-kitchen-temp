@@ -41,6 +41,9 @@ export default function PageBanner({
             component="img"
             src={image}
             alt={imageAlt ?? title}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             className="image-cover"
             sx={{ position: "absolute", inset: 0, opacity: 0.72 }}
           />

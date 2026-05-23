@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Box, Button, Chip, CircularProgress, Container, Stack, Typography } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
@@ -9,10 +10,15 @@ import { useMenu } from "../hooks/useMenu";
 import type { LocationId } from "../hooks/useMenu";
 import { tokens } from "../theme";
 
+const isLocationId = (value: string | null): value is LocationId =>
+  value === "scarborough" || value === "markham";
+
 export default function MenuPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [orderOpen, setOrderOpen] = useState(false);
-  const [selectedLocationId, setSelectedLocationId] = useState<LocationId>("scarborough");
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const locationParam = searchParams.get("location");
+  const selectedLocationId: LocationId = isLocationId(locationParam) ? locationParam : "scarborough";
 
   const { categories, loading, error } = useMenu(selectedLocationId);
 
@@ -27,8 +33,8 @@ export default function MenuPage() {
   }, [activeCategoryId, categories]);
 
   const switchLocation = (id: LocationId) => {
-    setSelectedLocationId(id);
     setActiveCategoryId(null);
+    setSearchParams({ location: id }, { replace: true });
   };
 
   if (loading) {
@@ -87,7 +93,7 @@ export default function MenuPage() {
         imageAlt="Noodle and curry dishes"
       >
         <Stack direction="row" gap={1} flexWrap="wrap">
-          <Chip label={`${categories.length} sections`} />
+          <Chip label={`${categories.length} categories`} />
           <Chip label={selectedLocation.name} sx={{ bgcolor: "rgba(245,166,35,0.18)", color: tokens.colors.primary.light, border: "1px solid rgba(245,166,35,0.28)" }} />
         </Stack>
       </PageBanner>
@@ -170,9 +176,9 @@ export default function MenuPage() {
             }}
           >
             <Box sx={{ p: 2.5, borderBottom: `1px solid ${tokens.colors.line.subtle}` }}>
-              <Typography sx={{ fontWeight: 700 }}>Menu sections</Typography>
+              <Typography sx={{ fontWeight: 700 }}>Browse Menu</Typography>
               <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.82rem" }}>
-                {selectedLocation.name} · {categories.length} sections
+                {selectedLocation.name} — {categories.length} {categories.length === 1 ? "category" : "categories"}
               </Typography>
             </Box>
             <Box
@@ -273,6 +279,8 @@ export default function MenuPage() {
                         component="img"
                         src={item.imageUrl}
                         alt={item.name}
+                        loading="lazy"
+                        decoding="async"
                         sx={{ width: 72, height: 72, objectFit: "cover", borderRadius: tokens.radius.md, flexShrink: 0 }}
                       />
                     )}

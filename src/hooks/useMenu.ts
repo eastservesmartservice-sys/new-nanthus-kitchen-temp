@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch, getImageUrl } from "../lib/api";
+import { onRealtime } from "../lib/realtime";
 import type { ApiMenuCategory } from "../types/api";
 
 export type LocationId = "scarborough" | "markham";
@@ -23,6 +24,12 @@ export interface MenuCategory {
   items: MenuItem[];
 }
 
+interface MenuState {
+  categories: MenuCategory[];
+  error: string | null;
+  requestKey: string | null;
+}
+
 function effectivePrice(
   item: { price: number | null; priceScarborough: number | null; priceMarkham: number | null },
   location: LocationId,
@@ -41,7 +48,7 @@ function mapCategory(raw: ApiMenuCategory, location: LocationId): MenuCategory {
     id: raw.id,
     name: raw.name,
     description: raw.description ?? "",
-    items: (raw.items ?? [])
+    items: [...(raw.items ?? [])]
       .filter((i) => i.isAvailable)
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((i) => ({
@@ -62,24 +69,45 @@ function mapCategory(raw: ApiMenuCategory, location: LocationId): MenuCategory {
 }
 
 export function useMenu(location: LocationId) {
-  const [categories, setCategories] = useState<MenuCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [tick, setTick] = useState(0);
+  const requestKey = `${location}:${tick}`;
+  const [state, setState] = useState<MenuState>({
+    categories: [],
+    error: null,
+    requestKey: null,
+  });
+
+  useEffect(() => onRealtime("menu:update", () => setTick((t) => t + 1)), []);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    apiFetch<ApiMenuCategory[]>(`/menu/categories?location=${location}`)
-      .then((data) => {
-        setCategories(
-          data
-            .sort((a, b) => a.sortOrder - b.sortOrder)
-            .map((c) => mapCategory(c, location)),
-        );
-      })
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [location]);
+    const controller = new AbortController();
 
-  return { categories, loading, error };
+    apiFetch<ApiMenuCategory[]>(`/menu/categories?location=${location}`, { signal: controller.signal })
+      .then((data) => {
+        const categories = [...data]
+            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .map((c) => mapCategory(c, location));
+
+        setState({ categories, error: null, requestKey });
+      })
+      .catch((e: Error) => {
+        if (e.name !== "AbortError") {
+          setState({
+            categories: [],
+            error: "Oops! Something went wrong loading the menu. Please try again or give us a call.",
+            requestKey,
+          });
+        }
+      });
+
+    return () => controller.abort();
+  }, [location, requestKey]);
+
+  const isCurrent = state.requestKey === requestKey;
+
+  return {
+    categories: isCurrent ? state.categories : [],
+    loading: !isCurrent,
+    error: isCurrent ? state.error : null,
+  };
 }

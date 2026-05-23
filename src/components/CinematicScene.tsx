@@ -12,7 +12,7 @@ export default function CinematicScene({ image = heroImage, tone = "dark" }: Cin
 
   return (
     <Box className="cinematic-canvas" aria-hidden="true" sx={{ overflow: "hidden" }}>
-      <Box component="img" src={image} alt="" className="image-cover" />
+      <Box component="img" src={image} alt="" loading="lazy" decoding="async" className="image-cover" />
       <Box
         sx={{
           position: "absolute",

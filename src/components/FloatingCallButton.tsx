@@ -18,7 +18,7 @@ export default function FloatingCallButton() {
   const [open, setOpen] = useState(false);
 
   const call = (phone: string) => {
-    window.location.href = `tel:${phone.replace(/\D/g, "")}`;
+    window.location.assign(`tel:${phone.replace(/\D/g, "")}`);
     setOpen(false);
   };
 

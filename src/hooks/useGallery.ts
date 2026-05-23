@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch, getImageUrl } from "../lib/api";
+import { onRealtime } from "../lib/realtime";
 import type { ApiMenuCategory, ApiSpecial } from "../types/api";
 
 export interface GalleryImage {
@@ -9,15 +10,32 @@ export interface GalleryImage {
   category: string;
 }
 
+interface GalleryState {
+  images: GalleryImage[];
+  error: string | null;
+  requestKey: number | null;
+}
+
 export function useGallery() {
-  const [images, setImages] = useState<GalleryImage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [tick, setTick] = useState(0);
+  const [state, setState] = useState<GalleryState>({
+    images: [],
+    error: null,
+    requestKey: null,
+  });
 
   useEffect(() => {
+    const offMenu = onRealtime("menu:update", () => setTick((t) => t + 1));
+    const offSpecial = onRealtime("special:update", () => setTick((t) => t + 1));
+    return () => { offMenu(); offSpecial(); };
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
     Promise.all([
-      apiFetch<ApiSpecial[]>("/specials/current"),
-      apiFetch<ApiMenuCategory[]>("/menu/categories"),
+      apiFetch<ApiSpecial[]>("/specials/current", { signal: controller.signal }),
+      apiFetch<ApiMenuCategory[]>("/menu/categories", { signal: controller.signal }),
     ])
       .then(([specials, categories]) => {
         const result: GalleryImage[] = [];
@@ -46,11 +64,22 @@ export function useGallery() {
           }
         }
 
-        setImages(result);
+        setState({ images: result, error: null, requestKey: tick });
       })
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
+      .catch((e: Error) => {
+        if (e.name !== "AbortError") {
+          setState({ images: [], error: e.message, requestKey: tick });
+        }
+      });
 
-  return { images, loading, error };
+    return () => controller.abort();
+  }, [tick]);
+
+  const isCurrent = state.requestKey === tick;
+
+  return {
+    images: isCurrent ? state.images : [],
+    loading: !isCurrent,
+    error: isCurrent ? state.error : null,
+  };
 }

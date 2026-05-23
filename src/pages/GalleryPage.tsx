@@ -166,6 +166,8 @@ export default function GalleryPage() {
                     component="img"
                     src={item.src}
                     alt={item.alt}
+                    loading="lazy"
+                    decoding="async"
                     className="gallery-img image-cover"
                     sx={{ transition: "transform 0.6s ease" }}
                   />
@@ -263,6 +265,8 @@ export default function GalleryPage() {
                 component="img"
                 src={selected.src}
                 alt={selected.alt}
+                loading="eager"
+                decoding="async"
                 sx={{ maxHeight: isMobile ? "calc(100vh - 128px)" : "72vh", width: "100%", objectFit: "contain", display: "block" }}
               />
             </Box>

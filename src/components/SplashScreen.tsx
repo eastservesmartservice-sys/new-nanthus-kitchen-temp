@@ -6,6 +6,22 @@ const SPLASH_KEY = "nk_splash_seen_v5";
 const HOLD_MS = 4600;
 const EXIT_MS = 900;
 
+function hasSeenSplash() {
+  try {
+    return sessionStorage.getItem(SPLASH_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markSplashSeen() {
+  try {
+    sessionStorage.setItem(SPLASH_KEY, "1");
+  } catch {
+    // Storage can be unavailable in some privacy modes.
+  }
+}
+
 function Mote({
   x,
   y,
@@ -37,25 +53,25 @@ function Mote({
 }
 
 export default function SplashScreen() {
-  const [visible, setVisible] = useState(
-    () => !sessionStorage.getItem(SPLASH_KEY),
-  );
+  const [visible, setVisible] = useState(() => !hasSeenSplash());
   const [exiting, setExiting] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!visible) return;
     document.body.style.overflow = "hidden";
-    timer.current = setTimeout(() => {
+    holdTimer.current = setTimeout(() => {
       setExiting(true);
-      setTimeout(() => {
+      exitTimer.current = setTimeout(() => {
         setVisible(false);
-        sessionStorage.setItem(SPLASH_KEY, "1");
+        markSplashSeen();
         document.body.style.overflow = "";
       }, EXIT_MS);
     }, HOLD_MS);
     return () => {
-      if (timer.current) clearTimeout(timer.current);
+      if (holdTimer.current) clearTimeout(holdTimer.current);
+      if (exitTimer.current) clearTimeout(exitTimer.current);
       document.body.style.overflow = "";
     };
   }, [visible]);
@@ -151,6 +167,8 @@ export default function SplashScreen() {
           <img
             src="/new_nanthus_kitchen_logo.png"
             alt="New Nanthus Kitchen"
+            loading="eager"
+            decoding="async"
             className={css.logo}
           />
         </motion.div>

@@ -117,6 +117,8 @@ export default function MenuLocationModal({ open, onClose }: Props) {
                     component="img"
                     src={location.image}
                     alt={`${location.name} counter`}
+                    loading="lazy"
+                    decoding="async"
                     className="loc-img image-cover"
                     sx={{ transition: "transform 0.6s ease" }}
                   />

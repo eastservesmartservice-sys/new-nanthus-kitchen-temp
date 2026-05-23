@@ -1,20 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "../theme";
 
 export default function ScrollToTop() {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
+  const frame = useRef<number | null>(null);
 
   useEffect(() => {
-    const onScroll = () => {
+    const updateScrollState = () => {
+      frame.current = null;
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(docHeight > 0 ? scrollTop / docHeight : 0);
       setVisible(scrollTop > 320);
     };
+
+    const onScroll = () => {
+      if (frame.current !== null) return;
+      frame.current = window.requestAnimationFrame(updateScrollState);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    updateScrollState();
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame.current !== null) window.cancelAnimationFrame(frame.current);
+    };
   }, []);
 
   const scrollUp = () => window.scrollTo({ top: 0, behavior: "smooth" });

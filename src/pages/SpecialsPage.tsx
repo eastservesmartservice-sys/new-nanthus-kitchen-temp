@@ -112,6 +112,8 @@ export default function SpecialsPage() {
                         component="img"
                         src={special.imageUrl}
                         alt={special.title}
+                        loading="lazy"
+                        decoding="async"
                         className="special-img image-cover"
                         sx={{ transition: "transform 0.7s ease" }}
                       />

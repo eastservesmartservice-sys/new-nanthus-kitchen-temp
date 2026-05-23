@@ -1,25 +1,38 @@
-const BASE = (import.meta.env.VITE_API_URL as string) ?? "http://localhost:3000/api";
+const BASE = import.meta.env.VITE_API_URL as string;
+if (!BASE) throw new Error("VITE_API_URL environment variable is not set");
 
-// Strip trailing slash
+// Strip trailing slash.
 const API = BASE.replace(/\/$/, "");
 
-export async function apiFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${API}${path}`);
-  if (!res.ok) throw new Error(`API ${path} → ${res.status}`);
-  return res.json() as Promise<T>;
+async function parseJsonResponse<T>(res: Response): Promise<T> {
+  if (res.status === 204) return undefined as T;
+
+  const text = await res.text();
+  if (!text) return undefined as T;
+
+  return JSON.parse(text) as T;
 }
 
-export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${API}${path}`, init);
+  if (!res.ok) throw new Error(`API ${path} -> ${res.status}`);
+  return parseJsonResponse<T>(res);
+}
+
+export async function apiPost<T>(path: string, body: unknown, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API}${path}`, {
+    ...init,
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...init?.headers },
     body: JSON.stringify(body),
   });
+
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message ?? `API ${path} → ${res.status}`);
+    const err = await parseJsonResponse<{ message?: string }>(res).catch(() => ({}) as { message?: string });
+    throw new Error(err.message ?? `API ${path} -> ${res.status}`);
   }
-  return res.json() as Promise<T>;
+
+  return parseJsonResponse<T>(res);
 }
 
 // Backend image URLs are relative (/uploads/...). Prepend the host (no /api part).

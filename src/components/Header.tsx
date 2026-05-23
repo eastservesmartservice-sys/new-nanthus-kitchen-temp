@@ -129,6 +129,8 @@ export default function Header() {
               component="img"
               src="/new_nanthus_kitchen_logo.png"
               alt={t("header.logoAlt")}
+              loading="eager"
+              decoding="async"
               sx={{ height: { xs: 54, md: 62 }, width: "auto", objectFit: "contain" }}
             />
           </Box>
@@ -264,6 +266,8 @@ export default function Header() {
               component="img"
               src="/new_nanthus_kitchen_logo.png"
               alt={t("header.logoAlt")}
+              loading="eager"
+              decoding="async"
               sx={{ height: 48, filter: "invert(1) hue-rotate(180deg)" }}
             />
             <IconButton

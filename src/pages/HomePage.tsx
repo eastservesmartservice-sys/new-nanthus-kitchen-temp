@@ -218,6 +218,9 @@ export default function HomePage() {
             component="img"
             src={heroImage}
             alt="Sri Lankan banana leaf rice"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
           />
         </motion.div>
@@ -497,6 +500,8 @@ export default function HomePage() {
               component="img"
               src="/home_feature.png"
               alt="Sri Lankan dishes at New Nanthus Kitchen"
+              loading="lazy"
+              decoding="async"
               className="image-cover"
             />
           </motion.div>
@@ -950,6 +955,8 @@ export default function HomePage() {
                         component="img"
                         src={item.image}
                         alt={item.title}
+                        loading="lazy"
+                        decoding="async"
                         className="feature-img image-cover"
                         sx={{ transition: "transform 0.65s ease" }}
                       />
@@ -1047,6 +1054,8 @@ export default function HomePage() {
                   component="img"
                   src="/home_feature.png"
                   alt="Prepared Sri Lankan dishes"
+                  loading="lazy"
+                  decoding="async"
                   className="image-cover"
                   sx={{ transition: "transform 0.85s ease" }}
                 />
@@ -1243,6 +1252,8 @@ export default function HomePage() {
                         component="img"
                         src={location.image}
                         alt={`${location.name} restaurant counter`}
+                        loading="lazy"
+                        decoding="async"
                         className="loc-img image-cover"
                         sx={{ transition: "transform 0.75s ease" }}
                       />
