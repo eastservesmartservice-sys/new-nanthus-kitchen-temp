@@ -29,10 +29,10 @@ export default function Footer() {
           >
             <Box>
               <Typography sx={{ color: tokens.colors.dark.textTertiary, textTransform: "uppercase", fontWeight: 700, mb: 1 }}>
-                Pickup kitchen
+                Jaffna flavours, Toronto made
               </Typography>
               <Typography sx={{ fontFamily: tokens.fonts.display, fontSize: { xs: "2rem", md: "2.6rem" }, lineHeight: 1.1 }}>
-                Fresh Sri Lankan food from two Toronto counters.
+                Bold Sri Lankan flavours, fresh from our two Toronto kitchens.
               </Typography>
             </Box>
             <Button
@@ -68,7 +68,7 @@ export default function Footer() {
               component="img"
               src="/new_nanthus_kitchen_logo.png"
               alt="New Nanthus Kitchen"
-              sx={{ width: 160, display: "block" }}
+              sx={{ width: { xs: 130, md: 160 }, display: "block" }}
             />
             <Typography sx={{ color: tokens.colors.dark.textSecondary, maxWidth: 320, lineHeight: 1.8 }}>
               Jaffna inspired cooking, short eats, grilled plates, biryani, kothu, and catering for family tables across Toronto.
@@ -141,11 +141,15 @@ export default function Footer() {
                     </Box>
                   </Stack>
                 ))}
-                <Stack direction="row" gap={1.2} alignItems="center">
-                  <AccessTimeIcon sx={{ fontSize: "0.95rem", color: tokens.colors.saffron.light }} />
-                  <Typography sx={{ color: tokens.colors.dark.textTertiary, fontSize: "0.82rem" }}>
-                    {location.hours}
-                  </Typography>
+                <Stack direction="row" gap={1.2} alignItems="flex-start">
+                  <AccessTimeIcon sx={{ fontSize: "0.95rem", color: tokens.colors.saffron.light, mt: 0.25 }} />
+                  <Stack gap={0.3}>
+                    {location.hours.map((line) => (
+                      <Typography key={line} sx={{ color: tokens.colors.dark.textTertiary, fontSize: "0.82rem" }}>
+                        {line}
+                      </Typography>
+                    ))}
+                  </Stack>
                 </Stack>
               </Stack>
             </Box>

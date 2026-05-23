@@ -4,6 +4,8 @@ import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import theme, { tokens } from "../theme";
+import FloatingCallButton from "./FloatingCallButton";
+import ScrollToTop from "./ScrollToTop";
 import Footer from "./Footer";
 import Header from "./Header";
 import SplashScreen from "./SplashScreen";
@@ -54,6 +56,8 @@ export default function Layout() {
           </motion.main>
         </AnimatePresence>
         <Footer />
+        <FloatingCallButton />
+        <ScrollToTop />
       </Box>
     </ThemeProvider>
   );

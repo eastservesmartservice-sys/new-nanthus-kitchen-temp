@@ -211,7 +211,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: tokens.radius.pill,
+          borderRadius: tokens.radius.md,
           minHeight: 42,
           boxShadow: "none",
           textTransform: "none",
@@ -257,7 +257,7 @@ const theme = createTheme({
     },
     MuiChip: {
       styleOverrides: {
-        root: { borderRadius: tokens.radius.pill, fontWeight: 700 },
+        root: { borderRadius: tokens.radius.sm, fontWeight: 700 },
       },
     },
     MuiIconButton: {
@@ -267,6 +267,26 @@ const theme = createTheme({
           "&:focus-visible": {
             outline: `2px solid ${tokens.colors.secondary.main}`,
             outlineOffset: 2,
+          },
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          "&:focus-visible": {
+            outline: `2px solid ${tokens.colors.secondary.main}`,
+            outlineOffset: 3,
+            borderRadius: tokens.radius.sm,
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: tokens.colors.secondary.main,
           },
         },
       },

@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useInView,
+  animate,
+  AnimatePresence,
+} from "framer-motion";
 import {
   Box,
   Button,
@@ -18,57 +26,172 @@ import RestaurantMenuOutlinedIcon from "@mui/icons-material/RestaurantMenuOutlin
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
-import { heroImage, locations, menuCategories, pageImages } from "../data/site";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import { heroImage, locations, pageImages } from "../data/site";
+
+const marqueeItems = [
+  "Kothu", "Biryani", "Grilled", "Short Eats", "Jaffna Specialties",
+  "Seafood", "Fried Rice", "Noodles", "Pasta", "Poutines",
+  "Chicken Dishes", "Beef Dishes", "Lamb Dishes", "Sandwiches", "Drinks",
+  "Banana Leaf", "Lamprais", "Puttu", "Idiyappam", "Kids Menu",
+];
 import { tokens } from "../theme";
+import EyebrowPill from "../components/EyebrowPill";
 import LocationSelectionModal from "../components/LocationSelectionModal";
 import SectionHeading from "../components/SectionHeading";
 
+// ─── Easing & variants ────────────────────────────────────────────────────────
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 52 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.78, ease, delay: i * 0.13 },
+  }),
+};
+
+const slideUp = {
+  hidden: { y: "108%", opacity: 0 },
+  visible: (i: number = 0) => ({
+    y: "0%",
+    opacity: 1,
+    transition: { duration: 0.92, ease, delay: i * 0.16 },
+  }),
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.91 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.75, ease, delay: i * 0.1 },
+  }),
+};
+
+// ─── Counter component ────────────────────────────────────────────────────────
+function Counter({
+  to,
+  suffix = "",
+  prefix = "",
+}: {
+  to: number;
+  suffix?: string;
+  prefix?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const [val, setVal] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    const ctrl = animate(0, to, {
+      duration: 2.4,
+      ease: "easeOut",
+      onUpdate: (v) => setVal(Math.round(v)),
+    });
+    return ctrl.stop;
+  }, [isInView, to]);
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {val}
+      {suffix}
+    </span>
+  );
+}
+
+// ─── Static data ──────────────────────────────────────────────────────────────
 const featureLinks = [
   {
-    title: "Menu built for every craving",
-    body: "Kothu, biryani, Jaffna curries, seafood, short eats, grilled plates, and family portions.",
+    title: "Browse the full menu",
+    body: "From kothu and biryani to Jaffna curries, seafood, short eats, and grilled plates — something for every appetite.",
     path: "/menu",
     image: pageImages.menu,
     icon: <RestaurantMenuOutlinedIcon />,
   },
   {
-    title: "Daily counter specials",
-    body: "Quick pickup meals, weekend soup, and kitchen picks that change with the rhythm of service.",
+    title: "Today's specials",
+    body: "Fresh kitchen picks, weekend soups, and counter plates that change with the day. Check what's on right now.",
     path: "/specials",
     image: pageImages.specials,
     icon: <StarBorderOutlinedIcon />,
   },
   {
-    title: "Catering for gatherings",
-    body: "Traditional Sri Lankan spreads for offices, weddings, cultural events, and milestone tables.",
+    title: "Plan a catering order",
+    body: "Feeding a crowd? We handle offices, weddings, cultural events, and family milestones with full Sri Lankan spreads.",
     path: "/catering",
     image: pageImages.catering,
     icon: <GroupsOutlinedIcon />,
   },
 ];
 
-const stats = [
-  { value: "2", label: "Toronto spots" },
-  { value: `${menuCategories.length}`, label: "Menu sections" },
-  { value: "20–30", label: "Minute pickup" },
-  { value: "10%", label: "First order offer" },
+const pillars = [
+  {
+    icon: <FavoriteOutlinedIcon sx={{ fontSize: "1.1rem" }} />,
+    title: "Rooted in Jaffna",
+    body: "Every recipe traces back to the Northern Sri Lankan kitchen — bold spice blends, slow-cooked curries, and techniques passed down through generations.",
+  },
+  {
+    icon: <VerifiedOutlinedIcon sx={{ fontSize: "1.1rem" }} />,
+    title: "No shortcuts",
+    body: "Fresh ingredients, made-to-order plates, and the same standards whether you're picking up on a Tuesday or a Sunday night.",
+  },
+  {
+    icon: <PeopleOutlinedIcon sx={{ fontSize: "1.1rem" }} />,
+    title: "Built for Toronto",
+    body: "Two counters — Scarborough and Markham — placed where the community is. Familiar food, close to home.",
+  },
 ];
 
+const stats = [
+  { value: 2, suffix: "", label: "GTA Locations" },
+  { value: 50, suffix: "+", label: "Menu items daily" },
+  { value: 10, suffix: "+", label: "Years of Jaffna" },
+  { value: 100, suffix: "%", label: "Authentic recipes" },
+];
+
+const foodChips = [
+  "Banana leaf",
+  "Kothu",
+  "Lamprais",
+  "Chicken 65",
+  "Seafood kool",
+  "Biryani",
+];
+
+const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function HomePage() {
   const [orderOpen, setOrderOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const subscribe = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  /* Hero parallax */
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroImgY = useTransform(heroScroll, [0, 1], ["0%", "22%"]);
+  const heroFade = useTransform(heroScroll, [0, 0.65], [1, 0]);
+  const heroSlide = useTransform(heroScroll, [0, 1], ["0%", "6%"]);
+
+  const subscribe = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setSubscribed(true);
     setEmail("");
   };
 
   return (
     <Box>
-      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      {/* ══ HERO ═══════════════════════════════════════════════════════════ */}
       <Box
+        ref={heroRef}
         component="section"
         sx={{
           minHeight: { xs: "calc(100svh - 70px)", md: "calc(100svh - 112px)" },
@@ -77,756 +200,1342 @@ export default function HomePage() {
           position: "relative",
           overflow: "hidden",
           color: tokens.colors.text.inverse,
+          bgcolor: "#0e0e0e",
         }}
       >
-        <Box
-          component="img"
-          src={heroImage}
-          alt="Sri Lankan banana leaf rice"
-          className="image-cover"
-          sx={{ position: "absolute", inset: 0 }}
-        />
-        <Box
-          sx={{
+        {/* Parallax image */}
+        <motion.div
+          style={{
             position: "absolute",
             inset: 0,
-            background:
-              "linear-gradient(90deg, rgba(23,27,23,0.92) 0%, rgba(23,27,23,0.62) 50%, rgba(23,27,23,0.18) 100%)",
-          }}
-        />
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(180deg, transparent 50%, rgba(23,27,23,0.5) 100%)",
-          }}
-        />
-
-        <Container
-          maxWidth="xl"
-          sx={{
-            position: "relative",
-            px: { xs: 2.5, md: 6 },
-            py: { xs: 8, md: 10 },
+            width: "100%",
+            height: "120%",
+            top: "-10%",
+            y: heroImgY,
           }}
         >
-          <Stack gap={3.5} alignItems="flex-start" sx={{ maxWidth: 720 }}>
-            <Box
-              sx={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 1,
-                px: 1.5,
-                py: 0.75,
-                borderRadius: "999px",
-                border: `1px solid rgba(245,166,35,0.4)`,
-                bgcolor: "rgba(245,166,35,0.1)",
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              <Box
-                sx={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  bgcolor: tokens.colors.primary.main,
-                }}
-              />
+          <Box
+            component="img"
+            src={heroImage}
+            alt="Sri Lankan banana leaf rice"
+            sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        </motion.div>
+
+        {/* Cinematic gradient overlays */}
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(105deg, rgba(14,14,14,0.96) 0%, rgba(14,14,14,0.72) 50%, rgba(14,14,14,0.18) 100%)",
+          }}
+        />
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(180deg, rgba(14,14,14,0.2) 0%, transparent 35%, transparent 65%, rgba(14,14,14,0.7) 100%)",
+          }}
+        />
+
+        {/* Film grain */}
+        <Box
+          aria-hidden="true"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.04,
+            backgroundImage: GRAIN,
+            backgroundSize: "180px 180px",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Vertical accent line — desktop only */}
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "38%", opacity: 1 }}
+            transition={{ duration: 1.4, ease, delay: 1.6 }}
+            style={{
+              position: "absolute",
+              left: 44,
+              top: "31%",
+              width: 1,
+              background: `linear-gradient(180deg, transparent 0%, ${tokens.colors.primary.main} 50%, transparent 100%)`,
+            }}
+          />
+        </Box>
+
+        {/* Content fades & slides up on scroll */}
+        <motion.div
+          style={{
+            opacity: heroFade,
+            y: heroSlide,
+            position: "relative",
+            zIndex: 2,
+            width: "100%",
+          }}
+        >
+          <Container
+            maxWidth="xl"
+            sx={{ px: { xs: 2.5, md: 6 }, py: { xs: 8, md: 10 } }}
+          >
+            <Stack gap={4} alignItems="flex-start" sx={{ maxWidth: 720 }}>
+              {/* Eyebrow */}
+              <motion.div
+                initial={{ opacity: 0, x: -28 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.75, ease, delay: 0.1 }}
+              >
+                <EyebrowPill label="Jaffna flavours, Toronto made" dark />
+              </motion.div>
+
+              {/* Headline — masked line reveal */}
               <Typography
+                component="h1"
                 sx={{
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                  color: tokens.colors.primary.light,
+                  fontFamily: tokens.fonts.display,
+                  fontSize: { xs: "2.8rem", sm: "4.4rem", md: "7rem" },
+                  lineHeight: 0.92,
+                  letterSpacing: "-0.025em",
                 }}
               >
-                Sri Lankan pickup kitchen
+                <Box sx={{ overflow: "hidden", display: "block" }}>
+                  <motion.span
+                    initial="hidden"
+                    animate="visible"
+                    variants={slideUp}
+                    custom={0}
+                    style={{ display: "inline-block" }}
+                  >
+                    New{" "}
+                    <Box
+                      component="span"
+                      sx={{ color: tokens.colors.primary.main }}
+                    >
+                      Nanthus
+                    </Box>
+                  </motion.span>
+                </Box>
+                <Box sx={{ overflow: "hidden", display: "block" }}>
+                  <motion.span
+                    initial="hidden"
+                    animate="visible"
+                    variants={slideUp}
+                    custom={1}
+                    style={{ display: "inline-block" }}
+                  >
+                    Kitchen
+                  </motion.span>
+                </Box>
               </Typography>
-            </Box>
 
-            <Typography
-              component="h1"
-              sx={{
-                fontFamily: tokens.fonts.display,
-                fontSize: { xs: "3rem", sm: "4.2rem", md: "6rem" },
-                lineHeight: 0.95,
-                letterSpacing: "-0.01em",
-              }}
-            >
-              New{" "}
-              <Box component="span" sx={{ color: tokens.colors.primary.main }}>
-                Nanthus
-              </Box>{" "}
-              Kitchen
-            </Typography>
-
-            <Typography
-              sx={{
-                color: tokens.colors.dark.textSecondary,
-                fontSize: { xs: "1rem", md: "1.12rem" },
-                lineHeight: 1.8,
-                maxWidth: 560,
-              }}
-            >
-              Jaffna inspired dishes, fast pickup, and catering built around
-              generous portions and bold spice.
-            </Typography>
-
-            <Stack direction={{ xs: "column", sm: "row" }} gap={1.5}>
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<ShoppingBagOutlinedIcon />}
-                onClick={() => setOrderOpen(true)}
-                sx={{
-                  bgcolor: tokens.colors.primary.main,
-                  color: tokens.colors.text.primary,
-                  fontWeight: 700,
-                  px: 3.5,
-                  "&:hover": { bgcolor: tokens.colors.primary.light },
-                }}
+              {/* Tagline */}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease, delay: 0.58 }}
               >
-                Order pickup
-              </Button>
-              <Button
-                component={Link}
-                to="/menu"
-                variant="outlined"
-                size="large"
-                endIcon={<ArrowForwardIcon />}
-                sx={{
-                  color: tokens.colors.text.inverse,
-                  borderColor: "rgba(251,250,246,0.35)",
-                  backdropFilter: "blur(8px)",
-                  "&:hover": {
-                    borderColor: tokens.colors.text.inverse,
-                    bgcolor: "rgba(251,250,246,0.1)",
-                  },
-                }}
+                <Typography
+                  sx={{
+                    color: "rgba(251,250,246,0.68)",
+                    fontSize: { xs: "1rem", md: "1.15rem" },
+                    lineHeight: 1.8,
+                    maxWidth: 520,
+                  }}
+                >
+                  Hot plates, bold spice, and generous portions from our
+                  Scarborough and Markham kitchens.
+                </Typography>
+              </motion.div>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease, delay: 0.76 }}
               >
-                Browse menu
-              </Button>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  gap={1.5}
+                  alignItems={{ xs: "stretch", sm: "center" }}
+                >
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<ShoppingBagOutlinedIcon />}
+                    onClick={() => setOrderOpen(true)}
+                    sx={{
+                      bgcolor: tokens.colors.primary.main,
+                      color: tokens.colors.text.primary,
+                      fontWeight: 700,
+                      px: 3.5,
+                      "&:hover": { bgcolor: tokens.colors.primary.light },
+                    }}
+                  >
+                    Order pickup
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/menu"
+                    variant="outlined"
+                    size="large"
+                    endIcon={<ArrowForwardIcon />}
+                    sx={{
+                      color: tokens.colors.text.inverse,
+                      borderColor: "rgba(251,250,246,0.3)",
+                      backdropFilter: "blur(8px)",
+                      "&:hover": {
+                        borderColor: tokens.colors.text.inverse,
+                        bgcolor: "rgba(251,250,246,0.08)",
+                      },
+                    }}
+                  >
+                    Browse menu
+                  </Button>
+                </Stack>
+              </motion.div>
             </Stack>
-          </Stack>
-        </Container>
+          </Container>
+        </motion.div>
+
       </Box>
 
-      {/* ── Marquee ───────────────────────────────────────────────────── */}
+      {/* ══ MARQUEE ════════════════════════════════════════════════════════ */}
       <Box
+        component="section"
+        aria-label="Menu categories"
+        aria-hidden="true"
         sx={{
-          bgcolor: tokens.colors.bg.inverse,
-          color: tokens.colors.dark.textPrimary,
-          borderTop: `1px solid ${tokens.colors.dark.borderSubtle}`,
+          bgcolor: tokens.colors.primary.main,
           overflow: "hidden",
         }}
       >
-        <Box className="marquee-track">
-          {[...menuCategories.slice(0, 9), ...menuCategories.slice(0, 9)].map(
-            (item, index) => (
+        <Box className="marquee-track" role="marquee">
+          {[...marqueeItems, ...marqueeItems].map(
+            (name, i) => (
               <Stack
-                key={`${item.category}-${index}`}
+                key={`${name}-${i}`}
                 direction="row"
                 alignItems="center"
-                gap={2}
-                sx={{ py: 1.8, px: 3, flexShrink: 0 }}
+                gap={1.5}
+                sx={{ py: 1.5, px: 3, flexShrink: 0 }}
               >
                 <LocalDiningOutlinedIcon
-                  sx={{ fontSize: "1rem", color: tokens.colors.primary.main }}
+                  sx={{ fontSize: "0.9rem", color: "rgba(23,27,23,0.65)" }}
                 />
-                <Typography sx={{ fontWeight: 700, fontSize: "0.86rem" }}>
-                  {item.category}
+                <Typography
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: "0.8rem",
+                    color: tokens.colors.text.primary,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {name}
                 </Typography>
               </Stack>
-            ),
+            )
           )}
         </Box>
       </Box>
 
-      {/* ── Stats ─────────────────────────────────────────────────────── */}
-      <Container
-        maxWidth="xl"
-        sx={{ px: { xs: 2.5, md: 6 }, py: { xs: 7, md: 10 } }}
-      >
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" },
-            border: `1px solid ${tokens.colors.line.subtle}`,
-            borderRadius: tokens.radius.xl,
-            overflow: "hidden",
-            bgcolor: tokens.colors.bg.card,
-          }}
-        >
-          {stats.map((item, index) => (
-            <Box
-              key={item.label}
-              sx={{
-                p: { xs: 2.5, md: 3.5 },
-                borderRight: {
-                  md:
-                    index < 3
-                      ? `1px solid ${tokens.colors.line.subtle}`
-                      : "none",
-                },
-                borderBottom: {
-                  xs:
-                    index < 2
-                      ? `1px solid ${tokens.colors.line.subtle}`
-                      : "none",
-                  md: "none",
-                },
-                position: "relative",
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "3px",
-                  bgcolor:
-                    index % 2 === 0
-                      ? tokens.colors.primary.main
-                      : tokens.colors.secondary.main,
-                  opacity: 0.7,
-                },
-              }}
-            >
-              <Typography
-                className="stat-num"
-                sx={{
-                  fontSize: { xs: "2.2rem", md: "3rem" },
-                  color: tokens.colors.text.primary,
-                  lineHeight: 1,
-                }}
-              >
-                {item.value}
-              </Typography>
-              <Typography
-                sx={{
-                  color: tokens.colors.text.tertiary,
-                  fontWeight: 700,
-                  fontSize: "0.78rem",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  mt: 0.5,
-                }}
-              >
-                {item.label}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </Container>
-
-      {/* ── Feature cards ─────────────────────────────────────────────── */}
-      <Box
-        component="section"
-        sx={{ bgcolor: tokens.colors.bg.warm, py: { xs: 7, md: 10 } }}
-      >
-        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
-          <SectionHeading
-            eyebrow="Start here"
-            title="Three ways into the kitchen"
-            body="Choose the path that matches the way you are ordering today."
-          />
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-              gap: 2.5,
-              mt: 4,
-            }}
-          >
-            {featureLinks.map((item) => (
-              <Box
-                key={item.title}
-                component={Link}
-                to={item.path}
-                sx={{
-                  textDecoration: "none",
-                  bgcolor: tokens.colors.bg.card,
-                  border: `1px solid ${tokens.colors.line.subtle}`,
-                  borderRadius: tokens.radius.xl,
-                  overflow: "hidden",
-                  transition: tokens.transitions.spring,
-                  display: "block",
-                  "&:hover": {
-                    transform: "translateY(-6px)",
-                    boxShadow: tokens.shadows.lg,
-                    borderColor: tokens.colors.primary.main,
-                  },
-                  "&:hover .feature-img": {
-                    transform: "scale(1.06)",
-                  },
-                  "&:hover .feature-icon": {
-                    bgcolor: tokens.colors.primary.main,
-                    color: tokens.colors.text.primary,
-                  },
-                }}
-              >
-                <Box
-                  sx={{ height: 220, overflow: "hidden", position: "relative" }}
-                >
-                  <Box
-                    component="img"
-                    src={item.image}
-                    alt={item.title}
-                    className="feature-img image-cover"
-                    sx={{ transition: "transform 0.6s ease" }}
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      inset: 0,
-                      background:
-                        "linear-gradient(180deg, transparent 40%, rgba(23,27,23,0.5) 100%)",
-                    }}
-                  />
-                </Box>
-                <Stack gap={1.5} sx={{ p: 2.5 }}>
-                  <Box
-                    className="feature-icon"
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: tokens.radius.md,
-                      display: "grid",
-                      placeItems: "center",
-                      bgcolor: tokens.colors.primary.pale,
-                      color: tokens.colors.primary.dark,
-                      transition: tokens.transitions.normal,
-                    }}
-                  >
-                    {item.icon}
-                  </Box>
-                  <Typography sx={{ fontWeight: 700, fontSize: "1.1rem" }}>
-                    {item.title}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: tokens.colors.text.secondary,
-                      fontSize: "0.9rem",
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {item.body}
-                  </Typography>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    gap={0.5}
-                    sx={{
-                      color: tokens.colors.secondary.main,
-                      fontWeight: 700,
-                      fontSize: "0.82rem",
-                      mt: 0.5,
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: 700, fontSize: "0.82rem" }}>
-                      Explore
-                    </Typography>
-                    <ArrowForwardIcon sx={{ fontSize: "0.9rem" }} />
-                  </Stack>
-                </Stack>
-              </Box>
-            ))}
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ── About / spice section ─────────────────────────────────────── */}
-      <Box component="section" sx={{ py: { xs: 7, md: 11 } }}>
-        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "0.95fr 1.05fr" },
-              gap: { xs: 5, md: 8 },
-              alignItems: "center",
-            }}
-          >
-            <Box
-              sx={{
-                aspectRatio: "4 / 3",
-                borderRadius: tokens.radius.xl,
-                overflow: "hidden",
-                border: `1px solid ${tokens.colors.line.subtle}`,
-                position: "relative",
-                "&:hover img": { transform: "scale(1.04)" },
-              }}
-            >
-              <Box
-                component="img"
-                src="https://images.unsplash.com/photo-1495714393975-3fb6c1c661af?w=1400&q=84&auto=format&fit=crop"
-                alt="Prepared Sri Lankan dishes on a restaurant table"
-                className="image-cover"
-                sx={{ transition: "transform 0.8s ease" }}
-              />
-              <Box
-                sx={{
-                  position: "absolute",
-                  bottom: 20,
-                  left: 20,
-                  bgcolor: "rgba(23,27,23,0.82)",
-                  backdropFilter: "blur(10px)",
-                  borderRadius: tokens.radius.md,
-                  px: 2,
-                  py: 1.2,
-                  border: `1px solid ${tokens.colors.dark.borderSubtle}`,
-                }}
-              >
-                <Stack direction="row" gap={1} alignItems="center">
-                  <VerifiedOutlinedIcon
-                    sx={{ color: tokens.colors.primary.main, fontSize: "1rem" }}
-                  />
-                  <Typography
-                    sx={{
-                      color: tokens.colors.dark.textPrimary,
-                      fontWeight: 700,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    Authentic Jaffna recipes
-                  </Typography>
-                </Stack>
-              </Box>
-            </Box>
-            <Stack gap={3}>
-              <SectionHeading
-                eyebrow="Our style"
-                title="Built around spice, rice, heat, and pickup speed"
-                body="The menu covers everyday plates and celebration food without losing the Jaffna backbone: curry, sambol, short eats, grilled meats, seafood, and rice dishes that travel well."
-              />
-              <Stack direction="row" flexWrap="wrap" gap={1}>
-                {[
-                  "Banana leaf",
-                  "Kothu",
-                  "Lamprais",
-                  "Chicken 65",
-                  "Seafood kool",
-                  "Biryani",
-                ].map((item) => (
-                  <Chip
-                    key={item}
-                    label={item}
-                    sx={{
-                      bgcolor: tokens.colors.secondary.pale,
-                      color: tokens.colors.secondary.dark,
-                      fontWeight: 700,
-                      border: `1px solid ${tokens.colors.secondary.glow}`,
-                    }}
-                  />
-                ))}
-              </Stack>
-              <Button
-                component={Link}
-                to="/gallery"
-                variant="outlined"
-                endIcon={<ArrowForwardIcon />}
-                sx={{
-                  alignSelf: "flex-start",
-                  borderColor: tokens.colors.line.medium,
-                  color: tokens.colors.text.primary,
-                  "&:hover": {
-                    borderColor: tokens.colors.secondary.main,
-                    color: tokens.colors.secondary.main,
-                  },
-                }}
-              >
-                See the food
-              </Button>
-            </Stack>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ── Locations ─────────────────────────────────────────────────── */}
+      {/* ══ ABOUT US — cinematic dark ══════════════════════════════════════ */}
       <Box
         component="section"
         sx={{
+          position: "relative",
+          overflow: "hidden",
           bgcolor: tokens.colors.bg.inverse,
           color: tokens.colors.dark.textPrimary,
-          py: { xs: 7, md: 10 },
         }}
       >
-        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
-          <SectionHeading
-            eyebrow="Locations"
-            title="Choose your nearest counter"
-            align="center"
-            dark
-          />
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-              gap: 2.5,
-              mt: 4,
-            }}
-          >
-            {locations.map((location) => (
-              <Box
-                key={location.id}
-                sx={{
-                  bgcolor: tokens.colors.dark.surface,
-                  border: `1px solid ${tokens.colors.dark.borderSubtle}`,
-                  borderRadius: tokens.radius.xl,
-                  overflow: "hidden",
-                  transition: tokens.transitions.spring,
-                  "&:hover": {
-                    borderColor: tokens.colors.primary.main,
-                    boxShadow: tokens.shadows.orange,
-                  },
-                  "&:hover .loc-img": { transform: "scale(1.04)" },
-                }}
-              >
-                <Box
-                  sx={{
-                    height: { xs: 200, md: 240 },
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={location.image}
-                    alt={`${location.name} restaurant counter`}
-                    className="loc-img image-cover"
-                    sx={{ transition: "transform 0.7s ease" }}
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      inset: 0,
-                      background:
-                        "linear-gradient(180deg, transparent 30%, rgba(23,27,23,0.85) 100%)",
-                    }}
-                  />
-                  <Typography
-                    sx={{
-                      position: "absolute",
-                      bottom: 18,
-                      left: 22,
-                      fontFamily: tokens.fonts.display,
-                      fontSize: { xs: "2rem", md: "2.5rem" },
-                      color: tokens.colors.dark.textPrimary,
-                      lineHeight: 1,
-                    }}
-                  >
-                    {location.name}
-                  </Typography>
-                </Box>
-                <Stack gap={1.5} sx={{ p: { xs: 2.5, md: 3 } }}>
-                  <Typography
-                    sx={{
-                      color: tokens.colors.dark.textSecondary,
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    {location.address}, {location.city}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: tokens.colors.dark.textTertiary,
-                      fontSize: "0.82rem",
-                    }}
-                  >
-                    {location.hours}
-                  </Typography>
-                  <Stack
-                    direction="row"
-                    gap={1.2}
-                    flexWrap="wrap"
-                    sx={{ pt: 0.5 }}
-                  >
-                    <Button
-                      variant="contained"
-                      onClick={() => setOrderOpen(true)}
-                      sx={{
-                        bgcolor: tokens.colors.primary.main,
-                        color: tokens.colors.text.primary,
-                        fontWeight: 700,
-                        "&:hover": { bgcolor: tokens.colors.primary.light },
-                      }}
-                    >
-                      Order here
-                    </Button>
-                    <Button
-                      component="a"
-                      href={location.mapLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      variant="outlined"
-                      startIcon={<MapOutlinedIcon />}
-                      sx={{
-                        borderColor: tokens.colors.dark.borderLight,
-                        color: tokens.colors.dark.textSecondary,
-                        "&:hover": {
-                          borderColor: tokens.colors.dark.textPrimary,
-                          color: tokens.colors.dark.textPrimary,
-                        },
-                      }}
-                    >
-                      Map
-                    </Button>
-                  </Stack>
-                </Stack>
-              </Box>
-            ))}
-          </Box>
-        </Container>
-      </Box>
+        {/* Grain */}
+        <Box
+          aria-hidden="true"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.032,
+            backgroundImage: GRAIN,
+            backgroundSize: "180px 180px",
+            pointerEvents: "none",
+          }}
+        />
 
-      {/* ── Newsletter ────────────────────────────────────────────────── */}
-      <Box
-        component="section"
-        sx={{ py: { xs: 7, md: 10 }, bgcolor: tokens.colors.bg.warm }}
-      >
-        <Container maxWidth="md" sx={{ px: { xs: 2.5, md: 6 } }}>
-          <Box
-            sx={{
-              bgcolor: tokens.colors.bg.inverse,
-              borderRadius: tokens.radius.xl,
-              p: { xs: 3.5, md: 6 },
-              border: `1px solid ${tokens.colors.dark.borderSubtle}`,
-              textAlign: "center",
-            }}
+        {/* Right image with cinematic reveal */}
+        <Box
+          sx={{
+            display: { xs: "none", md: "block" },
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: "42%",
+            height: "100%",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(90deg, rgba(23,27,23,1) 0%, rgba(23,27,23,0.52) 42%, transparent 100%)",
+              zIndex: 1,
+            },
+          }}
+        >
+          <motion.div
+            initial={{ scale: 1.14, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 0.58 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.6, ease }}
+            style={{ width: "100%", height: "100%" }}
           >
             <Box
-              sx={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 1,
-                px: 1.5,
-                py: 0.75,
-                borderRadius: "999px",
-                border: `1px solid rgba(245,166,35,0.3)`,
-                bgcolor: "rgba(245,166,35,0.1)",
-                mb: 2.5,
+              component="img"
+              src="/home_feature.png"
+              alt="Sri Lankan dishes at New Nanthus Kitchen"
+              className="image-cover"
+            />
+          </motion.div>
+        </Box>
+
+        {/* Drifting watermark */}
+        <motion.div
+          aria-hidden="true"
+          animate={{ x: [-18, 18] }}
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut",
+          }}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            translateX: "-50%",
+            translateY: "-50%",
+            pointerEvents: "none",
+            userSelect: "none",
+            zIndex: 0,
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: tokens.fonts.display,
+              fontSize: { xs: "22vw", md: "15vw" },
+              fontWeight: 700,
+              color: "rgba(251,250,246,0.018)",
+              whiteSpace: "nowrap",
+              lineHeight: 1,
+            }}
+          >
+            NANTHUS
+          </Typography>
+        </motion.div>
+
+        <Container
+          maxWidth="xl"
+          sx={{
+            px: { xs: 2.5, md: 6 },
+            py: { xs: 9, md: 14 },
+            position: "relative",
+            zIndex: 2,
+          }}
+        >
+          <Box sx={{ maxWidth: { xs: "100%", md: "57%" } }}>
+            {/* Eyebrow */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.18 } },
               }}
             >
-              <Box
-                sx={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  bgcolor: tokens.colors.primary.main,
-                }}
-              />
+              <Stack direction="row" alignItems="center" gap={2} sx={{ mb: 4 }}>
+                <motion.div
+                  variants={{
+                    hidden: { scaleX: 0 },
+                    visible: {
+                      scaleX: 1,
+                      transition: { duration: 0.75, ease },
+                    },
+                  }}
+                  style={{
+                    height: 1,
+                    width: 40,
+                    backgroundColor: tokens.colors.primary.main,
+                    transformOrigin: "left",
+                  }}
+                />
+                <motion.div variants={fadeUp} custom={0}>
+                  <Typography
+                    sx={{
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.16em",
+                      color: tokens.colors.primary.main,
+                    }}
+                  >
+                    Our story
+                  </Typography>
+                </motion.div>
+              </Stack>
+            </motion.div>
+
+            {/* Headline — masked line reveal */}
+            <Box sx={{ mb: 5 }}>
               <Typography
+                component="h2"
                 sx={{
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                  color: tokens.colors.primary.light,
+                  fontFamily: tokens.fonts.display,
+                  fontSize: {
+                    xs: "2.4rem",
+                    sm: "3.8rem",
+                    md: "5rem",
+                    lg: "5.8rem",
+                  },
+                  lineHeight: 0.94,
+                  letterSpacing: "-0.025em",
+                  color: tokens.colors.dark.textPrimary,
                 }}
               >
-                Updates
+                <Box sx={{ overflow: "hidden", display: "block" }}>
+                  <motion.span
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    variants={slideUp}
+                    custom={0}
+                    style={{ display: "inline-block" }}
+                  >
+                    Jaffna on{" "}
+                    <Box
+                      component="span"
+                      sx={{
+                        color: tokens.colors.primary.main,
+                        fontStyle: "italic",
+                      }}
+                    >
+                      the plate,
+                    </Box>
+                  </motion.span>
+                </Box>
+                <Box sx={{ overflow: "hidden", display: "block" }}>
+                  <motion.span
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    variants={slideUp}
+                    custom={1}
+                    style={{ display: "inline-block" }}
+                  >
+                    Toronto{" "}
+                    <Box
+                      component="span"
+                      sx={{ color: tokens.colors.dark.textTertiary }}
+                    >
+                      at the door.
+                    </Box>
+                  </motion.span>
+                </Box>
               </Typography>
             </Box>
 
-            <Typography
-              sx={{
-                fontFamily: tokens.fonts.display,
-                fontSize: { xs: "2rem", md: "2.8rem" },
-                lineHeight: 1.05,
-                color: tokens.colors.dark.textPrimary,
-                mb: 1.5,
-              }}
+            {/* Body */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={fadeUp}
+              custom={0}
             >
-              Get specials before lunch
-            </Typography>
-            <Typography
-              sx={{
-                color: tokens.colors.dark.textSecondary,
-                mb: 4,
-                maxWidth: 480,
-                mx: "auto",
-                lineHeight: 1.8,
-              }}
-            >
-              Join the email list for specials, menu additions, and catering
-              notes. No spam — unsubscribe any time.
-            </Typography>
-
-            {subscribed ? (
-              <Stack alignItems="center" gap={1}>
-                <VerifiedOutlinedIcon
-                  sx={{ color: tokens.colors.primary.main, fontSize: "2rem" }}
-                />
-                <Typography
-                  sx={{
-                    color: tokens.colors.dark.textPrimary,
-                    fontWeight: 700,
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  You're on the list.
-                </Typography>
-                <Typography
-                  sx={{
-                    color: tokens.colors.dark.textTertiary,
-                    fontSize: "0.88rem",
-                  }}
-                >
-                  We'll be in touch with specials and news.
-                </Typography>
-              </Stack>
-            ) : (
-              <Box
-                component="form"
-                onSubmit={subscribe}
+              <Typography
                 sx={{
-                  display: "flex",
-                  gap: 1.5,
-                  flexDirection: { xs: "column", sm: "row" },
-                  maxWidth: 480,
-                  mx: "auto",
+                  color: tokens.colors.dark.textSecondary,
+                  fontSize: { xs: "1rem", md: "1.08rem" },
+                  lineHeight: 1.9,
+                  maxWidth: 520,
+                  mb: 6,
                 }}
               >
-                <TextField
-                  fullWidth
-                  required
-                  type="email"
-                  label="Email address"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      bgcolor: tokens.colors.dark.card,
-                      "& fieldset": {
-                        borderColor: tokens.colors.dark.borderLight,
-                      },
-                      "&:hover fieldset": {
-                        borderColor: tokens.colors.dark.borderLight,
-                      },
-                      "& input": { color: tokens.colors.dark.textPrimary },
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: tokens.colors.dark.textTertiary,
-                    },
-                  }}
-                />
+                New Nanthus Kitchen brought the Northern Sri Lankan table to
+                Scarborough and Markham — full spice, proper portions, and the
+                cooking methods that don't take shortcuts. Every plate is made
+                fresh, every order treated like it matters.
+              </Typography>
+            </motion.div>
+
+            {/* Pillars */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.12 } },
+              }}
+            >
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                divider={
+                  <Box
+                    sx={{
+                      width: { xs: "100%", sm: "1px" },
+                      height: { xs: "1px", sm: "auto" },
+                      bgcolor: tokens.colors.dark.borderSubtle,
+                      flexShrink: 0,
+                    }}
+                  />
+                }
+                gap={0}
+                sx={{
+                  border: `1px solid ${tokens.colors.dark.borderSubtle}`,
+                  borderRadius: tokens.radius.xl,
+                  overflow: "hidden",
+                  mb: 5,
+                }}
+              >
+                {pillars.map((p) => (
+                  <motion.div
+                    key={p.title}
+                    variants={fadeUp}
+                    style={{ flex: 1 }}
+                  >
+                    <Box
+                      sx={{
+                        flex: 1,
+                        px: { xs: 2.5, md: 3 },
+                        py: 2.5,
+                        transition: tokens.transitions.fast,
+                        "&:hover": { bgcolor: tokens.colors.dark.surface },
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: tokens.radius.sm,
+                          display: "grid",
+                          placeItems: "center",
+                          bgcolor: "rgba(245,166,35,0.12)",
+                          color: tokens.colors.primary.main,
+                          mb: 1.5,
+                        }}
+                      >
+                        {p.icon}
+                      </Box>
+                      <Typography
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: "0.9rem",
+                          color: tokens.colors.dark.textPrimary,
+                          mb: 0.5,
+                        }}
+                      >
+                        {p.title}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "0.8rem",
+                          color: tokens.colors.dark.textTertiary,
+                          lineHeight: 1.65,
+                        }}
+                      >
+                        {p.body}
+                      </Typography>
+                    </Box>
+                  </motion.div>
+                ))}
+              </Stack>
+            </motion.div>
+
+            {/* CTAs */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={0}
+            >
+              <Stack
+                direction="row"
+                gap={2}
+                flexWrap="wrap"
+                alignItems="center"
+              >
                 <Button
-                  type="submit"
+                  component={Link}
+                  to="/gallery"
                   variant="contained"
+                  endIcon={<ArrowForwardIcon />}
                   sx={{
-                    px: 4,
-                    flexShrink: 0,
                     bgcolor: tokens.colors.primary.main,
                     color: tokens.colors.text.primary,
                     fontWeight: 700,
                     "&:hover": { bgcolor: tokens.colors.primary.light },
                   }}
                 >
-                  Subscribe
+                  See the food
                 </Button>
-              </Box>
-            )}
+                <Button
+                  component={Link}
+                  to="/menu"
+                  variant="text"
+                  endIcon={<ArrowForwardIcon />}
+                  sx={{
+                    color: tokens.colors.dark.textSecondary,
+                    "&:hover": { color: tokens.colors.dark.textPrimary },
+                  }}
+                >
+                  Browse menu
+                </Button>
+              </Stack>
+            </motion.div>
           </Box>
+        </Container>
+      </Box>
+
+      {/* ══ STATS STRIP ════════════════════════════════════════════════════ */}
+      <Box
+        component="section"
+        sx={{
+          bgcolor: tokens.colors.bg.base,
+          py: { xs: 5, md: 7 },
+          borderTop: `1px solid ${tokens.colors.line.subtle}`,
+          borderBottom: `1px solid ${tokens.colors.line.subtle}`,
+        }}
+      >
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.14 } },
+            }}
+          >
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" },
+                gap: { xs: 4, md: 0 },
+                textAlign: "center",
+              }}
+            >
+              {stats.map((s, i) => (
+                <motion.div key={s.label} variants={fadeUp} custom={i}>
+                  <Box
+                    sx={{
+                      px: { md: 3 },
+                      borderRight: {
+                        md:
+                          i < stats.length - 1
+                            ? `1px solid ${tokens.colors.line.subtle}`
+                            : "none",
+                      },
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: tokens.fonts.display,
+                        fontSize: { xs: "3.2rem", md: "4.8rem" },
+                        lineHeight: 1,
+                        fontWeight: 700,
+                        color: tokens.colors.primary.main,
+                        mb: 0.5,
+                      }}
+                    >
+                      <Counter to={s.value} suffix={s.suffix} />
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "0.76rem",
+                        color: tokens.colors.text.secondary,
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      {s.label}
+                    </Typography>
+                  </Box>
+                </motion.div>
+              ))}
+            </Box>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* ══ FEATURE CARDS ══════════════════════════════════════════════════ */}
+      <Box
+        component="section"
+        sx={{ bgcolor: tokens.colors.bg.warm, py: { xs: 8, md: 12 } }}
+      >
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={fadeUp}
+            custom={0}
+          >
+            <SectionHeading
+              eyebrow="Your visit, your way"
+              title="What brings you in today?"
+              body="Whether you're grabbing a quick plate, exploring the full menu, or planning a spread for a crowd."
+            />
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.16 } },
+            }}
+          >
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+                gap: 2.5,
+                mt: 4,
+              }}
+            >
+              {featureLinks.map((item) => (
+                <motion.div
+                  key={item.title}
+                  variants={scaleIn}
+                  whileHover={{
+                    y: -8,
+                    transition: { duration: 0.32, ease },
+                  }}
+                  style={{ display: "block" }}
+                >
+                  <Box
+                    component={Link}
+                    to={item.path}
+                    sx={{
+                      textDecoration: "none",
+                      bgcolor: tokens.colors.bg.card,
+                      border: `1px solid ${tokens.colors.line.subtle}`,
+                      borderRadius: tokens.radius.xl,
+                      overflow: "hidden",
+                      transition: "box-shadow 0.35s ease, border-color 0.35s ease",
+                      display: "block",
+                      "&:hover": {
+                        boxShadow: tokens.shadows.lg,
+                        borderColor: tokens.colors.primary.main,
+                      },
+                      "&:hover .feature-img": { transform: "scale(1.07)" },
+                      "&:hover .feature-icon": {
+                        bgcolor: tokens.colors.primary.main,
+                        color: tokens.colors.text.primary,
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{ height: 230, overflow: "hidden", position: "relative" }}
+                    >
+                      <Box
+                        component="img"
+                        src={item.image}
+                        alt={item.title}
+                        className="feature-img image-cover"
+                        sx={{ transition: "transform 0.65s ease" }}
+                      />
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          inset: 0,
+                          background:
+                            "linear-gradient(180deg, transparent 40%, rgba(23,27,23,0.55) 100%)",
+                        }}
+                      />
+                    </Box>
+                    <Stack gap={1.5} sx={{ p: 2.5 }}>
+                      <Box
+                        className="feature-icon"
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: tokens.radius.md,
+                          display: "grid",
+                          placeItems: "center",
+                          bgcolor: tokens.colors.primary.pale,
+                          color: tokens.colors.primary.dark,
+                          transition: tokens.transitions.normal,
+                        }}
+                      >
+                        {item.icon}
+                      </Box>
+                      <Typography sx={{ fontWeight: 700, fontSize: "1.1rem" }}>
+                        {item.title}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: tokens.colors.text.secondary,
+                          fontSize: "0.9rem",
+                          lineHeight: 1.65,
+                        }}
+                      >
+                        {item.body}
+                      </Typography>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        gap={0.5}
+                        sx={{
+                          color: tokens.colors.secondary.main,
+                          mt: 0.5,
+                        }}
+                      >
+                        <Typography
+                          sx={{ fontWeight: 700, fontSize: "0.82rem" }}
+                        >
+                          Explore
+                        </Typography>
+                        <ArrowForwardIcon sx={{ fontSize: "0.9rem" }} />
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </motion.div>
+              ))}
+            </Box>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* ══ FOOD HIGHLIGHTS ════════════════════════════════════════════════ */}
+      <Box component="section" sx={{ py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "0.95fr 1.05fr" },
+              gap: { xs: 6, md: 10 },
+              alignItems: "center",
+            }}
+          >
+            {/* Image */}
+            <motion.div
+              initial={{ opacity: 0, x: -56, scale: 0.95 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 1, ease }}
+            >
+              <Box
+                sx={{
+                  aspectRatio: "4/3",
+                  borderRadius: tokens.radius.xl,
+                  overflow: "hidden",
+                  border: `1px solid ${tokens.colors.line.subtle}`,
+                  position: "relative",
+                  "&:hover img": { transform: "scale(1.05)" },
+                }}
+              >
+                <Box
+                  component="img"
+                  src="/home_feature.png"
+                  alt="Prepared Sri Lankan dishes"
+                  className="image-cover"
+                  sx={{ transition: "transform 0.85s ease" }}
+                />
+                {/* Badge */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, ease, delay: 0.4 }}
+                  style={{ position: "absolute", bottom: 20, left: 20 }}
+                >
+                  <Box
+                    sx={{
+                      bgcolor: "rgba(23,27,23,0.85)",
+                      backdropFilter: "blur(12px)",
+                      borderRadius: tokens.radius.md,
+                      px: 2,
+                      py: 1.2,
+                      border: `1px solid ${tokens.colors.dark.borderSubtle}`,
+                    }}
+                  >
+                    <Stack direction="row" gap={1} alignItems="center">
+                      <VerifiedOutlinedIcon
+                        sx={{
+                          color: tokens.colors.primary.main,
+                          fontSize: "1rem",
+                        }}
+                      />
+                      <Typography
+                        sx={{
+                          color: tokens.colors.dark.textPrimary,
+                          fontWeight: 700,
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        Authentic Jaffna recipes
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </motion.div>
+              </Box>
+            </motion.div>
+
+            {/* Text */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.13 } },
+              }}
+            >
+              <Stack gap={3}>
+                <motion.div variants={fadeUp} custom={0}>
+                  <SectionHeading
+                    eyebrow="Our style"
+                    title="Built around spice, rice, heat, and pickup speed"
+                    body="The menu covers everyday plates and celebration food without losing the Jaffna backbone: curry, sambol, short eats, grilled meats, seafood, and rice dishes that travel well."
+                  />
+                </motion.div>
+                <motion.div variants={fadeUp} custom={1}>
+                  <Stack direction="row" flexWrap="wrap" gap={1}>
+                    {foodChips.map((item) => (
+                      <Chip
+                        key={item}
+                        label={item}
+                        sx={{
+                          bgcolor: tokens.colors.secondary.pale,
+                          color: tokens.colors.secondary.dark,
+                          fontWeight: 700,
+                          border: `1px solid ${tokens.colors.secondary.glow}`,
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                </motion.div>
+                <motion.div variants={fadeUp} custom={2}>
+                  <Button
+                    component={Link}
+                    to="/gallery"
+                    variant="outlined"
+                    endIcon={<ArrowForwardIcon />}
+                    sx={{
+                      alignSelf: "flex-start",
+                      borderColor: tokens.colors.line.medium,
+                      color: tokens.colors.text.primary,
+                      "&:hover": {
+                        borderColor: tokens.colors.secondary.main,
+                        color: tokens.colors.secondary.main,
+                      },
+                    }}
+                  >
+                    See the food
+                  </Button>
+                </motion.div>
+              </Stack>
+            </motion.div>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ══ LOCATIONS ══════════════════════════════════════════════════════ */}
+      <Box
+        component="section"
+        sx={{
+          bgcolor: tokens.colors.bg.inverse,
+          color: tokens.colors.dark.textPrimary,
+          py: { xs: 8, md: 12 },
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Grain */}
+        <Box
+          aria-hidden="true"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.03,
+            backgroundImage: GRAIN,
+            backgroundSize: "180px 180px",
+            pointerEvents: "none",
+          }}
+        />
+        <Container
+          maxWidth="xl"
+          sx={{ px: { xs: 2.5, md: 6 }, position: "relative", zIndex: 1 }}
+        >
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={fadeUp}
+            custom={0}
+          >
+            <SectionHeading
+              eyebrow="Two locations"
+              title="Find your nearest counter"
+              align="center"
+              dark
+            />
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.2 } },
+            }}
+          >
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                gap: 2.5,
+                mt: 4,
+              }}
+            >
+              {locations.map((location) => (
+                <motion.div
+                  key={location.id}
+                  variants={scaleIn}
+                  whileHover={{
+                    y: -6,
+                    transition: { duration: 0.3, ease },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      bgcolor: tokens.colors.dark.surface,
+                      border: `1px solid ${tokens.colors.dark.borderSubtle}`,
+                      borderRadius: tokens.radius.xl,
+                      overflow: "hidden",
+                      transition:
+                        "border-color 0.35s ease, box-shadow 0.35s ease",
+                      "&:hover": {
+                        borderColor: tokens.colors.primary.main,
+                        boxShadow: tokens.shadows.orange,
+                      },
+                      "&:hover .loc-img": { transform: "scale(1.05)" },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        height: { xs: 210, md: 260 },
+                        overflow: "hidden",
+                        position: "relative",
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={location.image}
+                        alt={`${location.name} restaurant counter`}
+                        className="loc-img image-cover"
+                        sx={{ transition: "transform 0.75s ease" }}
+                      />
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          inset: 0,
+                          background:
+                            "linear-gradient(180deg, transparent 28%, rgba(23,27,23,0.88) 100%)",
+                        }}
+                      />
+                      <Typography
+                        sx={{
+                          position: "absolute",
+                          bottom: 18,
+                          left: 22,
+                          fontFamily: tokens.fonts.display,
+                          fontSize: { xs: "2rem", md: "2.6rem" },
+                          color: tokens.colors.dark.textPrimary,
+                          lineHeight: 1,
+                        }}
+                      >
+                        {location.name}
+                      </Typography>
+                    </Box>
+                    <Stack gap={1.5} sx={{ p: { xs: 2.5, md: 3 } }}>
+                      <Typography
+                        sx={{
+                          color: tokens.colors.dark.textSecondary,
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        {location.address}, {location.city}
+                      </Typography>
+                      <Stack gap={0.3}>
+                        {location.hours.map((line) => (
+                          <Typography
+                            key={line}
+                            sx={{
+                              color: tokens.colors.dark.textTertiary,
+                              fontSize: "0.82rem",
+                            }}
+                          >
+                            {line}
+                          </Typography>
+                        ))}
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        gap={1.2}
+                        flexWrap="wrap"
+                        sx={{ pt: 0.5 }}
+                      >
+                        <Button
+                          variant="contained"
+                          onClick={() => setOrderOpen(true)}
+                          sx={{
+                            bgcolor: tokens.colors.primary.main,
+                            color: tokens.colors.text.primary,
+                            fontWeight: 700,
+                            "&:hover": { bgcolor: tokens.colors.primary.light },
+                          }}
+                        >
+                          Order here
+                        </Button>
+                        <Button
+                          component="a"
+                          href={location.mapLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          variant="outlined"
+                          startIcon={<MapOutlinedIcon />}
+                          sx={{
+                            borderColor: tokens.colors.dark.borderLight,
+                            color: tokens.colors.dark.textSecondary,
+                            "&:hover": {
+                              borderColor: tokens.colors.dark.textPrimary,
+                              color: tokens.colors.dark.textPrimary,
+                            },
+                          }}
+                        >
+                          Map
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </motion.div>
+              ))}
+            </Box>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* ══ NEWSLETTER ═════════════════════════════════════════════════════ */}
+      <Box
+        component="section"
+        sx={{ py: { xs: 8, md: 12 }, bgcolor: tokens.colors.bg.warm }}
+      >
+        <Container maxWidth="md" sx={{ px: { xs: 2.5, md: 6 } }}>
+          <motion.div
+            initial={{ opacity: 0, y: 44, scale: 0.96 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.85, ease }}
+          >
+            <Box
+              sx={{
+                bgcolor: tokens.colors.bg.inverse,
+                borderRadius: tokens.radius.xl,
+                p: { xs: 3.5, md: 7 },
+                border: `1px solid ${tokens.colors.dark.borderSubtle}`,
+                textAlign: "center",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {/* Grain */}
+              <Box
+                aria-hidden="true"
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  opacity: 0.03,
+                  backgroundImage: GRAIN,
+                  backgroundSize: "180px 180px",
+                  pointerEvents: "none",
+                }}
+              />
+
+              <Box sx={{ position: "relative", zIndex: 1 }}>
+                <Box sx={{ mb: 2.5 }}>
+                  <EyebrowPill label="Newsletter" dark />
+                </Box>
+
+                <Typography
+                  sx={{
+                    fontFamily: tokens.fonts.display,
+                    fontSize: { xs: "2.2rem", md: "3rem" },
+                    lineHeight: 1.05,
+                    color: tokens.colors.dark.textPrimary,
+                    mb: 1.5,
+                  }}
+                >
+                  Be the first to know
+                </Typography>
+                <Typography
+                  sx={{
+                    color: tokens.colors.dark.textSecondary,
+                    mb: 4,
+                    maxWidth: 480,
+                    mx: "auto",
+                    lineHeight: 1.8,
+                  }}
+                >
+                  Sign up and get the latest specials, new menu items, catering
+                  updates, and kitchen news. No spam — unsubscribe any time.
+                </Typography>
+
+                <AnimatePresence mode="wait">
+                  {subscribed ? (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, y: 18, scale: 0.94 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.5, ease }}
+                    >
+                      <Stack alignItems="center" gap={1.5}>
+                        <motion.div
+                          initial={{ scale: 0, rotate: -30 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 280,
+                            damping: 18,
+                            delay: 0.1,
+                          }}
+                        >
+                          <VerifiedOutlinedIcon
+                            sx={{
+                              color: tokens.colors.primary.main,
+                              fontSize: "2.4rem",
+                            }}
+                          />
+                        </motion.div>
+                        <Typography
+                          sx={{
+                            color: tokens.colors.dark.textPrimary,
+                            fontWeight: 700,
+                            fontSize: "1.1rem",
+                          }}
+                        >
+                          You're subscribed!
+                        </Typography>
+                        <Typography
+                          sx={{
+                            color: tokens.colors.dark.textTertiary,
+                            fontSize: "0.88rem",
+                          }}
+                        >
+                          Thanks for joining — we'll keep you in the loop.
+                        </Typography>
+                        <Button
+                          size="small"
+                          onClick={() => setSubscribed(false)}
+                          sx={{
+                            mt: 0.5,
+                            color: tokens.colors.dark.textTertiary,
+                            fontSize: "0.78rem",
+                            textDecoration: "underline",
+                            "&:hover": {
+                              color: tokens.colors.dark.textSecondary,
+                            },
+                          }}
+                        >
+                          Subscribe with a different email
+                        </Button>
+                      </Stack>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="form"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Box
+                        component="form"
+                        onSubmit={subscribe}
+                        sx={{
+                          display: "flex",
+                          gap: 1.5,
+                          flexDirection: { xs: "column", sm: "row" },
+                          maxWidth: 480,
+                          mx: "auto",
+                        }}
+                      >
+                        <TextField
+                          fullWidth
+                          required
+                          type="email"
+                          label="Email address"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              bgcolor: tokens.colors.dark.card,
+                              "& fieldset": {
+                                borderColor: tokens.colors.dark.borderLight,
+                              },
+                              "&:hover fieldset": {
+                                borderColor: tokens.colors.dark.borderLight,
+                              },
+                              "& input": {
+                                color: tokens.colors.dark.textPrimary,
+                              },
+                              "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
+                                {
+                                  WebkitBoxShadow: `0 0 0 100px ${tokens.colors.dark.card} inset`,
+                                  WebkitTextFillColor: `${tokens.colors.dark.textPrimary} !important`,
+                                  caretColor:
+                                    tokens.colors.dark.textPrimary,
+                                },
+                            },
+                            "& .MuiInputLabel-root": {
+                              color: tokens.colors.dark.textTertiary,
+                            },
+                          }}
+                        />
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          sx={{
+                            px: 4,
+                            flexShrink: 0,
+                            bgcolor: tokens.colors.primary.main,
+                            color: tokens.colors.text.primary,
+                            fontWeight: 700,
+                            "&:hover": {
+                              bgcolor: tokens.colors.primary.light,
+                            },
+                          }}
+                        >
+                          Join the list
+                        </Button>
+                      </Box>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Box>
+            </Box>
+          </motion.div>
         </Container>
       </Box>
 

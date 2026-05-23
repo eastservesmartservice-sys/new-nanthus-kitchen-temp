@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Box, Button, Chip, Container, Stack, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -119,9 +120,15 @@ export default function OrderPage() {
                   <Typography sx={{ color: tokens.colors.text.secondary }}>
                     {location.address}, {location.city}
                   </Typography>
-                  <Stack direction="row" gap={1.2} alignItems="center">
-                    <AccessTimeIcon sx={{ color: accentColor, fontSize: "1rem" }} />
-                    <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem" }}>{location.hours}</Typography>
+                  <Stack direction="row" gap={1.2} alignItems="flex-start">
+                    <AccessTimeIcon sx={{ color: accentColor, fontSize: "1rem", mt: 0.25, flexShrink: 0 }} />
+                    <Stack gap={0.3}>
+                      {location.hours.map((line) => (
+                        <Typography key={line} sx={{ color: tokens.colors.text.tertiary, fontSize: "0.88rem" }}>
+                          {line}
+                        </Typography>
+                      ))}
+                    </Stack>
                   </Stack>
                   {location.phones.map((phone) => (
                     <Stack key={phone} direction="row" gap={1.2} alignItems="center">
@@ -176,7 +183,19 @@ export default function OrderPage() {
       <Box component="section" sx={{ bgcolor: tokens.colors.bg.inverse, py: { xs: 7, md: 10 } }}>
         <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 } }}>
           <SectionHeading eyebrow="Flow" title="How pickup ordering works" align="center" dark />
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: 2, mt: 4 }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: { xs: 0, md: 2 }, mt: 4, position: "relative" }}>
+            {/* connector line on desktop */}
+            <Box sx={{
+              display: { xs: "none", md: "block" },
+              position: "absolute",
+              top: 46,
+              left: "calc(33.33% - 0px)",
+              width: "33.33%",
+              height: "2px",
+              background: `linear-gradient(90deg, ${tokens.colors.primary.main}, ${tokens.colors.secondary.main})`,
+              opacity: 0.35,
+              zIndex: 0,
+            }} />
             {steps.map((step, index) => (
               <Box
                 key={step.title}
@@ -187,6 +206,23 @@ export default function OrderPage() {
                   p: { xs: 2.5, md: 3 },
                   position: "relative",
                   overflow: "hidden",
+                  zIndex: 1,
+                  /* mobile: vertical connector */
+                  "&:not(:last-child)::after": {
+                    content: '""',
+                    display: { xs: "block", md: "none" },
+                    width: "2px",
+                    height: 24,
+                    bgcolor: tokens.colors.dark.borderLight,
+                    mx: "auto",
+                    mt: 0,
+                    mb: 0,
+                    position: "absolute",
+                    bottom: -24,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                  },
+                  mb: { xs: 3, md: 0 },
                   "&::before": {
                     content: `"0${index + 1}"`,
                     position: "absolute",
@@ -201,20 +237,37 @@ export default function OrderPage() {
                   },
                 }}
               >
-                <Box
-                  sx={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: tokens.radius.md,
-                    display: "grid",
-                    placeItems: "center",
-                    bgcolor: index === 1 ? tokens.colors.secondary.pale : "rgba(245,166,35,0.15)",
-                    color: index === 1 ? tokens.colors.secondary.main : tokens.colors.primary.main,
-                    mb: 2,
-                  }}
-                >
-                  {step.icon}
-                </Box>
+                <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: tokens.radius.md,
+                      display: "grid",
+                      placeItems: "center",
+                      bgcolor: index === 1 ? tokens.colors.secondary.pale : "rgba(245,166,35,0.15)",
+                      color: index === 1 ? tokens.colors.secondary.main : tokens.colors.primary.main,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {step.icon}
+                  </Box>
+                  <Box
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: "50%",
+                      display: "grid",
+                      placeItems: "center",
+                      bgcolor: tokens.colors.dark.elevated,
+                      border: `1px solid ${tokens.colors.dark.borderLight}`,
+                    }}
+                  >
+                    <Typography sx={{ fontSize: "0.68rem", fontWeight: 700, color: tokens.colors.dark.textTertiary, lineHeight: 1 }}>
+                      {index + 1}
+                    </Typography>
+                  </Box>
+                </Stack>
                 <Typography sx={{ fontWeight: 700, fontSize: "1.08rem", mb: 1, color: tokens.colors.dark.textPrimary }}>{step.title}</Typography>
                 <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.9rem", lineHeight: 1.7 }}>{step.body}</Typography>
               </Box>
@@ -222,8 +275,8 @@ export default function OrderPage() {
           </Box>
           <Box sx={{ textAlign: "center", mt: 5 }}>
             <Button
-              href="/menu"
-              component="a"
+              component={Link}
+              to="/menu"
               variant="outlined"
               endIcon={<ArrowForwardIcon />}
               sx={{ borderColor: tokens.colors.dark.borderLight, color: tokens.colors.dark.textSecondary, "&:hover": { borderColor: tokens.colors.dark.textPrimary, color: tokens.colors.dark.textPrimary } }}

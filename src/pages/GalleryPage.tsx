@@ -1,35 +1,53 @@
-import { useMemo, useState } from "react";
-import { Box, Button, Container, Dialog, IconButton, Stack, Typography } from "@mui/material";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Box, Button, CircularProgress, Container, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
 import PageBanner from "../components/PageBanner";
-import { galleryItems, pageImages } from "../data/site";
+import { pageImages } from "../data/site";
+import { useGallery } from "../hooks/useGallery";
 import { tokens } from "../theme";
-
-const aspectRatio = {
-  wide: "4 / 3",
-  tall: "3 / 4",
-  square: "1 / 1",
-};
 
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const categories = useMemo(() => ["All", ...Array.from(new Set(galleryItems.map((item) => item.category)))], []);
-  const filtered = useMemo(
-    () => (activeCategory === "All" ? galleryItems : galleryItems.filter((item) => item.category === activeCategory)),
-    [activeCategory],
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { images, loading, error } = useGallery();
+
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(images.map((item) => item.category)))],
+    [images],
   );
+
+  const filtered = useMemo(
+    () => (activeCategory === "All" ? images : images.filter((item) => item.category === activeCategory)),
+    [activeCategory, images],
+  );
+
   const selected = lightboxIndex === null ? undefined : filtered[lightboxIndex];
 
   const closeLightbox = () => setLightboxIndex(null);
-  const moveLightbox = (direction: -1 | 1) => {
-    setLightboxIndex((current) => {
-      if (current === null || filtered.length === 0) return current;
-      return (current + direction + filtered.length) % filtered.length;
-    });
-  };
+  const moveLightbox = useCallback(
+    (direction: -1 | 1) => {
+      setLightboxIndex((current) => {
+        if (current === null || filtered.length === 0) return current;
+        return (current + direction + filtered.length) % filtered.length;
+      });
+    },
+    [filtered.length],
+  );
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") moveLightbox(1);
+      else if (e.key === "ArrowLeft") moveLightbox(-1);
+      else if (e.key === "Escape") closeLightbox();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIndex, moveLightbox]);
 
   return (
     <Box>
@@ -44,9 +62,23 @@ export default function GalleryPage() {
 
       <Container maxWidth="xl" sx={{ px: { xs: 2.5, md: 6 }, py: { xs: 6, md: 9 } }}>
         {/* ── Filter pills ──────────────────────────────────────────── */}
-        <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mb: 5 }}>
+        <Stack
+          direction="row"
+          gap={1}
+          role="group"
+          aria-label="Filter gallery by category"
+          sx={{
+            mb: 5,
+            overflowX: { xs: "auto", sm: "visible" },
+            flexWrap: { xs: "nowrap", sm: "wrap" },
+            pb: { xs: 0.5, sm: 0 },
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": { display: "none" },
+          }}
+        >
           {categories.map((category) => {
             const active = activeCategory === category;
+            const count = category === "All" ? images.length : images.filter((i) => i.category === category).length;
             return (
               <Button
                 key={category}
@@ -55,113 +87,137 @@ export default function GalleryPage() {
                   setLightboxIndex(null);
                 }}
                 size="small"
+                aria-pressed={active}
                 sx={{
                   borderRadius: "999px",
                   px: 2,
                   fontWeight: 700,
                   fontSize: "0.8rem",
-                  bgcolor: active ? tokens.colors.text.primary : tokens.colors.bg.card,
-                  color: active ? tokens.colors.text.inverse : tokens.colors.text.secondary,
-                  border: `1px solid ${active ? tokens.colors.text.primary : tokens.colors.line.subtle}`,
+                  bgcolor: active ? tokens.colors.primary.main : tokens.colors.bg.card,
+                  color: active ? tokens.colors.text.primary : tokens.colors.text.secondary,
+                  border: `1px solid ${active ? tokens.colors.primary.main : tokens.colors.line.subtle}`,
                   "&:hover": {
-                    bgcolor: active ? tokens.colors.text.primary : tokens.colors.bg.warm,
-                    borderColor: active ? tokens.colors.text.primary : tokens.colors.line.medium,
-                    color: active ? tokens.colors.text.inverse : tokens.colors.text.primary,
+                    bgcolor: active ? tokens.colors.primary.light : tokens.colors.bg.warm,
+                    borderColor: active ? tokens.colors.primary.light : tokens.colors.line.medium,
+                    color: tokens.colors.text.primary,
                   },
                 }}
               >
                 {category}
+                <Box component="span" sx={{ ml: 0.75, fontSize: "0.72rem", fontWeight: 700, opacity: active ? 0.75 : 0.55 }}>
+                  {count}
+                </Box>
               </Button>
             );
           })}
         </Stack>
 
+        {/* ── Loading ───────────────────────────────────────────────── */}
+        {loading && (
+          <Box sx={{ display: "grid", placeItems: "center", py: 10 }}>
+            <CircularProgress sx={{ color: tokens.colors.primary.main }} />
+          </Box>
+        )}
+
+        {!loading && error && (
+          <Box sx={{ textAlign: "center", py: 8 }}>
+            <Typography sx={{ color: tokens.colors.text.secondary }}>
+              Gallery unavailable right now. Please try again shortly.
+            </Typography>
+          </Box>
+        )}
+
+        {!loading && !error && filtered.length === 0 && (
+          <Box sx={{ textAlign: "center", py: 8 }}>
+            <Typography sx={{ color: tokens.colors.text.secondary }}>
+              No images yet — check back soon.
+            </Typography>
+          </Box>
+        )}
+
         {/* ── Masonry grid ──────────────────────────────────────────── */}
-        <Box
-          sx={{
-            columns: { xs: 1, sm: 2, lg: 3 },
-            columnGap: "20px",
-          }}
-        >
-          {filtered.map((item, index) => (
-            <Box
-              key={item.id}
-              component="button"
-              onClick={() => setLightboxIndex(index)}
-              sx={{
-                width: "100%",
-                display: "block",
-                mb: "20px",
-                p: 0,
-                border: "none",
-                borderRadius: tokens.radius.xl,
-                overflow: "hidden",
-                breakInside: "avoid",
-                bgcolor: tokens.colors.bg.card,
-                cursor: "pointer",
-                textAlign: "left",
-                position: "relative",
-                "&:hover .gallery-img": { transform: "scale(1.06)" },
-                "&:hover .gallery-overlay": { opacity: 1 },
-                "&:hover .gallery-info": { transform: "translateY(0)", opacity: 1 },
-              }}
-            >
-              <Box sx={{ aspectRatio: aspectRatio[item.orientation], overflow: "hidden", position: "relative" }}>
-                <Box
-                  component="img"
-                  src={item.image}
-                  alt={item.alt}
-                  className="gallery-img image-cover"
-                  sx={{ transition: "transform 0.6s ease" }}
-                />
-                <Box
-                  className="gallery-overlay"
-                  sx={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "linear-gradient(180deg, transparent 30%, rgba(23,27,23,0.88) 100%)",
-                    opacity: 0,
-                    transition: "opacity 0.4s ease",
-                  }}
-                />
-                <Stack
-                  className="gallery-info"
-                  gap={0.3}
-                  sx={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    p: 2,
-                    transform: "translateY(8px)",
-                    opacity: 0,
-                    transition: "transform 0.4s ease, opacity 0.4s ease",
-                  }}
-                >
-                  <Typography sx={{ fontWeight: 700, color: tokens.colors.dark.textPrimary, fontSize: "0.92rem" }}>
-                    {item.title}
-                  </Typography>
-                  <Typography sx={{ color: tokens.colors.primary.main, fontSize: "0.76rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    {item.category}
-                  </Typography>
-                </Stack>
-              </Box>
-              <Stack
-                gap={0.5}
+        {!loading && filtered.length > 0 && (
+          <Box sx={{ columns: { xs: 1, sm: 2, lg: 3 }, columnGap: 2.5 }}>
+            {filtered.map((item, index) => (
+              <Box
+                key={item.id}
+                component="button"
+                onClick={() => setLightboxIndex(index)}
                 sx={{
-                  p: 1.8,
-                  border: `1px solid ${tokens.colors.line.subtle}`,
-                  borderTop: "none",
-                  borderBottomLeftRadius: tokens.radius.xl,
-                  borderBottomRightRadius: tokens.radius.xl,
+                  width: "100%",
+                  display: "block",
+                  mb: 2.5,
+                  p: 0,
+                  border: "none",
+                  borderRadius: tokens.radius.xl,
+                  overflow: "hidden",
+                  breakInside: "avoid",
+                  bgcolor: tokens.colors.bg.card,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  position: "relative",
+                  "&:hover .gallery-img": { transform: "scale(1.06)" },
+                  "&:hover .gallery-overlay": { opacity: 1 },
+                  "&:hover .gallery-info": { transform: "translateY(0)", opacity: 1 },
                 }}
               >
-                <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>{item.title}</Typography>
-                <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.78rem" }}>{item.category}</Typography>
-              </Stack>
-            </Box>
-          ))}
-        </Box>
+                <Box sx={{ aspectRatio: "4/3", overflow: "hidden", position: "relative" }}>
+                  <Box
+                    component="img"
+                    src={item.src}
+                    alt={item.alt}
+                    className="gallery-img image-cover"
+                    sx={{ transition: "transform 0.6s ease" }}
+                  />
+                  <Box
+                    className="gallery-overlay"
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "linear-gradient(180deg, transparent 30%, rgba(23,27,23,0.88) 100%)",
+                      opacity: { xs: 1, sm: 0 },
+                      transition: "opacity 0.4s ease",
+                    }}
+                  />
+                  <Stack
+                    className="gallery-info"
+                    gap={0.3}
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      p: 2,
+                      transform: { xs: "translateY(0)", sm: "translateY(8px)" },
+                      opacity: { xs: 1, sm: 0 },
+                      transition: "transform 0.4s ease, opacity 0.4s ease",
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 700, color: tokens.colors.dark.textPrimary, fontSize: "0.92rem" }}>
+                      {item.alt}
+                    </Typography>
+                    <Typography sx={{ color: tokens.colors.primary.main, fontSize: "0.76rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                      {item.category}
+                    </Typography>
+                  </Stack>
+                </Box>
+                <Stack
+                  gap={0.5}
+                  sx={{
+                    p: 1.8,
+                    border: `1px solid ${tokens.colors.line.subtle}`,
+                    borderTop: "none",
+                    borderBottomLeftRadius: tokens.radius.xl,
+                    borderBottomRightRadius: tokens.radius.xl,
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>{item.alt}</Typography>
+                  <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.78rem" }}>{item.category}</Typography>
+                </Stack>
+              </Box>
+            ))}
+          </Box>
+        )}
       </Container>
 
       {/* ── Lightbox ──────────────────────────────────────────────────── */}
@@ -170,41 +226,44 @@ export default function GalleryPage() {
         onClose={closeLightbox}
         maxWidth="lg"
         fullWidth
+        fullScreen={isMobile}
         PaperProps={{
           sx: {
             bgcolor: "#0a0d0a",
             color: tokens.colors.dark.textPrimary,
-            borderRadius: tokens.radius.xl,
+            borderRadius: isMobile ? 0 : tokens.radius.xl,
             overflow: "hidden",
-            border: `1px solid ${tokens.colors.dark.borderSubtle}`,
+            border: isMobile ? "none" : `1px solid ${tokens.colors.dark.borderSubtle}`,
+            display: "flex",
+            flexDirection: "column",
           },
         }}
       >
         {selected && (
-          <Box>
+          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <Stack
               direction="row"
               alignItems="center"
               justifyContent="space-between"
-              sx={{ px: 3, py: 2, borderBottom: `1px solid ${tokens.colors.dark.borderSubtle}` }}
+              sx={{ px: { xs: 2, md: 3 }, py: { xs: 1.5, md: 2 }, borderBottom: `1px solid ${tokens.colors.dark.borderSubtle}`, flexShrink: 0 }}
             >
               <Box>
-                <Typography sx={{ fontWeight: 700 }}>{selected.title}</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: { xs: "0.95rem", md: "1rem" } }}>{selected.alt}</Typography>
                 <Typography sx={{ color: tokens.colors.primary.main, fontSize: "0.76rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   {selected.category}
                 </Typography>
               </Box>
-              <IconButton onClick={closeLightbox} aria-label="Close gallery image" sx={{ color: tokens.colors.dark.textPrimary }}>
+              <IconButton onClick={closeLightbox} aria-label="Close gallery image" sx={{ color: tokens.colors.dark.textPrimary, minWidth: 44, minHeight: 44 }}>
                 <CloseIcon />
               </IconButton>
             </Stack>
 
-            <Box sx={{ maxHeight: "72vh", display: "grid", placeItems: "center", bgcolor: "#0a0d0a" }}>
+            <Box sx={{ flex: 1, display: "grid", placeItems: "center", bgcolor: "#0a0d0a", overflow: "hidden", minHeight: 0 }}>
               <Box
                 component="img"
-                src={selected.image}
+                src={selected.src}
                 alt={selected.alt}
-                sx={{ maxHeight: "72vh", width: "100%", objectFit: "contain", display: "block" }}
+                sx={{ maxHeight: isMobile ? "calc(100vh - 128px)" : "72vh", width: "100%", objectFit: "contain", display: "block" }}
               />
             </Box>
 
@@ -212,23 +271,21 @@ export default function GalleryPage() {
               direction="row"
               justifyContent="space-between"
               alignItems="center"
-              sx={{ px: 3, py: 2, borderTop: `1px solid ${tokens.colors.dark.borderSubtle}` }}
+              sx={{ px: { xs: 1, md: 3 }, py: { xs: 1, md: 2 }, borderTop: `1px solid ${tokens.colors.dark.borderSubtle}`, flexShrink: 0 }}
             >
-              <Button
-                onClick={() => moveLightbox(-1)}
-                startIcon={<ArrowBackIcon />}
-                sx={{ color: tokens.colors.dark.textSecondary, "&:hover": { color: tokens.colors.dark.textPrimary } }}
-              >
+              <IconButton onClick={() => moveLightbox(-1)} aria-label="Previous image" sx={{ color: tokens.colors.dark.textSecondary, minWidth: 52, minHeight: 52, display: { xs: "flex", sm: "none" } }}>
+                <ArrowBackIcon />
+              </IconButton>
+              <Button onClick={() => moveLightbox(-1)} startIcon={<ArrowBackIcon />} aria-label="Previous image" sx={{ color: tokens.colors.dark.textSecondary, display: { xs: "none", sm: "inline-flex" }, "&:hover": { color: tokens.colors.dark.textPrimary } }}>
                 Previous
               </Button>
-              <Typography sx={{ color: tokens.colors.dark.textTertiary, fontSize: "0.8rem" }}>
+              <Typography sx={{ color: tokens.colors.dark.textTertiary, fontSize: "0.8rem" }} aria-live="polite" aria-atomic="true">
                 {lightboxIndex !== null ? lightboxIndex + 1 : 0} / {filtered.length}
               </Typography>
-              <Button
-                onClick={() => moveLightbox(1)}
-                endIcon={<ArrowForwardIcon />}
-                sx={{ color: tokens.colors.dark.textSecondary, "&:hover": { color: tokens.colors.dark.textPrimary } }}
-              >
+              <IconButton onClick={() => moveLightbox(1)} aria-label="Next image" sx={{ color: tokens.colors.dark.textSecondary, minWidth: 52, minHeight: 52, display: { xs: "flex", sm: "none" } }}>
+                <ArrowForwardIcon />
+              </IconButton>
+              <Button onClick={() => moveLightbox(1)} endIcon={<ArrowForwardIcon />} aria-label="Next image" sx={{ color: tokens.colors.dark.textSecondary, display: { xs: "none", sm: "inline-flex" }, "&:hover": { color: tokens.colors.dark.textPrimary } }}>
                 Next
               </Button>
             </Stack>

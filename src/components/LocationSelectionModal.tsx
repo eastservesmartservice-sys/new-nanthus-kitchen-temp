@@ -1,7 +1,7 @@
-import { Box, Button, Dialog, DialogContent, IconButton, Stack, Typography } from "@mui/material";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { Box, Button, Dialog, DialogContent, IconButton, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { locations } from "../data/site";
 import { tokens } from "../theme";
@@ -12,6 +12,9 @@ interface Props {
 }
 
 export default function LocationSelectionModal({ open, onClose }: Props) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const openOrder = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
     onClose();
@@ -23,12 +26,13 @@ export default function LocationSelectionModal({ open, onClose }: Props) {
       onClose={onClose}
       maxWidth="md"
       fullWidth
+      fullScreen={isMobile}
       PaperProps={{
         sx: {
-          borderRadius: tokens.radius.xl,
+          borderRadius: isMobile ? 0 : tokens.radius.xl,
           overflow: "hidden",
           bgcolor: tokens.colors.bg.base,
-          border: `1px solid ${tokens.colors.line.subtle}`,
+          border: isMobile ? "none" : `1px solid ${tokens.colors.line.subtle}`,
         },
       }}
       slotProps={{
@@ -53,7 +57,7 @@ export default function LocationSelectionModal({ open, onClose }: Props) {
 
       <DialogContent sx={{ p: { xs: 2.5, md: 3.5 } }}>
         <Typography sx={{ color: tokens.colors.text.secondary, mb: 3 }}>
-          Select the location you want to pick up from. You will continue through our ordering partner.
+          Select the location you want to pick up from. You'll be taken to our ordering partner in a new tab.
         </Typography>
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
           {locations.map((location) => {
@@ -68,7 +72,7 @@ export default function LocationSelectionModal({ open, onClose }: Props) {
                   bgcolor: tokens.colors.bg.card,
                 }}
               >
-                <Box sx={{ height: 170, position: "relative" }}>
+                <Box sx={{ height: { xs: 150, md: 170 }, position: "relative" }}>
                   <Box component="img" src={location.image} alt={`${location.name} pickup counter`} className="image-cover" />
                   <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 20%, rgba(23, 27, 23, 0.72) 100%)" }} />
                   <Typography sx={{ position: "absolute", left: 18, bottom: 16, color: tokens.colors.text.inverse, fontFamily: tokens.fonts.display, fontSize: "1.8rem" }}>
@@ -91,13 +95,15 @@ export default function LocationSelectionModal({ open, onClose }: Props) {
                   </Stack>
                   <Button
                     variant="contained"
-                    endIcon={<ArrowForwardIcon />}
+                    endIcon={<OpenInNewIcon sx={{ fontSize: "0.95rem !important" }} />}
                     onClick={() => openOrder(location.orderLink)}
+                    aria-label={`Order from ${location.name} — opens in a new tab`}
                     sx={{
                       mt: 1,
                       bgcolor: accent,
-                      color: "#fff",
-                      "&:hover": { bgcolor: location.accent === "tomato" ? tokens.colors.primary.dark : tokens.colors.secondary.dark },
+                      color: location.accent === "tomato" ? tokens.colors.text.primary : "#fff",
+                      fontWeight: 700,
+                      "&:hover": { bgcolor: location.accent === "tomato" ? tokens.colors.primary.light : tokens.colors.secondary.light },
                     }}
                   >
                     Order from {location.name}

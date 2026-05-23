@@ -27,7 +27,8 @@ export default function PageBanner({
       sx={{
         position: "relative",
         overflow: "hidden",
-        minHeight: { xs: 340, md: 420 },
+        minHeight: { xs: "52vh", sm: "60vh", md: "66.67vh" },
+        height: { xs: "52vh", sm: "60vh", md: "66.67vh" },
         display: "flex",
         alignItems: "flex-end",
         bgcolor: tokens.colors.bg.inverse,
@@ -41,14 +42,14 @@ export default function PageBanner({
             src={image}
             alt={imageAlt ?? title}
             className="image-cover"
-            sx={{ position: "absolute", inset: 0, opacity: 0.38 }}
+            sx={{ position: "absolute", inset: 0, opacity: 0.72 }}
           />
           <Box
             sx={{
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(180deg, rgba(23,27,23,0.3) 0%, rgba(23,27,23,0.82) 70%, rgba(23,27,23,0.96) 100%)",
+                "linear-gradient(180deg, rgba(23,27,23,0.1) 0%, rgba(23,27,23,0.55) 70%, rgba(23,27,23,0.82) 100%)",
             }}
           />
           <Box
@@ -56,7 +57,7 @@ export default function PageBanner({
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(90deg, rgba(23,27,23,0.6) 0%, transparent 60%)",
+                "linear-gradient(90deg, rgba(23,27,23,0.35) 0%, transparent 60%)",
             }}
           />
         </>
@@ -85,7 +86,7 @@ export default function PageBanner({
             component="h1"
             sx={{
               fontFamily: tokens.fonts.display,
-              fontSize: { xs: "2.75rem", sm: "3.6rem", md: "4.8rem" },
+              fontSize: { xs: "2.2rem", sm: "3.2rem", md: "4.8rem" },
               lineHeight: 1,
               color: tokens.colors.dark.textPrimary,
             }}

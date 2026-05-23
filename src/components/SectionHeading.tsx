@@ -26,7 +26,7 @@ export default function SectionHeading({
     <Box sx={{ textAlign: centered ? "center" : "left", maxWidth: centered ? 720 : 620, mx: centered ? "auto" : 0 }}>
       <Box
         sx={{
-          display: centered ? "inline-flex" : "inline-flex",
+          display: "inline-flex",
           alignItems: "center",
           gap: 1,
           mb: 2.5,

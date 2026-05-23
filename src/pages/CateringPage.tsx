@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Box, Button, Chip, Container, Stack, Typography } from "@mui/material";
+import EyebrowPill from "../components/EyebrowPill";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
@@ -116,11 +117,8 @@ export default function CateringPage() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "0.9fr 1.1fr" }, gap: { xs: 5, md: 7 }, alignItems: "center" }}>
             <Stack gap={3}>
               <Box>
-                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 2.5 }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: tokens.colors.primary.main }} />
-                  <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: tokens.colors.dark.textTertiary }}>
-                    Planning
-                  </Typography>
+                <Box sx={{ mb: 2.5 }}>
+                  <EyebrowPill label="Planning" dark color="neutral" />
                 </Box>
                 <Typography sx={{ fontFamily: tokens.fonts.display, fontSize: { xs: "2.1rem", md: "3rem" }, lineHeight: 1.05, color: tokens.colors.dark.textPrimary, mb: 2 }}>
                   A simple catering sequence
@@ -188,23 +186,8 @@ export default function CateringPage() {
       {/* ── CTA ───────────────────────────────────────────────────────── */}
       <Box component="section" sx={{ py: { xs: 7, md: 10 } }}>
         <Container maxWidth="lg" sx={{ px: { xs: 2.5, md: 6 }, textAlign: "center" }}>
-          <Box
-            sx={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 1,
-              px: 1.5,
-              py: 0.75,
-              borderRadius: "999px",
-              border: `1px solid ${tokens.colors.line.medium}`,
-              bgcolor: tokens.colors.bg.warm,
-              mb: 3,
-            }}
-          >
-            <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: tokens.colors.secondary.main }} />
-            <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: tokens.colors.text.tertiary }}>
-              Event menu
-            </Typography>
+          <Box sx={{ mb: 3 }}>
+            <EyebrowPill label="Event menu" color="secondary" />
           </Box>
           <Typography sx={{ fontFamily: tokens.fonts.display, fontSize: { xs: "2.2rem", md: "3.4rem" }, lineHeight: 1, mb: 2 }}>
             Build a spread that feels familiar and generous.
@@ -218,7 +201,7 @@ export default function CateringPage() {
             variant="contained"
             size="large"
             endIcon={<ArrowForwardIcon />}
-            sx={{ bgcolor: tokens.colors.text.primary, color: tokens.colors.text.inverse, "&:hover": { bgcolor: tokens.colors.primary.dark } }}
+            sx={{ bgcolor: tokens.colors.primary.main, color: tokens.colors.text.primary, fontWeight: 700, "&:hover": { bgcolor: tokens.colors.primary.light } }}
           >
             Contact catering
           </Button>

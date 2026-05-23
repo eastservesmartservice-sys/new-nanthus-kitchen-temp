@@ -13,6 +13,36 @@
   box-sizing: border-box;
 }
 
+/* ── Global scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ink);
+  border-left: 1px solid rgba(251, 250, 246, 0.06);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #F5A623;
+  border-radius: 0;
+  border: none;
+  min-height: 48px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F8C45A;
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--ink);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #F5A623 var(--ink);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -44,6 +74,23 @@ select {
   font: inherit;
 }
 
+/* ── Mobile touch improvements ───────────────────────────────────── */
+button,
+[role="button"],
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent iOS auto-zoom on input focus (font-size must be >= 16px) */
+@media (max-width: 600px) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
 ::selection {
   background: rgba(245, 166, 35, 0.18);
 }
@@ -51,6 +98,15 @@ select {
 :focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: 3px;
+  border-radius: 4px;
+}
+
+a:focus-visible,
+[role="button"]:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 .skip-link {

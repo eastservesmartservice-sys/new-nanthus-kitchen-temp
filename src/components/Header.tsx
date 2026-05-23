@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { contactEmail, locations, navLinks } from "../data/site";
 import { tokens } from "../theme";
 import LocationSelectionModal from "./LocationSelectionModal";
+import MenuLocationModal from "./MenuLocationModal";
 
 const navLabels: Record<string, string> = {
   home: "Home",
@@ -32,6 +33,7 @@ const navLabels: Record<string, string> = {
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [orderOpen, setOrderOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
@@ -80,10 +82,6 @@ export default function Header() {
             >
               {contactEmail}
             </Box>
-            <Box sx={{ width: 1, height: 14, bgcolor: tokens.colors.dark.borderSubtle }} />
-            <Typography variant="caption" sx={{ color: "inherit", whiteSpace: "nowrap" }}>
-              Daily pickup · 11 AM – 9:30 PM
-            </Typography>
           </Stack>
           <Stack direction="row" gap={2.5} alignItems="center">
             {locations.map((item) => (
@@ -145,39 +143,57 @@ export default function Header() {
             >
               {navLinks.map((item) => {
                 const active = isActive(item.path);
+                const isMenu = item.key === "menu";
+                const sharedSx = {
+                  position: "relative",
+                  px: 1.75,
+                  py: 0.75,
+                  fontSize: "0.84rem",
+                  fontWeight: active ? 700 : 500,
+                  color: active ? tokens.colors.text.primary : tokens.colors.text.secondary,
+                  textDecoration: "none",
+                  letterSpacing: 0,
+                  transition: tokens.transitions.fast,
+                  borderRadius: tokens.radius.sm,
+                  cursor: "pointer",
+                  "&:hover": { color: tokens.colors.text.primary },
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: -1,
+                    left: "50%",
+                    transform: active ? "translateX(-50%) scaleX(1)" : "translateX(-50%) scaleX(0)",
+                    transformOrigin: "center",
+                    width: "70%",
+                    height: "2px",
+                    bgcolor: tokens.colors.primary.main,
+                    borderRadius: "2px",
+                    transition: "transform 0.25s ease",
+                  },
+                  "&:hover::after": { transform: "translateX(-50%) scaleX(1)" },
+                };
+
+                if (isMenu) {
+                  return (
+                    <Box
+                      key={item.path}
+                      component="button"
+                      aria-current={active ? "page" : undefined}
+                      onClick={() => setMenuOpen(true)}
+                      sx={{ background: "none", border: "none", ...sharedSx }}
+                    >
+                      {navLabels[item.key] ?? item.key}
+                    </Box>
+                  );
+                }
+
                 return (
                   <Box
                     key={item.path}
                     component={Link}
                     to={item.path}
                     aria-current={active ? "page" : undefined}
-                    sx={{
-                      position: "relative",
-                      px: 1.75,
-                      py: 0.75,
-                      fontSize: "0.84rem",
-                      fontWeight: active ? 700 : 500,
-                      color: active ? tokens.colors.text.primary : tokens.colors.text.secondary,
-                      textDecoration: "none",
-                      letterSpacing: 0,
-                      transition: tokens.transitions.fast,
-                      borderRadius: tokens.radius.sm,
-                      "&:hover": { color: tokens.colors.text.primary },
-                      "&::after": {
-                        content: '""',
-                        position: "absolute",
-                        bottom: -1,
-                        left: "50%",
-                        transform: active ? "translateX(-50%) scaleX(1)" : "translateX(-50%) scaleX(0)",
-                        transformOrigin: "center",
-                        width: "70%",
-                        height: "2px",
-                        bgcolor: tokens.colors.primary.main,
-                        borderRadius: "2px",
-                        transition: "transform 0.25s ease",
-                      },
-                      "&:hover::after": { transform: "translateX(-50%) scaleX(1)" },
-                    }}
+                    sx={sharedSx}
                   >
                     {navLabels[item.key] ?? item.key}
                   </Box>
@@ -267,6 +283,53 @@ export default function Header() {
           <Stack component="nav" gap={0} sx={{ px: 2, pt: 2, flex: 1 }}>
             {navLinks.map((item) => {
               const active = isActive(item.path);
+              const isMenu = item.key === "menu";
+              const sharedDrawerSx = {
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                px: 2,
+                py: 1.5,
+                borderRadius: tokens.radius.lg,
+                textDecoration: "none",
+                color: active ? tokens.colors.dark.textPrimary : tokens.colors.dark.textSecondary,
+                bgcolor: active ? tokens.colors.dark.surface : "transparent",
+                fontWeight: active ? 700 : 500,
+                fontSize: "1rem",
+                transition: tokens.transitions.fast,
+                borderLeft: active ? `3px solid ${tokens.colors.primary.main}` : "3px solid transparent",
+                cursor: "pointer",
+                "&:hover": {
+                  bgcolor: tokens.colors.dark.surface,
+                  color: tokens.colors.dark.textPrimary,
+                },
+              };
+
+              const label = (
+                <>
+                  <Typography sx={{ fontWeight: "inherit", fontSize: "inherit", color: "inherit" }}>
+                    {navLabels[item.key] ?? item.key}
+                  </Typography>
+                  {active && (
+                    <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: tokens.colors.primary.main, flexShrink: 0 }} />
+                  )}
+                </>
+              );
+
+              if (isMenu) {
+                return (
+                  <Box
+                    key={item.path}
+                    component="button"
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => { setDrawerOpen(false); setMenuOpen(true); }}
+                    sx={{ background: "none", border: "none", width: "100%", textAlign: "left", ...sharedDrawerSx }}
+                  >
+                    {label}
+                  </Box>
+                );
+              }
+
               return (
                 <Box
                   key={item.path}
@@ -274,40 +337,9 @@ export default function Header() {
                   to={item.path}
                   onClick={() => setDrawerOpen(false)}
                   aria-current={active ? "page" : undefined}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    px: 2,
-                    py: 1.5,
-                    borderRadius: tokens.radius.lg,
-                    textDecoration: "none",
-                    color: active ? tokens.colors.dark.textPrimary : tokens.colors.dark.textSecondary,
-                    bgcolor: active ? tokens.colors.dark.surface : "transparent",
-                    fontWeight: active ? 700 : 500,
-                    fontSize: "1rem",
-                    transition: tokens.transitions.fast,
-                    borderLeft: active ? `3px solid ${tokens.colors.primary.main}` : "3px solid transparent",
-                    "&:hover": {
-                      bgcolor: tokens.colors.dark.surface,
-                      color: tokens.colors.dark.textPrimary,
-                    },
-                  }}
+                  sx={sharedDrawerSx}
                 >
-                  <Typography sx={{ fontWeight: "inherit", fontSize: "inherit", color: "inherit" }}>
-                    {navLabels[item.key] ?? item.key}
-                  </Typography>
-                  {active && (
-                    <Box
-                      sx={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: "50%",
-                        bgcolor: tokens.colors.primary.main,
-                        flexShrink: 0,
-                      }}
-                    />
-                  )}
+                  {label}
                 </Box>
               );
             })}
@@ -373,6 +405,7 @@ export default function Header() {
       </Drawer>
 
       <LocationSelectionModal open={orderOpen} onClose={() => setOrderOpen(false)} />
+      <MenuLocationModal open={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
 }

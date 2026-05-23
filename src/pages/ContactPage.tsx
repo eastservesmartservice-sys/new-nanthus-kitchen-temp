@@ -4,6 +4,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Container,
   FormControl,
   InputLabel,
@@ -16,6 +17,7 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
@@ -25,26 +27,57 @@ import SendIcon from "@mui/icons-material/Send";
 import PageBanner from "../components/PageBanner";
 import SectionHeading from "../components/SectionHeading";
 import { contactEmail, locations, pageImages } from "../data/site";
+import { apiPost } from "../lib/api";
 import { tokens } from "../theme";
 
-const enquiryTypes = ["General enquiry", "Catering request", "Feedback", "Partnership", "Other"];
+const enquiryTypes = ["General enquiry", "Catering request", "Feedback", "Careers", "Other"];
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", type: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", type: "", role: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submittedType, setSubmittedType] = useState("");
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const changeText = (field: "name" | "email" | "message") => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm((current) => ({ ...current, [field]: event.target.value }));
-  };
+  const isCareers = form.type === "Careers";
+
+  const changeText = (field: "name" | "email" | "phone" | "role" | "message") =>
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((current) => ({ ...current, [field]: event.target.value }));
+    };
 
   const changeType = (event: SelectChangeEvent<string>) => {
     setForm((current) => ({ ...current, type: event.target.value }));
   };
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSent(true);
-    setForm({ name: "", email: "", type: "", message: "" });
+    setSubmitting(true);
+    setApiError(null);
+    try {
+      const subject = isCareers
+        ? `Careers application: ${form.role || "Position not specified"}`
+        : `${form.type}: ${form.name}`;
+      const messageBody = isCareers
+        ? `Position: ${form.role}\n\n${form.message}`
+        : form.message;
+
+      await apiPost("/contact", {
+        name: form.name,
+        email: form.email,
+        ...(form.phone ? { phone: form.phone } : {}),
+        subject,
+        message: messageBody,
+      });
+
+      setSubmittedType(form.type);
+      setSent(true);
+      setForm({ name: "", email: "", phone: "", type: "", role: "", message: "" });
+    } catch (e: unknown) {
+      setApiError((e as Error).message ?? "Failed to send. Please try again or contact us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -64,9 +97,11 @@ export default function ContactPage() {
           {/* ── Form ──────────────────────────────────────────────────── */}
           <Box>
             <SectionHeading
-              eyebrow="Message"
-              title="Send the details"
-              body="For catering, include the date, guest count, pickup or service needs, and preferred dishes if you already know them."
+              eyebrow={isCareers ? "Join the team" : "Message"}
+              title={isCareers ? "Apply for a position" : "Send the details"}
+              body={isCareers
+                ? "Tell us about yourself and the role you're interested in. We'll be in touch if there's a good fit."
+                : "For catering, include the date, guest count, pickup or service needs, and preferred dishes if you already know them."}
             />
             <Box
               component="form"
@@ -93,23 +128,59 @@ export default function ContactPage() {
                   ))}
                 </Select>
               </FormControl>
-              <TextField required multiline rows={6} label="Message" value={form.message} onChange={changeText("message")} />
+
+              {isCareers && (
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+                  <TextField
+                    required
+                    label="Position applying for"
+                    placeholder="e.g. Kitchen hand, Cashier, Cook"
+                    value={form.role}
+                    onChange={changeText("role")}
+                    InputProps={{ startAdornment: <WorkOutlineIcon sx={{ mr: 1, fontSize: "1.1rem", color: tokens.colors.text.tertiary }} /> }}
+                  />
+                  <TextField
+                    label="Phone number"
+                    type="tel"
+                    placeholder="e.g. (416) 123-4567"
+                    value={form.phone}
+                    onChange={changeText("phone")}
+                  />
+                </Box>
+              )}
+
+              <TextField
+                required
+                multiline
+                rows={6}
+                label={isCareers ? "Tell us about yourself" : "Message"}
+                placeholder={isCareers ? "Share your experience, availability, and why you'd like to join the team." : ""}
+                value={form.message}
+                onChange={changeText("message")}
+              />
+
+              {apiError && (
+                <Alert severity="error" sx={{ borderRadius: tokens.radius.md }}>{apiError}</Alert>
+              )}
+
               <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={2}>
                 <Typography sx={{ color: tokens.colors.text.tertiary, fontSize: "0.8rem" }}>
-                  We typically respond within 24 hours.
+                  {isCareers ? "We review all applications and respond to shortlisted candidates." : "We typically respond within 24 hours."}
                 </Typography>
                 <Button
                   type="submit"
                   variant="contained"
-                  endIcon={<SendIcon />}
+                  disabled={submitting}
+                  endIcon={submitting ? <CircularProgress size={16} color="inherit" /> : <SendIcon />}
                   sx={{
                     px: 4,
                     bgcolor: tokens.colors.text.primary,
                     color: tokens.colors.text.inverse,
                     "&:hover": { bgcolor: tokens.colors.primary.dark },
+                    "&.Mui-disabled": { bgcolor: tokens.colors.text.primary, opacity: 0.6, color: tokens.colors.text.inverse },
                   }}
                 >
-                  Send message
+                  {submitting ? "Sending…" : isCareers ? "Submit application" : "Send message"}
                 </Button>
               </Stack>
             </Box>
@@ -138,13 +209,24 @@ export default function ContactPage() {
                     {contactEmail}
                   </Box>
                 </Stack>
-                <Stack direction="row" gap={1.5} alignItems="center">
-                  <Box sx={{ width: 34, height: 34, borderRadius: tokens.radius.sm, bgcolor: "rgba(245,166,35,0.12)", display: "grid", placeItems: "center", flexShrink: 0 }}>
+                <Stack direction="row" gap={1.5} alignItems="flex-start">
+                  <Box sx={{ width: 34, height: 34, borderRadius: tokens.radius.sm, bgcolor: "rgba(245,166,35,0.12)", display: "grid", placeItems: "center", flexShrink: 0, mt: 0.2 }}>
                     <AccessTimeIcon sx={{ color: tokens.colors.primary.main, fontSize: "1rem" }} />
                   </Box>
-                  <Typography sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.9rem" }}>
-                    Daily 11:00 AM – 9:30 PM
-                  </Typography>
+                  <Box>
+                    {locations.map((loc) => (
+                      <Box key={loc.id} sx={{ mb: 0.8 }}>
+                        <Typography sx={{ color: tokens.colors.dark.textPrimary, fontSize: "0.8rem", fontWeight: 700 }}>
+                          {loc.name}
+                        </Typography>
+                        {loc.hours.map((line) => (
+                          <Typography key={line} sx={{ color: tokens.colors.dark.textSecondary, fontSize: "0.82rem" }}>
+                            {line}
+                          </Typography>
+                        ))}
+                      </Box>
+                    ))}
+                  </Box>
                 </Stack>
                 <Stack direction="row" gap={1.5} alignItems="center">
                   <Box sx={{ width: 34, height: 34, borderRadius: tokens.radius.sm, bgcolor: "rgba(25,118,111,0.12)", display: "grid", placeItems: "center", flexShrink: 0 }}>
@@ -220,7 +302,9 @@ export default function ContactPage() {
 
       <Snackbar open={sent} autoHideDuration={4500} onClose={() => setSent(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
         <Alert onClose={() => setSent(false)} severity="success" sx={{ borderRadius: tokens.radius.lg }}>
-          Message sent — we'll be in touch within 24 hours.
+          {submittedType === "Careers"
+            ? "Application received — we'll be in touch with shortlisted candidates."
+            : "Message sent — we'll be in touch within 24 hours."}
         </Alert>
       </Snackbar>
     </Box>
