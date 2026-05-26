@@ -58,6 +58,7 @@ export default function GalleryPage() {
         subtitle="A visual look at the dishes, tables, and pickup kitchen."
         image={pageImages.gallery}
         imageSrcSet={pageImageSets.gallery.srcSet}
+        imageWebpSrcSet={pageImageSets.gallery.webpSrcSet}
         imageSizes={pageImageSets.gallery.sizes}
         imageAlt="Kitchen plating"
       />

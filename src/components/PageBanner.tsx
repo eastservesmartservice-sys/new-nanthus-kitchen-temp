@@ -9,6 +9,7 @@ interface PageBannerProps {
   subtitle?: string;
   image?: string;
   imageSrcSet?: string;
+  imageWebpSrcSet?: string;
   imageSizes?: string;
   imageAlt?: string;
   children?: ReactNode;
@@ -21,6 +22,7 @@ export default function PageBanner({
   subtitle,
   image,
   imageSrcSet,
+  imageWebpSrcSet,
   imageSizes = "100vw",
   imageAlt,
   children,
@@ -41,18 +43,24 @@ export default function PageBanner({
     >
       {image && (
         <>
-          <Box
-            component="img"
-            src={image}
-            srcSet={imageSrcSet}
-            sizes={imageSrcSet ? imageSizes : undefined}
-            alt={imageAlt ?? title}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            className="image-cover"
-            sx={{ position: "absolute", inset: 0, opacity: 0.72 }}
-          />
+          <picture
+            style={{ position: "absolute", inset: 0, opacity: 0.72, display: "block" }}
+          >
+            {imageWebpSrcSet && (
+              <source type="image/webp" srcSet={imageWebpSrcSet} sizes={imageSizes} />
+            )}
+            {imageSrcSet && (
+              <source type="image/jpeg" srcSet={imageSrcSet} sizes={imageSizes} />
+            )}
+            <img
+              src={image}
+              alt={imageAlt ?? title}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className="image-cover"
+            />
+          </picture>
           <Box
             sx={{
               position: "absolute",

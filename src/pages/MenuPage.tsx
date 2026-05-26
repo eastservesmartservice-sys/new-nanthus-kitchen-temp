@@ -46,6 +46,7 @@ export default function MenuPage() {
           highlight="craving"
           image={pageImages.menu}
           imageSrcSet={pageImageSets.menu.srcSet}
+          imageWebpSrcSet={pageImageSets.menu.webpSrcSet}
           imageSizes={pageImageSets.menu.sizes}
           imageAlt="Noodle and curry dishes"
         />
@@ -65,6 +66,7 @@ export default function MenuPage() {
           highlight="craving"
           image={pageImages.menu}
           imageSrcSet={pageImageSets.menu.srcSet}
+          imageWebpSrcSet={pageImageSets.menu.webpSrcSet}
           imageSizes={pageImageSets.menu.sizes}
           imageAlt="Noodle and curry dishes"
         />

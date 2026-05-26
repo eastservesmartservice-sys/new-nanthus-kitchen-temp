@@ -32,6 +32,7 @@ export default function CateringPage() {
         subtitle="Event trays, family portions, cultural gatherings, office meals, and milestone spreads planned around your guest count."
         image={pageImages.catering}
         imageSrcSet={pageImageSets.catering.srcSet}
+        imageWebpSrcSet={pageImageSets.catering.webpSrcSet}
         imageSizes={pageImageSets.catering.sizes}
         imageAlt="Catering table with shared dishes"
       >

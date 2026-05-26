@@ -40,6 +40,7 @@ export default function SpecialsPage() {
         subtitle="Daily pickup meals and weekend comforts from the counter. Availability can change during service."
         image={pageImages.specials}
         imageSrcSet={pageImageSets.specials.srcSet}
+        imageWebpSrcSet={pageImageSets.specials.webpSrcSet}
         imageSizes={pageImageSets.specials.sizes}
         imageAlt="Rice and curry special"
       />

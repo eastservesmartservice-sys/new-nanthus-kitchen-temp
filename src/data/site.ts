@@ -16,6 +16,7 @@ export interface LocationInfo {
   mapLink: string;
   image: string;
   imageSrcSet: string;
+  imageWebpSrcSet: string;
   imageSizes: string;
   accent: "tomato" | "teal";
 }
@@ -51,6 +52,7 @@ export const socials = [
 export interface StaticImage {
   src: string;
   srcSet: string;
+  webpSrcSet: string;
   sizes: string;
 }
 
@@ -61,7 +63,8 @@ const jpgImage = (
   sizes = "100vw",
 ): StaticImage => ({
   src: `/optimized/${name}-${fallbackWidth}.jpg`,
-  srcSet: widths.map((width) => `/optimized/${name}-${width}.jpg ${width}w`).join(", "),
+  srcSet: widths.map((w) => `/optimized/${name}-${w}.jpg ${w}w`).join(", "),
+  webpSrcSet: widths.map((w) => `/optimized/${name}-${w}.webp ${w}w`).join(", "),
   sizes,
 });
 
@@ -119,6 +122,7 @@ export const locations: LocationInfo[] = [
     mapLink: "https://maps.app.goo.gl/BhDAhF9jiPi9HLia9",
     image: locationImageSets.scarborough.src,
     imageSrcSet: locationImageSets.scarborough.srcSet,
+    imageWebpSrcSet: locationImageSets.scarborough.webpSrcSet,
     imageSizes: locationImageSets.scarborough.sizes,
     accent: "tomato",
   },
@@ -134,6 +138,7 @@ export const locations: LocationInfo[] = [
     mapLink: "https://maps.app.goo.gl/ck2Lnqn9AhWs6EbV8",
     image: locationImageSets.markham.src,
     imageSrcSet: locationImageSets.markham.srcSet,
+    imageWebpSrcSet: locationImageSets.markham.webpSrcSet,
     imageSizes: locationImageSets.markham.sizes,
     accent: "teal",
   },

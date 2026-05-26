@@ -224,17 +224,18 @@ export default function HomePage() {
             y: heroImgY,
           }}
         >
-          <Box
-            component="img"
-            src={heroImage}
-            srcSet={heroImageSet.srcSet}
-            sizes={heroImageSet.sizes}
-            alt="Sri Lankan banana leaf rice"
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
+          <picture style={{ display: "block", width: "100%", height: "100%" }}>
+            <source type="image/webp" srcSet={heroImageSet.webpSrcSet} sizes={heroImageSet.sizes} />
+            <source type="image/jpeg" srcSet={heroImageSet.srcSet} sizes={heroImageSet.sizes} />
+            <img
+              src={heroImage}
+              alt="Sri Lankan banana leaf rice"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+          </picture>
         </motion.div>
 
         {/* Cinematic gradient overlays */}
@@ -508,16 +509,11 @@ export default function HomePage() {
             transition={{ duration: 1.6, ease }}
             style={{ width: "100%", height: "100%" }}
           >
-            <Box
-              component="img"
-              src={homeFeatureImageSet.src}
-              srcSet={homeFeatureImageSet.srcSet}
-              sizes={homeFeatureImageSet.sizes}
-              alt="Sri Lankan dishes at New Nanthus Kitchen"
-              loading="lazy"
-              decoding="async"
-              className="image-cover"
-            />
+            <picture style={{ display: "block", width: "100%", height: "100%" }}>
+              <source type="image/webp" srcSet={homeFeatureImageSet.webpSrcSet} sizes={homeFeatureImageSet.sizes} />
+              <source type="image/jpeg" srcSet={homeFeatureImageSet.srcSet} sizes={homeFeatureImageSet.sizes} />
+              <img src={homeFeatureImageSet.src} alt="Sri Lankan dishes at New Nanthus Kitchen" loading="lazy" decoding="async" className="image-cover" />
+            </picture>
           </motion.div>
         </Box>
 
@@ -568,48 +564,34 @@ export default function HomePage() {
           <Box sx={{ maxWidth: { xs: "100%", md: "57%" } }}>
             {/* Eyebrow */}
             <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-60px" }}
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.18 } },
-              }}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.7, ease }}
             >
               <Stack direction="row" alignItems="center" gap={2} sx={{ mb: 4 }}>
-                <motion.div
-                  variants={{
-                    hidden: { scaleX: 0 },
-                    visible: {
-                      scaleX: 1,
-                      transition: { duration: 0.75, ease },
-                    },
+                <Box sx={{ height: "1px", width: 40, bgcolor: tokens.colors.primary.main, flexShrink: 0 }} />
+                <Typography
+                  sx={{
+                    fontSize: "0.7rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.16em",
+                    color: tokens.colors.primary.main,
                   }}
-                  style={{
-                    height: 1,
-                    width: 40,
-                    backgroundColor: tokens.colors.primary.main,
-                    transformOrigin: "left",
-                  }}
-                />
-                <motion.div variants={fadeUp} custom={0}>
-                  <Typography
-                    sx={{
-                      fontSize: "0.7rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.16em",
-                      color: tokens.colors.primary.main,
-                    }}
-                  >
-                    Our story
-                  </Typography>
-                </motion.div>
+                >
+                  Our story
+                </Typography>
               </Stack>
             </motion.div>
 
-            {/* Headline — masked line reveal */}
-            <Box sx={{ mb: 5 }}>
+            {/* Headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.85, ease, delay: 0.1 }}
+            >
               <Typography
                 component="h2"
                 sx={{
@@ -623,57 +605,30 @@ export default function HomePage() {
                   lineHeight: 0.94,
                   letterSpacing: "-0.025em",
                   color: tokens.colors.dark.textPrimary,
+                  mb: 5,
                 }}
               >
-                <Box sx={{ overflow: "hidden", display: "block" }}>
-                  <motion.span
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-60px" }}
-                    variants={slideUp}
-                    custom={0}
-                    style={{ display: "inline-block" }}
-                  >
-                    Jaffna on{" "}
-                    <Box
-                      component="span"
-                      sx={{
-                        color: tokens.colors.primary.main,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      the plate,
-                    </Box>
-                  </motion.span>
+                Jaffna on{" "}
+                <Box
+                  component="span"
+                  sx={{ color: tokens.colors.primary.main, fontStyle: "italic" }}
+                >
+                  the plate,
                 </Box>
-                <Box sx={{ overflow: "hidden", display: "block" }}>
-                  <motion.span
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-60px" }}
-                    variants={slideUp}
-                    custom={1}
-                    style={{ display: "inline-block" }}
-                  >
-                    Toronto{" "}
-                    <Box
-                      component="span"
-                      sx={{ color: tokens.colors.dark.textTertiary }}
-                    >
-                      at the door.
-                    </Box>
-                  </motion.span>
+                <br />
+                Toronto{" "}
+                <Box component="span" sx={{ color: tokens.colors.dark.textTertiary }}>
+                  at the door.
                 </Box>
               </Typography>
-            </Box>
+            </motion.div>
 
             {/* Body */}
             <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-60px" }}
-              variants={fadeUp}
-              custom={0}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.78, ease, delay: 0.2 }}
             >
               <Typography
                 sx={{
@@ -693,13 +648,10 @@ export default function HomePage() {
 
             {/* Pillars */}
             <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-60px" }}
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.12 } },
-              }}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.78, ease, delay: 0.3 }}
             >
               <Stack
                 direction={{ xs: "column", sm: "row" }}
@@ -722,66 +674,60 @@ export default function HomePage() {
                 }}
               >
                 {pillars.map((p) => (
-                  <motion.div
+                  <Box
                     key={p.title}
-                    variants={fadeUp}
-                    style={{ flex: 1 }}
+                    sx={{
+                      flex: 1,
+                      px: { xs: 2.5, md: 3 },
+                      py: 2.5,
+                      transition: tokens.transitions.fast,
+                      "&:hover": { bgcolor: tokens.colors.dark.surface },
+                    }}
                   >
                     <Box
                       sx={{
-                        flex: 1,
-                        px: { xs: 2.5, md: 3 },
-                        py: 2.5,
-                        transition: tokens.transitions.fast,
-                        "&:hover": { bgcolor: tokens.colors.dark.surface },
+                        width: 32,
+                        height: 32,
+                        borderRadius: tokens.radius.sm,
+                        display: "grid",
+                        placeItems: "center",
+                        bgcolor: "rgba(245,166,35,0.12)",
+                        color: tokens.colors.primary.main,
+                        mb: 1.5,
                       }}
                     >
-                      <Box
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: tokens.radius.sm,
-                          display: "grid",
-                          placeItems: "center",
-                          bgcolor: "rgba(245,166,35,0.12)",
-                          color: tokens.colors.primary.main,
-                          mb: 1.5,
-                        }}
-                      >
-                        {p.icon}
-                      </Box>
-                      <Typography
-                        sx={{
-                          fontWeight: 700,
-                          fontSize: "0.9rem",
-                          color: tokens.colors.dark.textPrimary,
-                          mb: 0.5,
-                        }}
-                      >
-                        {p.title}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "0.8rem",
-                          color: tokens.colors.dark.textTertiary,
-                          lineHeight: 1.65,
-                        }}
-                      >
-                        {p.body}
-                      </Typography>
+                      {p.icon}
                     </Box>
-                  </motion.div>
+                    <Typography
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "0.9rem",
+                        color: tokens.colors.dark.textPrimary,
+                        mb: 0.5,
+                      }}
+                    >
+                      {p.title}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "0.8rem",
+                        color: tokens.colors.dark.textTertiary,
+                        lineHeight: 1.65,
+                      }}
+                    >
+                      {p.body}
+                    </Typography>
+                  </Box>
                 ))}
               </Stack>
             </motion.div>
 
             {/* CTAs */}
             <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={0}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.7, ease, delay: 0.4 }}
             >
               <Stack
                 direction="row"
@@ -965,17 +911,18 @@ export default function HomePage() {
                     <Box
                       sx={{ height: 230, overflow: "hidden", position: "relative" }}
                     >
-                      <Box
-                        component="img"
-                        src={item.image}
-                        srcSet={item.imageSet.srcSet}
-                        sizes="(max-width: 900px) 100vw, 33vw"
-                        alt={item.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="feature-img image-cover"
-                        sx={{ transition: "transform 0.65s ease" }}
-                      />
+                      <picture style={{ display: "block", width: "100%", height: "100%" }}>
+                        <source type="image/webp" srcSet={item.imageSet.webpSrcSet} sizes="(max-width: 900px) 100vw, 33vw" />
+                        <source type="image/jpeg" srcSet={item.imageSet.srcSet} sizes="(max-width: 900px) 100vw, 33vw" />
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          loading="lazy"
+                          decoding="async"
+                          className="feature-img image-cover"
+                          style={{ transition: "transform 0.65s ease" }}
+                        />
+                      </picture>
                       <Box
                         sx={{
                           position: "absolute",
@@ -1066,17 +1013,18 @@ export default function HomePage() {
                   "&:hover img": { transform: "scale(1.05)" },
                 }}
               >
-                <Box
-                  component="img"
-                  src={homeFeatureImageSet.src}
-                  srcSet={homeFeatureImageSet.srcSet}
-                  sizes={homeFeatureImageSet.sizes}
-                  alt="Prepared Sri Lankan dishes"
-                  loading="lazy"
-                  decoding="async"
-                  className="image-cover"
-                  sx={{ transition: "transform 0.85s ease" }}
-                />
+                <picture style={{ display: "block", width: "100%", height: "100%" }}>
+                  <source type="image/webp" srcSet={homeFeatureImageSet.webpSrcSet} sizes={homeFeatureImageSet.sizes} />
+                  <source type="image/jpeg" srcSet={homeFeatureImageSet.srcSet} sizes={homeFeatureImageSet.sizes} />
+                  <img
+                    src={homeFeatureImageSet.src}
+                    alt="Prepared Sri Lankan dishes"
+                    loading="lazy"
+                    decoding="async"
+                    className="image-cover"
+                    style={{ transition: "transform 0.85s ease" }}
+                  />
+                </picture>
                 {/* Badge */}
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
@@ -1266,17 +1214,18 @@ export default function HomePage() {
                         position: "relative",
                       }}
                     >
-                      <Box
-                        component="img"
-                        src={location.image}
-                        srcSet={location.imageSrcSet}
-                        sizes={location.imageSizes}
-                        alt={`${location.name} restaurant counter`}
-                        loading="lazy"
-                        decoding="async"
-                        className="loc-img image-cover"
-                        sx={{ transition: "transform 0.75s ease" }}
-                      />
+                      <picture style={{ display: "block", width: "100%", height: "100%" }}>
+                        <source type="image/webp" srcSet={location.imageWebpSrcSet} sizes={location.imageSizes} />
+                        <source type="image/jpeg" srcSet={location.imageSrcSet} sizes={location.imageSizes} />
+                        <img
+                          src={location.image}
+                          alt={`${location.name} restaurant counter`}
+                          loading="lazy"
+                          decoding="async"
+                          className="loc-img image-cover"
+                          style={{ transition: "transform 0.75s ease" }}
+                        />
+                      </picture>
                       <Box
                         sx={{
                           position: "absolute",

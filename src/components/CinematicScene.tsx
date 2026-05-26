@@ -12,16 +12,15 @@ export default function CinematicScene({ image = heroImage, tone = "dark" }: Cin
 
   return (
     <Box className="cinematic-canvas" aria-hidden="true" sx={{ overflow: "hidden" }}>
-      <Box
-        component="img"
-        src={image}
-        srcSet={image === heroImage ? heroImageSet.srcSet : undefined}
-        sizes={image === heroImage ? heroImageSet.sizes : undefined}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        className="image-cover"
-      />
+      <picture className="image-cover" style={{ display: "block", position: "absolute", inset: 0 }}>
+        {image === heroImage && (
+          <source type="image/webp" srcSet={heroImageSet.webpSrcSet} sizes={heroImageSet.sizes} />
+        )}
+        {image === heroImage && (
+          <source type="image/jpeg" srcSet={heroImageSet.srcSet} sizes={heroImageSet.sizes} />
+        )}
+        <img src={image} alt="" loading="lazy" decoding="async" className="image-cover" />
+      </picture>
       <Box
         sx={{
           position: "absolute",

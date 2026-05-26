@@ -89,6 +89,7 @@ export default function ContactPage() {
         subtitle="Send a catering request, ask about pickup, or reach one of the counters directly."
         image={pageImages.contact}
         imageSrcSet={pageImageSets.contact.srcSet}
+        imageWebpSrcSet={pageImageSets.contact.webpSrcSet}
         imageSizes={pageImageSets.contact.sizes}
         imageAlt="Restaurant interior"
       />

@@ -40,6 +40,7 @@ export default function OrderPage() {
         subtitle="Online ordering redirects to our pickup partner. Choose the location nearest to you before placing the order."
         image={pageImages.order}
         imageSrcSet={pageImageSets.order.srcSet}
+        imageWebpSrcSet={pageImageSets.order.webpSrcSet}
         imageSizes={pageImageSets.order.sizes}
         imageAlt="Restaurant table with shared dishes"
       >
