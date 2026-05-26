@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { apiFetch, getImageUrl } from "../lib/api";
 import { onRealtime } from "../lib/realtime";
-import type { ApiMenuCategory, ApiSpecial } from "../types/api";
+import type { ApiGalleryGrouped } from "../types/api";
 
 export interface GalleryImage {
   id: string;
   src: string;
   alt: string;
+  description: string;
   category: string;
+  mediaType: "image" | "video";
 }
 
 interface GalleryState {
@@ -26,43 +28,35 @@ export function useGallery() {
     loaded: !!galleryCache,
   }));
 
+  // Re-fetch when gallery items change via WebSocket
   useEffect(() => {
-    const offMenu = onRealtime("menu:update", () => setTick((t) => t + 1));
-    const offSpecial = onRealtime("special:update", () => setTick((t) => t + 1));
-    return () => { offMenu(); offSpecial(); };
+    const off = onRealtime("gallery:update", () => {
+      galleryCache = null;
+      setTick((t) => t + 1);
+    });
+    return off;
   }, []);
 
   useEffect(() => {
     const controller = new AbortController();
 
-    Promise.all([
-      apiFetch<ApiSpecial[]>("/specials/current", { signal: controller.signal }),
-      apiFetch<ApiMenuCategory[]>("/menu/categories", { signal: controller.signal }),
-    ])
-      .then(([specials, categories]) => {
+    apiFetch<ApiGalleryGrouped[]>("/gallery/public/grouped", {
+      signal: controller.signal,
+    })
+      .then((grouped) => {
         const result: GalleryImage[] = [];
 
-        for (const special of specials) {
-          for (const url of special.imageUrls ?? []) {
+        for (const group of grouped) {
+          const sectionName = group.category?.name ?? "General";
+          for (const item of group.items) {
             result.push({
-              id: `special-${special.id}-${result.length}`,
-              src: getImageUrl(url),
-              alt: special.title,
-              category: "Specials",
+              id: item.id,
+              src: getImageUrl(item.mediaUrl),
+              alt: item.title,
+              description: item.description ?? "",
+              category: sectionName,
+              mediaType: item.mediaType,
             });
-          }
-        }
-
-        for (const cat of categories) {
-          for (const item of cat.items ?? []) {
-            for (const url of item.imageUrls ?? []) {
-              result.push({
-                id: `menu-${item.id}-${result.length}`,
-                src: getImageUrl(url),
-                alt: item.name,
-                category: cat.name,
-              });
-            }
           }
         }
 

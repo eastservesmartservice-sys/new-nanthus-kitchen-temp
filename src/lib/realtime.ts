@@ -8,6 +8,7 @@ const realtimeEvents = [
   "special:update",
   "event:update",
   "openingHours:update",
+  "gallery:update",
 ] as const;
 
 let socket: Socket | null = null;

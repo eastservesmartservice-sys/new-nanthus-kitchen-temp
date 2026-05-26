@@ -53,6 +53,35 @@ export interface ApiOpeningHours {
   isClosed: boolean;
 }
 
+// ── Gallery (admin-managed) ───────────────────────────────────────────────────
+
+export interface ApiGallerySection {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface ApiGalleryItem {
+  id: string;
+  title: string;
+  description: string | null;
+  categoryId: string | null;
+  category: ApiGallerySection | null;
+  mediaType: "image" | "video";
+  mediaUrl: string;
+  thumbnailUrl: string | null;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface ApiGalleryGrouped {
+  category: ApiGallerySection | null;
+  items: ApiGalleryItem[];
+}
+
 export interface ContactPayload {
   name: string;
   email: string;
