@@ -26,7 +26,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import SendIcon from "@mui/icons-material/Send";
 import PageBanner from "../components/PageBanner";
 import SectionHeading from "../components/SectionHeading";
-import { contactEmail, locations, pageImages } from "../data/site";
+import { contactEmail, locations, pageImageSets, pageImages } from "../data/site";
 import { apiPost } from "../lib/api";
 import { tokens } from "../theme";
 
@@ -88,6 +88,8 @@ export default function ContactPage() {
         highlight="the kitchen"
         subtitle="Send a catering request, ask about pickup, or reach one of the counters directly."
         image={pageImages.contact}
+        imageSrcSet={pageImageSets.contact.srcSet}
+        imageSizes={pageImageSets.contact.sizes}
         imageAlt="Restaurant interior"
       />
 

@@ -16,8 +16,10 @@ export interface Special {
 interface SpecialsState {
   specials: Special[];
   error: string | null;
-  requestKey: number | null;
+  loaded: boolean;
 }
+
+let specialsCache: Special[] | null = null;
 
 function mapSpecial(raw: ApiSpecial): Special {
   return {
@@ -33,11 +35,11 @@ function mapSpecial(raw: ApiSpecial): Special {
 
 export function useSpecials() {
   const [tick, setTick] = useState(0);
-  const [state, setState] = useState<SpecialsState>({
-    specials: [],
+  const [state, setState] = useState<SpecialsState>(() => ({
+    specials: specialsCache ?? [],
     error: null,
-    requestKey: null,
-  });
+    loaded: !!specialsCache,
+  }));
 
   useEffect(() => onRealtime("special:update", () => setTick((t) => t + 1)), []);
 
@@ -46,26 +48,33 @@ export function useSpecials() {
 
     apiFetch<ApiSpecial[]>("/specials/current", { signal: controller.signal })
       .then((data) => {
+        const specials = [...data].sort((a, b) => a.sortOrder - b.sortOrder).map(mapSpecial);
+        specialsCache = specials;
         setState({
-          specials: [...data].sort((a, b) => a.sortOrder - b.sortOrder).map(mapSpecial),
+          specials,
           error: null,
-          requestKey: tick,
+          loaded: true,
         });
       })
       .catch((e: Error) => {
         if (e.name !== "AbortError") {
-          setState({ specials: [], error: e.message, requestKey: tick });
+          setState((current) => ({
+            specials: current.specials,
+            error: current.specials.length ? null : e.message,
+            loaded: true,
+          }));
         }
       });
 
     return () => controller.abort();
   }, [tick]);
 
-  const isCurrent = state.requestKey === tick;
+  const specials = specialsCache ?? state.specials;
+  const error = state.error;
 
   return {
-    specials: isCurrent ? state.specials : [],
-    loading: !isCurrent,
-    error: isCurrent ? state.error : null,
+    specials,
+    loading: !state.loaded && specials.length === 0 && !error,
+    error,
   };
 }

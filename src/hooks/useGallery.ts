@@ -13,16 +13,18 @@ export interface GalleryImage {
 interface GalleryState {
   images: GalleryImage[];
   error: string | null;
-  requestKey: number | null;
+  loaded: boolean;
 }
+
+let galleryCache: GalleryImage[] | null = null;
 
 export function useGallery() {
   const [tick, setTick] = useState(0);
-  const [state, setState] = useState<GalleryState>({
-    images: [],
+  const [state, setState] = useState<GalleryState>(() => ({
+    images: galleryCache ?? [],
     error: null,
-    requestKey: null,
-  });
+    loaded: !!galleryCache,
+  }));
 
   useEffect(() => {
     const offMenu = onRealtime("menu:update", () => setTick((t) => t + 1));
@@ -64,22 +66,28 @@ export function useGallery() {
           }
         }
 
-        setState({ images: result, error: null, requestKey: tick });
+        galleryCache = result;
+        setState({ images: result, error: null, loaded: true });
       })
       .catch((e: Error) => {
         if (e.name !== "AbortError") {
-          setState({ images: [], error: e.message, requestKey: tick });
+          setState((current) => ({
+            images: current.images,
+            error: current.images.length ? null : e.message,
+            loaded: true,
+          }));
         }
       });
 
     return () => controller.abort();
   }, [tick]);
 
-  const isCurrent = state.requestKey === tick;
+  const images = galleryCache ?? state.images;
+  const error = state.error;
 
   return {
-    images: isCurrent ? state.images : [],
-    loading: !isCurrent,
-    error: isCurrent ? state.error : null,
+    images,
+    loading: !state.loaded && images.length === 0 && !error,
+    error,
   };
 }

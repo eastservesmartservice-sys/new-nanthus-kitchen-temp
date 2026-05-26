@@ -28,7 +28,14 @@ import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import { heroImage, locations, pageImages } from "../data/site";
+import {
+  heroImage,
+  heroImageSet,
+  homeFeatureImageSet,
+  locations,
+  pageImageSets,
+  pageImages,
+} from "../data/site";
 
 const marqueeItems = [
   "Kothu", "Biryani", "Grilled", "Short Eats", "Jaffna Specialties",
@@ -111,6 +118,7 @@ const featureLinks = [
     body: "From kothu and biryani to Jaffna curries, seafood, short eats, and grilled plates — something for every appetite.",
     path: "/menu",
     image: pageImages.menu,
+    imageSet: pageImageSets.menu,
     icon: <RestaurantMenuOutlinedIcon />,
   },
   {
@@ -118,6 +126,7 @@ const featureLinks = [
     body: "Fresh kitchen picks, weekend soups, and counter plates that change with the day. Check what's on right now.",
     path: "/specials",
     image: pageImages.specials,
+    imageSet: pageImageSets.specials,
     icon: <StarBorderOutlinedIcon />,
   },
   {
@@ -125,6 +134,7 @@ const featureLinks = [
     body: "Feeding a crowd? We handle offices, weddings, cultural events, and family milestones with full Sri Lankan spreads.",
     path: "/catering",
     image: pageImages.catering,
+    imageSet: pageImageSets.catering,
     icon: <GroupsOutlinedIcon />,
   },
 ];
@@ -217,6 +227,8 @@ export default function HomePage() {
           <Box
             component="img"
             src={heroImage}
+            srcSet={heroImageSet.srcSet}
+            sizes={heroImageSet.sizes}
             alt="Sri Lankan banana leaf rice"
             loading="eager"
             decoding="async"
@@ -498,7 +510,9 @@ export default function HomePage() {
           >
             <Box
               component="img"
-              src="/home_feature.png"
+              src={homeFeatureImageSet.src}
+              srcSet={homeFeatureImageSet.srcSet}
+              sizes={homeFeatureImageSet.sizes}
               alt="Sri Lankan dishes at New Nanthus Kitchen"
               loading="lazy"
               decoding="async"
@@ -954,6 +968,8 @@ export default function HomePage() {
                       <Box
                         component="img"
                         src={item.image}
+                        srcSet={item.imageSet.srcSet}
+                        sizes="(max-width: 900px) 100vw, 33vw"
                         alt={item.title}
                         loading="lazy"
                         decoding="async"
@@ -1052,7 +1068,9 @@ export default function HomePage() {
               >
                 <Box
                   component="img"
-                  src="/home_feature.png"
+                  src={homeFeatureImageSet.src}
+                  srcSet={homeFeatureImageSet.srcSet}
+                  sizes={homeFeatureImageSet.sizes}
                   alt="Prepared Sri Lankan dishes"
                   loading="lazy"
                   decoding="async"
@@ -1251,6 +1269,8 @@ export default function HomePage() {
                       <Box
                         component="img"
                         src={location.image}
+                        srcSet={location.imageSrcSet}
+                        sizes={location.imageSizes}
                         alt={`${location.name} restaurant counter`}
                         loading="lazy"
                         decoding="async"

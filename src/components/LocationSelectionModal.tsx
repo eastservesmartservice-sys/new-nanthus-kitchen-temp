@@ -73,7 +73,16 @@ export default function LocationSelectionModal({ open, onClose }: Props) {
                 }}
               >
                 <Box sx={{ height: { xs: 150, md: 170 }, position: "relative" }}>
-                  <Box component="img" src={location.image} alt={`${location.name} pickup counter`} loading="lazy" decoding="async" className="image-cover" />
+                  <Box
+                    component="img"
+                    src={location.image}
+                    srcSet={location.imageSrcSet}
+                    sizes={location.imageSizes}
+                    alt={`${location.name} pickup counter`}
+                    loading="lazy"
+                    decoding="async"
+                    className="image-cover"
+                  />
                   <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 20%, rgba(23, 27, 23, 0.72) 100%)" }} />
                   <Typography sx={{ position: "absolute", left: 18, bottom: 16, color: tokens.colors.text.inverse, fontFamily: tokens.fonts.display, fontSize: "1.8rem" }}>
                     {location.name}

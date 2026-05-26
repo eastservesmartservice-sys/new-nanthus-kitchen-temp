@@ -5,7 +5,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import PageBanner from "../components/PageBanner";
 import LocationSelectionModal from "../components/LocationSelectionModal";
-import { locations, pageImages } from "../data/site";
+import { locations, pageImageSets, pageImages } from "../data/site";
 import { useMenu } from "../hooks/useMenu";
 import type { LocationId } from "../hooks/useMenu";
 import { tokens } from "../theme";
@@ -45,6 +45,8 @@ export default function MenuPage() {
           title="Browse by"
           highlight="craving"
           image={pageImages.menu}
+          imageSrcSet={pageImageSets.menu.srcSet}
+          imageSizes={pageImageSets.menu.sizes}
           imageAlt="Noodle and curry dishes"
         />
         <Box sx={{ display: "grid", placeItems: "center", py: 12 }}>
@@ -62,6 +64,8 @@ export default function MenuPage() {
           title="Browse by"
           highlight="craving"
           image={pageImages.menu}
+          imageSrcSet={pageImageSets.menu.srcSet}
+          imageSizes={pageImageSets.menu.sizes}
           imageAlt="Noodle and curry dishes"
         />
         <Box sx={{ textAlign: "center", py: 12 }}>
@@ -90,6 +94,8 @@ export default function MenuPage() {
         highlight="craving"
         subtitle="A practical pickup menu with Jaffna specialties, kothu, biryani, grilled plates, short eats, and weekday staples."
         image={pageImages.menu}
+        imageSrcSet={pageImageSets.menu.srcSet}
+        imageSizes={pageImageSets.menu.sizes}
         imageAlt="Noodle and curry dishes"
       >
         <Stack direction="row" gap={1} flexWrap="wrap">

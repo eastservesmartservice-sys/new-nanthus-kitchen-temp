@@ -27,8 +27,10 @@ export interface MenuCategory {
 interface MenuState {
   categories: MenuCategory[];
   error: string | null;
-  requestKey: string | null;
+  location: LocationId | null;
 }
+
+const menuCache = new Map<LocationId, MenuCategory[]>();
 
 function effectivePrice(
   item: { price: number | null; priceScarborough: number | null; priceMarkham: number | null },
@@ -70,11 +72,9 @@ function mapCategory(raw: ApiMenuCategory, location: LocationId): MenuCategory {
 
 export function useMenu(location: LocationId) {
   const [tick, setTick] = useState(0);
-  const requestKey = `${location}:${tick}`;
-  const [state, setState] = useState<MenuState>({
-    categories: [],
-    error: null,
-    requestKey: null,
+  const [state, setState] = useState<MenuState>(() => {
+    const cached = menuCache.get(location);
+    return { categories: cached ?? [], error: null, location: cached ? location : null };
   });
 
   useEffect(() => onRealtime("menu:update", () => setTick((t) => t + 1)), []);
@@ -88,26 +88,32 @@ export function useMenu(location: LocationId) {
             .sort((a, b) => a.sortOrder - b.sortOrder)
             .map((c) => mapCategory(c, location));
 
-        setState({ categories, error: null, requestKey });
+        menuCache.set(location, categories);
+        setState({ categories, error: null, location });
       })
       .catch((e: Error) => {
         if (e.name !== "AbortError") {
-          setState({
-            categories: [],
-            error: "Oops! Something went wrong loading the menu. Please try again or give us a call.",
-            requestKey,
-          });
+          setState((current) => ({
+            categories: current.location === location ? current.categories : [],
+            error: current.location === location && current.categories.length
+              ? null
+              : "Oops! Something went wrong loading the menu. Please try again or give us a call.",
+            location,
+          }));
         }
       });
 
     return () => controller.abort();
-  }, [location, requestKey]);
+  }, [location, tick]);
 
-  const isCurrent = state.requestKey === requestKey;
+  const cached = menuCache.get(location);
+  const isCurrent = state.location === location;
+  const categories = cached ?? (isCurrent ? state.categories : []);
+  const error = isCurrent ? state.error : null;
 
   return {
-    categories: isCurrent ? state.categories : [],
-    loading: !isCurrent,
-    error: isCurrent ? state.error : null,
+    categories,
+    loading: categories.length === 0 && !error,
+    error,
   };
 }

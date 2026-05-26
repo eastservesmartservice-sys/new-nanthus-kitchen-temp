@@ -116,6 +116,8 @@ export default function MenuLocationModal({ open, onClose }: Props) {
                   <Box
                     component="img"
                     src={location.image}
+                    srcSet={location.imageSrcSet}
+                    sizes={location.imageSizes}
                     alt={`${location.name} counter`}
                     loading="lazy"
                     decoding="async"

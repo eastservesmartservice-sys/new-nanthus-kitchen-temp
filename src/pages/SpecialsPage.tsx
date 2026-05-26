@@ -6,7 +6,7 @@ import ScheduleOutlinedIcon from "@mui/icons-material/ScheduleOutlined";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import PageBanner from "../components/PageBanner";
 import SectionHeading from "../components/SectionHeading";
-import { pageImages } from "../data/site";
+import { pageImageSets, pageImages } from "../data/site";
 import { useSpecials } from "../hooks/useSpecials";
 import { tokens } from "../theme";
 
@@ -39,6 +39,8 @@ export default function SpecialsPage() {
         highlight="move fast"
         subtitle="Daily pickup meals and weekend comforts from the counter. Availability can change during service."
         image={pageImages.specials}
+        imageSrcSet={pageImageSets.specials.srcSet}
+        imageSizes={pageImageSets.specials.sizes}
         imageAlt="Rice and curry special"
       />
 

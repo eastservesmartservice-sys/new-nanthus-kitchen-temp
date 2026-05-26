@@ -15,6 +15,8 @@ export interface LocationInfo {
   orderLink: string;
   mapLink: string;
   image: string;
+  imageSrcSet: string;
+  imageSizes: string;
   accent: "tomato" | "teal";
 }
 
@@ -46,15 +48,62 @@ export const socials = [
   { label: "Instagram", url: "https://www.instagram.com/newnanthuskitchen" },
 ];
 
-export const heroImage = "/pittu_landing_page.png";
+export interface StaticImage {
+  src: string;
+  srcSet: string;
+  sizes: string;
+}
+
+const jpgImage = (
+  name: string,
+  widths: number[],
+  fallbackWidth: number,
+  sizes = "100vw",
+): StaticImage => ({
+  src: `/optimized/${name}-${fallbackWidth}.jpg`,
+  srcSet: widths.map((width) => `/optimized/${name}-${width}.jpg ${width}w`).join(", "),
+  sizes,
+});
+
+export const logoImage = "/optimized/new_nanthus_kitchen_logo-256.png";
+export const logoImageSrcSet = [
+  "/optimized/new_nanthus_kitchen_logo-96.png 96w",
+  "/optimized/new_nanthus_kitchen_logo-192.png 192w",
+  "/optimized/new_nanthus_kitchen_logo-256.png 256w",
+  "/optimized/new_nanthus_kitchen_logo-512.png 512w",
+].join(", ");
+
+export const heroImageSet = jpgImage("pittu_landing_page", [768, 1280, 1536], 1536);
+export const heroImage = heroImageSet.src;
+export const homeFeatureImageSet = jpgImage(
+  "home_feature",
+  [768, 1280, 1536],
+  1280,
+  "(max-width: 900px) 100vw, 42vw",
+);
+
+export const pageImageSets = {
+  menu: jpgImage("menu_banner", [768, 1280, 1717], 1717),
+  specials: jpgImage("specials_banner", [768, 1280, 1701], 1701),
+  order: jpgImage("order_banner", [768, 1280, 1536], 1536),
+  catering: jpgImage("catering_banner", [768, 1280, 1720], 1720),
+  contact: jpgImage("contact_banner", [768, 1280, 1717], 1717),
+  gallery: jpgImage("gallery_banner", [768, 1280, 1717], 1717),
+};
 
 export const pageImages = {
-  menu: "/menu_banner.png",
-  specials: "/specials_banner.png",
-  order: "/order_banner.png",
-  catering: "/catering_banner.png",
-  contact: "/contact_banner.jpg",
-  gallery: "/gallery_banner.png",
+  menu: pageImageSets.menu.src,
+  specials: pageImageSets.specials.src,
+  order: pageImageSets.order.src,
+  catering: pageImageSets.catering.src,
+  contact: pageImageSets.contact.src,
+  gallery: pageImageSets.gallery.src,
+};
+
+const locationImageSizes = "(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 640px";
+const locationImageSets = {
+  scarborough: jpgImage("scarborough", [768, 1280, 1693], 1280, locationImageSizes),
+  markham: jpgImage("markham", [768, 1280, 1720], 1280, locationImageSizes),
 };
 
 export const locations: LocationInfo[] = [
@@ -68,7 +117,9 @@ export const locations: LocationInfo[] = [
     orderLink:
       "https://www.eastserve.ca/ordering/restaurant/menu?company_uid=b26cb912-8916-4de5-ae9e-bdcab2c08fa8&restaurant_uid=548c1a41-011d-488a-8876-d7815c9181d7&facebook=true",
     mapLink: "https://maps.app.goo.gl/BhDAhF9jiPi9HLia9",
-    image: "/scarborough.png",
+    image: locationImageSets.scarborough.src,
+    imageSrcSet: locationImageSets.scarborough.srcSet,
+    imageSizes: locationImageSets.scarborough.sizes,
     accent: "tomato",
   },
   {
@@ -81,7 +132,9 @@ export const locations: LocationInfo[] = [
     orderLink:
       "https://www.eastserve.ca/ordering/restaurant/menu?company_uid=b26cb912-8916-4de5-ae9e-bdcab2c08fa8&restaurant_uid=d171d5c5-0412-4013-b588-c52b5513f592&facebook=true",
     mapLink: "https://maps.app.goo.gl/ck2Lnqn9AhWs6EbV8",
-    image: "/markham.png",
+    image: locationImageSets.markham.src,
+    imageSrcSet: locationImageSets.markham.srcSet,
+    imageSizes: locationImageSets.markham.sizes,
     accent: "teal",
   },
 ];

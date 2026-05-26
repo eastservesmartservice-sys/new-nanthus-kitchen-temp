@@ -9,7 +9,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import PageBanner from "../components/PageBanner";
 import SectionHeading from "../components/SectionHeading";
-import { locations, pageImages } from "../data/site";
+import { locations, pageImageSets, pageImages } from "../data/site";
 import { tokens } from "../theme";
 
 const steps = [
@@ -39,6 +39,8 @@ export default function OrderPage() {
         highlight="your counter"
         subtitle="Online ordering redirects to our pickup partner. Choose the location nearest to you before placing the order."
         image={pageImages.order}
+        imageSrcSet={pageImageSets.order.srcSet}
+        imageSizes={pageImageSets.order.sizes}
         imageAlt="Restaurant table with shared dishes"
       >
         <Stack direction="row" gap={1} flexWrap="wrap">
@@ -78,6 +80,8 @@ export default function OrderPage() {
                   <Box
                     component="img"
                     src={location.image}
+                    srcSet={location.imageSrcSet}
+                    sizes={location.imageSizes}
                     alt={`${location.name} pickup location`}
                     loading="lazy"
                     decoding="async"

@@ -8,13 +8,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+  transition: opacity var(--exit-ms, 420ms) cubic-bezier(0.76, 0, 0.24, 1);
+  contain: layout paint style;
+}
+
+.overlayExit {
+  opacity: 0;
 }
 
 /* ── Background food image ─────────────────────────────────────────────── */
 .backgroundImage {
   position: absolute;
   inset: 0;
-  background-image: url("/welcome.png");
+  background-image: url("/optimized/welcome-768.jpg");
+  background-image: image-set(
+    url("/optimized/welcome-768.jpg") 1x,
+    url("/optimized/welcome-1024.jpg") 2x
+  );
   background-size: cover;
   background-position: center center;
   opacity: 0.38;
@@ -44,6 +55,8 @@
     transparent 80%
   );
   pointer-events: none;
+  opacity: 0;
+  animation: splash-fade-in 850ms ease forwards;
 }
 
 /* ── Light rays ────────────────────────────────────────────────────────── */
@@ -69,6 +82,9 @@
   filter: blur(1.2px);
   pointer-events: none;
   transform-origin: top center;
+  opacity: 0;
+  transform: rotate(var(--ray-angle)) scaleY(0);
+  animation: splash-ray-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* ── Floating motes ────────────────────────────────────────────────────── */
@@ -82,6 +98,10 @@
   );
   pointer-events: none;
   filter: blur(0.5px);
+  opacity: 0;
+  animation-name: splash-mote-rise;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
 }
 
 /* ── Gold hairline rulers ──────────────────────────────────────────────── */
@@ -101,6 +121,9 @@
   );
   margin-top: -160px;
   transform-origin: center;
+  opacity: 0;
+  transform: scaleX(0);
+  animation: splash-rule-in 1200ms 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .rulerBottom {
@@ -119,6 +142,9 @@
   );
   margin-top: 132px;
   transform-origin: center;
+  opacity: 0;
+  transform: scaleX(0);
+  animation: splash-rule-in 1200ms 380ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* ── Content stack ─────────────────────────────────────────────────────── */
@@ -138,6 +164,9 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 22px;
+  opacity: 0;
+  transform: translateY(24px) scale(0.72);
+  animation: splash-logo-in 780ms 180ms cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
 }
 
 .logoGlow {
@@ -173,6 +202,8 @@
   margin-bottom: 20px;
   transform-origin: center;
   box-shadow: 0 0 12px rgba(245, 166, 35, 0.5);
+  transform: scaleX(0);
+  animation: splash-rule-in 650ms 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* ── Tamil welcome title ───────────────────────────────────────────────── */
@@ -188,6 +219,9 @@
     0 0 36px rgba(255, 208, 146, 0.25),
     0 3px 0 rgba(0, 0, 0, 0.48);
   margin: 0;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: splash-content-in 620ms 760ms ease-out forwards;
 }
 
 /* ── Tamil welcome label ────────────────────────────────────────────────── */
@@ -201,6 +235,9 @@
   color: rgba(255, 246, 227, 0.92);
   text-align: center;
   line-height: 1.6;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: splash-content-in 560ms 900ms ease-out forwards;
 }
 
 .welcomeCaption {
@@ -212,6 +249,9 @@
   text-align: center;
   max-width: 30rem;
   line-height: 1.75;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: splash-content-in 560ms 1040ms ease-out forwards;
 }
 
 /* ── Exit curtain ──────────────────────────────────────────────────────── */
@@ -231,5 +271,78 @@
   height: 2px;
   background: linear-gradient(90deg, #c07a10 0%, #f5a623 55%, #19766f 100%);
   transform-origin: left;
+  transform: scaleX(0);
   box-shadow: 0 0 8px rgba(245, 166, 35, 0.4);
+  animation: splash-progress var(--hold-ms, 1800ms) 120ms linear forwards;
+}
+
+@keyframes splash-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splash-ray-in {
+  to {
+    opacity: var(--ray-opacity);
+    transform: rotate(var(--ray-angle)) scaleY(1);
+  }
+}
+
+@keyframes splash-mote-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  35% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--mote-rise, 52px) * -1));
+  }
+}
+
+@keyframes splash-rule-in {
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes splash-logo-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes splash-content-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes splash-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradientWash,
+  .ray,
+  .mote,
+  .rulerTop,
+  .rulerBottom,
+  .logoWrapper,
+  .rule,
+  .tamilText,
+  .welcomeLabel,
+  .welcomeCaption,
+  .progressBar {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+  }
 }

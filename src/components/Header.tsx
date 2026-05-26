@@ -15,7 +15,7 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import { useTranslation } from "react-i18next";
-import { contactEmail, locations, navLinks } from "../data/site";
+import { contactEmail, locations, logoImage, logoImageSrcSet, navLinks } from "../data/site";
 import { tokens } from "../theme";
 import LocationSelectionModal from "./LocationSelectionModal";
 import MenuLocationModal from "./MenuLocationModal";
@@ -127,7 +127,9 @@ export default function Header() {
           >
             <Box
               component="img"
-              src="/new_nanthus_kitchen_logo.png"
+              src={logoImage}
+              srcSet={logoImageSrcSet}
+              sizes="(max-width: 600px) 54px, 62px"
               alt={t("header.logoAlt")}
               loading="eager"
               decoding="async"
@@ -264,7 +266,9 @@ export default function Header() {
           >
             <Box
               component="img"
-              src="/new_nanthus_kitchen_logo.png"
+              src={logoImage}
+              srcSet={logoImageSrcSet}
+              sizes="48px"
               alt={t("header.logoAlt")}
               loading="eager"
               decoding="async"

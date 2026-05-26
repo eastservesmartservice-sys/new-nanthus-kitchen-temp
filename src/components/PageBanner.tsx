@@ -8,6 +8,8 @@ interface PageBannerProps {
   highlight?: string;
   subtitle?: string;
   image?: string;
+  imageSrcSet?: string;
+  imageSizes?: string;
   imageAlt?: string;
   children?: ReactNode;
 }
@@ -18,6 +20,8 @@ export default function PageBanner({
   highlight,
   subtitle,
   image,
+  imageSrcSet,
+  imageSizes = "100vw",
   imageAlt,
   children,
 }: PageBannerProps) {
@@ -40,6 +44,8 @@ export default function PageBanner({
           <Box
             component="img"
             src={image}
+            srcSet={imageSrcSet}
+            sizes={imageSrcSet ? imageSizes : undefined}
             alt={imageAlt ?? title}
             loading="eager"
             decoding="async"

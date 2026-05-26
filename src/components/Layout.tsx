@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
-import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import theme, { tokens } from "../theme";
 import FloatingCallButton from "./FloatingCallButton";
@@ -43,18 +42,9 @@ export default function Layout() {
       </a>
       <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column", bgcolor: tokens.colors.bg.base }}>
         <Header />
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.main
-            id="main-content"
-            key={location.pathname}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.28 } }}
-            exit={{ opacity: 0, transition: { duration: 0.16 } }}
-            style={{ flex: 1 }}
-          >
-            <Outlet />
-          </motion.main>
-        </AnimatePresence>
+        <Box component="main" id="main-content" key={location.pathname} className="route-main" sx={{ flex: 1 }}>
+          <Outlet />
+        </Box>
         <Footer />
         <FloatingCallButton />
         <ScrollToTop />

@@ -4,7 +4,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
 import PageBanner from "../components/PageBanner";
-import { pageImages } from "../data/site";
+import { pageImageSets, pageImages } from "../data/site";
 import { useGallery } from "../hooks/useGallery";
 import { tokens } from "../theme";
 
@@ -57,6 +57,8 @@ export default function GalleryPage() {
         highlight="counter, moments"
         subtitle="A visual look at the dishes, tables, and pickup kitchen."
         image={pageImages.gallery}
+        imageSrcSet={pageImageSets.gallery.srcSet}
+        imageSizes={pageImageSets.gallery.sizes}
         imageAlt="Kitchen plating"
       />
 

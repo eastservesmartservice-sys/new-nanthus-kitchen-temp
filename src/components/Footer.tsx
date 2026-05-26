@@ -8,7 +8,7 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneIcon from "@mui/icons-material/Phone";
-import { contactEmail, locations, navLinks, socials } from "../data/site";
+import { contactEmail, locations, logoImage, logoImageSrcSet, navLinks, socials } from "../data/site";
 import { tokens } from "../theme";
 
 const socialIcons: Record<string, ReactNode> = {
@@ -66,7 +66,9 @@ export default function Footer() {
           <Stack gap={2.5}>
             <Box
               component="img"
-              src="/new_nanthus_kitchen_logo.png"
+              src={logoImage}
+              srcSet={logoImageSrcSet}
+              sizes="(max-width: 600px) 130px, 160px"
               alt="New Nanthus Kitchen"
               loading="lazy"
               decoding="async"

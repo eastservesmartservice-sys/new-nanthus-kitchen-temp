@@ -7,7 +7,7 @@ import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlin
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import PageBanner from "../components/PageBanner";
 import SectionHeading from "../components/SectionHeading";
-import { cateringServices, pageImages } from "../data/site";
+import { cateringServices, pageImageSets, pageImages } from "../data/site";
 import { tokens } from "../theme";
 
 const process = [
@@ -31,6 +31,8 @@ export default function CateringPage() {
         highlight="bigger tables"
         subtitle="Event trays, family portions, cultural gatherings, office meals, and milestone spreads planned around your guest count."
         image={pageImages.catering}
+        imageSrcSet={pageImageSets.catering.srcSet}
+        imageSizes={pageImageSets.catering.sizes}
         imageAlt="Catering table with shared dishes"
       >
         <Stack direction="row" gap={1} flexWrap="wrap">

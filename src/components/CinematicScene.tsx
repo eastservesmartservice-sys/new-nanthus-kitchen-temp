@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { heroImage } from "../data/site";
+import { heroImage, heroImageSet } from "../data/site";
 import { tokens } from "../theme";
 
 interface CinematicSceneProps {
@@ -12,7 +12,16 @@ export default function CinematicScene({ image = heroImage, tone = "dark" }: Cin
 
   return (
     <Box className="cinematic-canvas" aria-hidden="true" sx={{ overflow: "hidden" }}>
-      <Box component="img" src={image} alt="" loading="lazy" decoding="async" className="image-cover" />
+      <Box
+        component="img"
+        src={image}
+        srcSet={image === heroImage ? heroImageSet.srcSet : undefined}
+        sizes={image === heroImage ? heroImageSet.sizes : undefined}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className="image-cover"
+      />
       <Box
         sx={{
           position: "absolute",
