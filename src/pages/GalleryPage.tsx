@@ -201,7 +201,7 @@ export default function GalleryPage() {
                 }}
               >
                 {/* Media thumbnail */}
-                <Box sx={{ aspectRatio: "4/3", overflow: "hidden", position: "relative" }}>
+                <Box sx={{ position: "relative", overflow: "hidden" }}>
                   {item.mediaType === "video" ? (
                     <>
                       <Box
@@ -212,8 +212,7 @@ export default function GalleryPage() {
                         preload="metadata"
                         sx={{
                           width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
+                          height: "auto",
                           display: "block",
                           transition: "transform 0.6s ease",
                         }}
@@ -245,8 +244,8 @@ export default function GalleryPage() {
                       alt={item.alt}
                       loading="lazy"
                       decoding="async"
-                      className="gallery-media image-cover"
-                      sx={{ transition: "transform 0.6s ease" }}
+                      className="gallery-media"
+                      sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.6s ease" }}
                     />
                   )}
 
