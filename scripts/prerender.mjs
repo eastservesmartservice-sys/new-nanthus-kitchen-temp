@@ -145,21 +145,8 @@ async function main() {
     });
   } catch (launchErr) {
     const msg = String(launchErr?.message ?? launchErr);
-    if (msg.includes("shared libraries") || msg.includes("error while loading")) {
-      console.error(`
-❌  Chromium is missing required system libraries.
-    Run this once on the server, then retry the build:
-
-    sudo apt-get install -y \\
-      libglib2.0-0t64 libnss3 libnspr4 libatk1.0-0t64 libatk-bridge2.0-0t64 \\
-      libcups2t64 libdrm2 libdbus-1-3 libxkbcommon0 libxcomposite1 \\
-      libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2t64 \\
-      libpango-1.0-0 libcairo2 libatspi2.0-0t64 libgtk-3-0t64 \\
-      libx11-xcb1 libxcb-dri3-0 fonts-liberation
-`);
-    } else {
-      console.error("❌  Failed to launch browser:", msg);
-    }
+    // Always print the raw error so we can see exactly which library is missing
+    console.error("\n❌  Raw launch error:\n" + msg);
     process.exit(1);
   }
 
