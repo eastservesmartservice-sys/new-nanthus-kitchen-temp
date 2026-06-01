@@ -182,23 +182,20 @@ async function main() {
       // alive indefinitely, which prevents networkidle2 from ever firing.
       await page.goto(url, { waitUntil: "load", timeout: 30_000 });
 
-      // Wait until React has hydrated at least one child inside <main>
+      // Wait until SEOHead has injected its JSON-LD <script> tag.
+      // This is the definitive signal that the real page component has mounted
+      // and react-helmet-async has flushed — NOT just the <PageLoader /> fallback.
       await page
         .waitForFunction(
-          () => {
-            const main = document.getElementById("main-content");
-            return main != null && main.children.length > 0;
-          },
-          { timeout: 10_000 },
+          () => document.querySelector('script[type="application/ld+json"]') !== null,
+          { timeout: 15_000 },
         )
         .catch(() => {
-          // Shell HTML with correct <head> SEO tags is still useful even if
-          // the page body didn't fully hydrate (e.g. backend not running).
-          console.warn(`  ⚠️  Hydration wait timed out for ${route} — saving shell HTML`);
+          console.warn(`  ⚠️  SEOHead not detected for ${route} — saving shell HTML`);
         });
 
-      // Give react-helmet-async one tick to flush its <head> updates
-      await new Promise((r) => setTimeout(r, 200));
+      // Extra tick for any trailing Helmet DOM reconciliation
+      await new Promise((r) => setTimeout(r, 300));
 
       const html = await page.content();
       await page.close();
