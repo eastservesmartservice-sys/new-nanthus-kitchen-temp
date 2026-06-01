@@ -19,6 +19,8 @@ import PageBanner from "../components/PageBanner";
 import { pageImageSets, pageImages } from "../data/site";
 import { useGallery } from "../hooks/useGallery";
 import { tokens } from "../theme";
+import SEOHead from "../seo/SEOHead";
+import { restaurantSchema, breadcrumbSchema } from "../seo/structuredData";
 
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -74,6 +76,7 @@ export default function GalleryPage() {
 
   return (
     <Box>
+      <SEOHead page="/gallery" schemas={[restaurantSchema, breadcrumbSchema([{ name: "Gallery", path: "/gallery" }])]} />
       <PageBanner
         eyebrow="Gallery"
         title="Food,"

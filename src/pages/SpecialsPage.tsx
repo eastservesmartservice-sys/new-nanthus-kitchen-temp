@@ -9,6 +9,8 @@ import SectionHeading from "../components/SectionHeading";
 import { pageImageSets, pageImages } from "../data/site";
 import { useSpecials } from "../hooks/useSpecials";
 import { tokens } from "../theme";
+import SEOHead from "../seo/SEOHead";
+import { restaurantSchema, breadcrumbSchema } from "../seo/structuredData";
 
 const dayLabel: Record<string, string> = {
   monday: "Monday",
@@ -33,6 +35,7 @@ export default function SpecialsPage() {
 
   return (
     <Box>
+      <SEOHead page="/specials" schemas={[restaurantSchema, breadcrumbSchema([{ name: "Specials", path: "/specials" }])]} />
       <PageBanner
         eyebrow="Kitchen notes"
         title="Specials that"

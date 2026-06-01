@@ -9,6 +9,8 @@ import PageBanner from "../components/PageBanner";
 import SectionHeading from "../components/SectionHeading";
 import { cateringServices, pageImageSets, pageImages } from "../data/site";
 import { tokens } from "../theme";
+import SEOHead from "../seo/SEOHead";
+import { restaurantSchema, cateringFAQSchema, breadcrumbSchema } from "../seo/structuredData";
 
 const process = [
   "Tell us your guest count and date",
@@ -25,6 +27,7 @@ const accentColors = [
 export default function CateringPage() {
   return (
     <Box>
+      <SEOHead page="/catering" schemas={[restaurantSchema, cateringFAQSchema, breadcrumbSchema([{ name: "Catering", path: "/catering" }])]} />
       <PageBanner
         eyebrow="Catering"
         title="Sri Lankan food for"

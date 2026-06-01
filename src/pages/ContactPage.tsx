@@ -29,6 +29,8 @@ import SectionHeading from "../components/SectionHeading";
 import { contactEmail, locations, pageImageSets, pageImages } from "../data/site";
 import { apiPost } from "../lib/api";
 import { tokens } from "../theme";
+import SEOHead from "../seo/SEOHead";
+import { restaurantSchema, contactPageSchema, breadcrumbSchema } from "../seo/structuredData";
 
 const enquiryTypes = ["General enquiry", "Catering request", "Feedback", "Careers", "Other"];
 
@@ -82,6 +84,7 @@ export default function ContactPage() {
 
   return (
     <Box>
+      <SEOHead page="/contact" schemas={[restaurantSchema, contactPageSchema, breadcrumbSchema([{ name: "Contact", path: "/contact" }])]} />
       <PageBanner
         eyebrow="Contact"
         title="Talk to"

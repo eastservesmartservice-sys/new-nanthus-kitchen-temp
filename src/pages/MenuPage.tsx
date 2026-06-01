@@ -9,6 +9,8 @@ import { locations, pageImageSets, pageImages } from "../data/site";
 import { useMenu } from "../hooks/useMenu";
 import type { LocationId } from "../hooks/useMenu";
 import { tokens } from "../theme";
+import SEOHead from "../seo/SEOHead";
+import { restaurantSchema, menuPageSchema, breadcrumbSchema } from "../seo/structuredData";
 
 const isLocationId = (value: string | null): value is LocationId =>
   value === "scarborough" || value === "markham";
@@ -90,6 +92,7 @@ export default function MenuPage() {
 
   return (
     <Box>
+      <SEOHead page="/menu" schemas={[restaurantSchema, menuPageSchema, breadcrumbSchema([{ name: "Menu", path: "/menu" }])]} />
       <PageBanner
         eyebrow="Full menu"
         title="Browse by"

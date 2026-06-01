@@ -29,6 +29,8 @@ export default defineConfig({
           if (realtimePackages.some((pkg) => id.includes(`node_modules/${pkg}`))) return "realtime-vendor";
           if (id.includes("node_modules/framer-motion") || id.includes("node_modules/motion")) return "motion-vendor";
           if (id.includes("@mui/") || id.includes("@emotion/")) return "mui-vendor";
+          // Keep SEO/helmet library in its own small chunk so it loads fast on first paint
+          if (id.includes("node_modules/react-helmet-async") || id.includes("node_modules/helmet")) return "seo-vendor";
           if (id.includes("node_modules")) return "vendor";
         },
       },

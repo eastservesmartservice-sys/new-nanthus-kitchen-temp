@@ -9,17 +9,6 @@ import Footer from "./Footer";
 import Header from "./Header";
 import SplashScreen from "./SplashScreen";
 
-const pageTitles: Record<string, string> = {
-  "/": "layout.pageTitles.home",
-  "/menu": "layout.pageTitles.menu",
-  "/specials": "layout.pageTitles.specials",
-  "/order": "layout.pageTitles.order",
-  "/catering": "layout.pageTitles.catering",
-  "/contact": "layout.pageTitles.contact",
-  "/gallery": "layout.pageTitles.gallery",
-  "*": "layout.pageTitles.notFound",
-};
-
 export default function Layout() {
   const location = useLocation();
   const { t } = useTranslation();
@@ -27,11 +16,6 @@ export default function Layout() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [location.pathname]);
-
-  useEffect(() => {
-    const key = pageTitles[location.pathname] ?? pageTitles["*"];
-    document.title = t(key);
-  }, [location.pathname, t]);
 
   return (
     <ThemeProvider theme={theme}>

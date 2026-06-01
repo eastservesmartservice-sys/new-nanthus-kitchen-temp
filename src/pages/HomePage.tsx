@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import type { FormEvent } from "react";
+import SEOHead from "../seo/SEOHead";
+import { restaurantSchema, websiteSchema } from "../seo/structuredData";
 import { Link } from "react-router-dom";
 import {
   motion,
@@ -199,6 +201,7 @@ export default function HomePage() {
 
   return (
     <Box>
+      <SEOHead page="/" schemas={[restaurantSchema, websiteSchema]} />
       {/* ══ HERO ═══════════════════════════════════════════════════════════ */}
       <Box
         ref={heroRef}

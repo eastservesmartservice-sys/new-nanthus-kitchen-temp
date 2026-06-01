@@ -1,48 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+>
+  <!-- Homepage -->
   <url>
     <loc>https://newnanthuskitchen.com/</loc>
-    <lastmod>2025-12-14</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en-ca" href="https://newnanthuskitchen.com/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://newnanthuskitchen.com/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://newnanthuskitchen.com/" />
+    <image:image>
+      <image:loc>https://newnanthuskitchen.com/optimized/pittu_landing_page-1280.jpg</image:loc>
+      <image:title>Authentic Sri Lankan cuisine — New Nanthu's Kitchen</image:title>
+    </image:image>
   </url>
+
+  <!-- Menu -->
   <url>
     <loc>https://newnanthuskitchen.com/menu</loc>
-    <lastmod>2025-12-14</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://newnanthuskitchen.com/optimized/menu_banner-1280.jpg</image:loc>
+      <image:title>Sri Lankan menu — Kothu, Biryani, Curries</image:title>
+    </image:image>
   </url>
+
+  <!-- Specials -->
   <url>
     <loc>https://newnanthuskitchen.com/specials</loc>
-    <lastmod>2025-12-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://newnanthuskitchen.com/optimized/specials_banner-1280.jpg</image:loc>
+      <image:title>Daily specials — New Nanthu's Kitchen</image:title>
+    </image:image>
   </url>
+
+  <!-- Order -->
   <url>
     <loc>https://newnanthuskitchen.com/order</loc>
-    <lastmod>2025-12-14</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://newnanthuskitchen.com/optimized/order_banner-1280.jpg</image:loc>
+      <image:title>Order Sri Lankan food for pickup</image:title>
+    </image:image>
   </url>
+
+  <!-- Catering -->
   <url>
     <loc>https://newnanthuskitchen.com/catering</loc>
-    <lastmod>2025-12-14</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://newnanthuskitchen.com/optimized/catering_banner-1280.jpg</image:loc>
+      <image:title>Sri Lankan catering for weddings and events</image:title>
+    </image:image>
   </url>
+
+  <!-- Contact -->
   <url>
     <loc>https://newnanthuskitchen.com/contact</loc>
-    <lastmod>2025-12-14</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://newnanthuskitchen.com/optimized/contact_banner-1280.jpg</image:loc>
+      <image:title>Contact New Nanthu's Kitchen — Scarborough and Markham</image:title>
+    </image:image>
   </url>
+
+  <!-- Gallery -->
   <url>
     <loc>https://newnanthuskitchen.com/gallery</loc>
-    <lastmod>2025-12-14</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://newnanthuskitchen.com/optimized/gallery_banner-1280.jpg</image:loc>
+      <image:title>Sri Lankan food gallery — New Nanthu's Kitchen</image:title>
+    </image:image>
   </url>
 </urlset>

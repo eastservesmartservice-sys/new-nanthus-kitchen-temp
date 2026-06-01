@@ -11,6 +11,8 @@ import PageBanner from "../components/PageBanner";
 import SectionHeading from "../components/SectionHeading";
 import { locations, pageImageSets, pageImages } from "../data/site";
 import { tokens } from "../theme";
+import SEOHead from "../seo/SEOHead";
+import { restaurantSchema, breadcrumbSchema } from "../seo/structuredData";
 
 const steps = [
   {
@@ -33,6 +35,7 @@ const steps = [
 export default function OrderPage() {
   return (
     <Box>
+      <SEOHead page="/order" schemas={[restaurantSchema, breadcrumbSchema([{ name: "Order Pickup", path: "/order" }])]} />
       <PageBanner
         eyebrow="Pickup only"
         title="Order from"
