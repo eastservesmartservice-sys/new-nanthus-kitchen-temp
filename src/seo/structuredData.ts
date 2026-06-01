@@ -20,7 +20,7 @@ export const restaurantSchema = {
     "https://www.facebook.com/share/1HHiP73yE2/?mibextid=wwXIfr",
     "https://www.instagram.com/newnanthuskitchen",
   ],
-  location: [
+  containsPlace: [
     {
       "@type": "Restaurant",
       name: "New Nanthu's Kitchen — Scarborough",
@@ -137,11 +137,6 @@ export const menuPageSchema = {
   description:
     "50+ authentic Sri Lankan dishes including Kothu Roti, Biryani, Banana Leaf Rice, Jaffna Curries, Seafood and international favourites.",
   inLanguage: "en",
-  offers: {
-    "@type": "Offer",
-    priceCurrency: "CAD",
-    availability: "https://schema.org/InStock",
-  },
   hasMenuSection: [
     {
       "@type": "MenuSection",

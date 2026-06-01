@@ -19,6 +19,22 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer";
 
+// Detect an installed system Chrome/Chromium to use instead of the bundled one.
+// This avoids downloading a second binary and skips the shared-library problem.
+function findSystemChrome() {
+  const candidates = [
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium",
+    "/snap/bin/chromium",
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(__dirname, "../dist");
 
@@ -108,19 +124,44 @@ async function main() {
   await new Promise((resolve) => server.listen(PORT, "127.0.0.1", resolve));
   console.log(`🌐  Static server ready at ${BASE}`);
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      // Required on Ubuntu/Debian servers (low /dev/shm allocation)
-      "--disable-dev-shm-usage",
-      // Headless servers don't have a GPU
-      "--disable-gpu",
-      "--no-first-run",
-      "--no-zygote",
-    ],
-  });
+  const systemChrome = findSystemChrome();
+  if (systemChrome) {
+    console.log(`🔍  Using system Chrome: ${systemChrome}`);
+  }
+
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      executablePath: systemChrome ?? undefined,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",   // required on Ubuntu (low /dev/shm)
+        "--disable-gpu",
+        "--no-first-run",
+        "--no-zygote",
+      ],
+    });
+  } catch (launchErr) {
+    const msg = String(launchErr?.message ?? launchErr);
+    if (msg.includes("shared libraries") || msg.includes("error while loading")) {
+      console.error(`
+❌  Chromium is missing required system libraries.
+    Run this once on the server, then retry the build:
+
+    sudo apt-get install -y \\
+      libglib2.0-0t64 libnss3 libnspr4 libatk1.0-0t64 libatk-bridge2.0-0t64 \\
+      libcups2t64 libdrm2 libdbus-1-3 libxkbcommon0 libxcomposite1 \\
+      libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2t64 \\
+      libpango-1.0-0 libcairo2 libatspi2.0-0t64 libgtk-3-0t64 \\
+      libx11-xcb1 libxcb-dri3-0 fonts-liberation
+`);
+    } else {
+      console.error("❌  Failed to launch browser:", msg);
+    }
+    process.exit(1);
+  }
 
   try {
     for (const route of ROUTES) {
@@ -145,8 +186,10 @@ async function main() {
         }
       });
 
-      page.on("console", () => {});
-      page.on("pageerror", () => {});
+      page.on("console", (msg) => {
+        if (msg.type() === "error") console.warn(`  [page] ${msg.text()}`);
+      });
+      page.on("pageerror", (err) => console.warn(`  [page error] ${err.message}`));
 
       // Use "load" — not "networkidle2" — because Socket.IO keeps connections
       // alive indefinitely, which prevents networkidle2 from ever firing.
@@ -185,8 +228,8 @@ async function main() {
       console.log(`  ✅  Saved → ${path.relative(process.cwd(), outFile)}`);
     }
   } finally {
-    await browser.close();
-    server.close();
+    await browser?.close();
+    await new Promise((resolve) => server.close(resolve));
   }
 
   console.log("\n🎉  Prerendering complete.");
