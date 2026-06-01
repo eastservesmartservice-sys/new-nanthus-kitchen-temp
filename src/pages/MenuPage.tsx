@@ -42,6 +42,7 @@ export default function MenuPage() {
   if (loading) {
     return (
       <Box>
+        <SEOHead page="/menu" schemas={[restaurantSchema, menuPageSchema, breadcrumbSchema([{ name: "Menu", path: "/menu" }])]} />
         <PageBanner
           eyebrow="Full menu"
           title="Browse by"
@@ -62,6 +63,7 @@ export default function MenuPage() {
   if (error || categories.length === 0) {
     return (
       <Box>
+        <SEOHead page="/menu" schemas={[restaurantSchema, menuPageSchema, breadcrumbSchema([{ name: "Menu", path: "/menu" }])]} />
         <PageBanner
           eyebrow="Full menu"
           title="Browse by"
